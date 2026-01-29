@@ -4,6 +4,46 @@
 -- =============================================================================
 
 -- =============================================================================
+-- 0. 全テーブル削除（外部キー制約を考慮した逆順）
+-- =============================================================================
+
+-- 設定テーブル
+DROP TABLE IF EXISTS chart_color_palettes;
+DROP TABLE IF EXISTS chart_color_settings;
+DROP TABLE IF EXISTS chart_stack_order_settings;
+
+-- 関連テーブル
+DROP TABLE IF EXISTS project_change_history;
+DROP TABLE IF EXISTS project_attachments;
+DROP TABLE IF EXISTS chart_view_indirect_work_items;
+DROP TABLE IF EXISTS chart_view_project_items;
+
+-- ファクトテーブル
+DROP TABLE IF EXISTS standard_effort_weights;
+DROP TABLE IF EXISTS indirect_work_type_ratios;
+DROP TABLE IF EXISTS monthly_indirect_work_load;
+DROP TABLE IF EXISTS monthly_capacity;
+DROP TABLE IF EXISTS monthly_headcount_plan;
+DROP TABLE IF EXISTS project_load;
+
+-- エンティティテーブル
+DROP TABLE IF EXISTS chart_views;
+DROP TABLE IF EXISTS indirect_work_cases;
+DROP TABLE IF EXISTS capacity_scenarios;
+DROP TABLE IF EXISTS headcount_plan_cases;
+DROP TABLE IF EXISTS project_cases;
+DROP TABLE IF EXISTS standard_effort_masters;
+DROP TABLE IF EXISTS projects;
+
+-- マスタテーブル
+DROP TABLE IF EXISTS work_types;
+DROP TABLE IF EXISTS project_types;
+DROP TABLE IF EXISTS business_units;
+
+PRINT 'All existing tables dropped.';
+GO
+
+-- =============================================================================
 -- 1. マスタテーブル
 -- =============================================================================
 
