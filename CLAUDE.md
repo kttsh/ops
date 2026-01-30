@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Turborepo + pnpm を使用したモノレポ構成のフルスタックアプリケーション。
 
+## ドメイン知識
+
+業務ロジック実装前に docs/domain/ 配下の関連ドキュメントを確認すること
+
 ## 開発コマンド
 
 ```bash
@@ -63,9 +67,12 @@ pnpm --filter frontend test
 
 ## コーディング規約
 
-**`docs/rules/folder-structure.md` を厳守すること。**
+### MUST ルール（必須遵守）
 
-**REST API実装時は `docs/rules/api-response.md` を遵守すること。**
+以下のルールは **すべてのコード生成・変更時に必ず遵守すること（MUST）**。違反するコードは許容されない。
+
+1. **ディレクトリ構成規約**: `docs/rules/folder-structure.md` に定められたディレクトリ構成を厳守すること。ファイルの配置場所、命名規則、features 構成、routes 構成など、すべての構造規約に従うこと。
+2. **API レスポンス規約**: `docs/rules/api-response.md` に定められた API レスポンス形式を厳守すること。成功時の共通レスポンス構造（data/meta/links）、エラー時の RFC 9457 Problem Details 形式、HTTP ステータスコードの使い分け、ソフトデリートの仕様など、すべてのレスポンス規約に従うこと。
 
 **Hono を使用したバックエンド実装時は `docs/rules/hono/` 配下のガイドラインを必ず遵守すること。**
 - `docs/rules/hono/crud-guide.md` - CRUD API の実装パターン・ルーティング構成・テスト方法
