@@ -97,7 +97,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:w-64 lg:flex-col border-r border-border bg-sidebar">
         <div className="flex h-14 items-center px-6">
-          <h1 className="text-lg font-bold text-sidebar-foreground">Ops</h1>
+          <h1 className="text-lg font-bold text-sidebar-foreground">操業管理システム</h1>
         </div>
         <Separator />
         <SidebarNav />
@@ -115,12 +115,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
               <SheetHeader className="p-6 pb-0">
-                <SheetTitle>Ops</SheetTitle>
+                <SheetTitle>操業管理システム</SheetTitle>
               </SheetHeader>
               <SidebarNav />
             </SheetContent>
           </Sheet>
-          <h1 className="text-lg font-bold">Ops</h1>
+          <h1 className="text-lg font-bold">操業管理システム</h1>
         </header>
 
         {/* Page content */}
