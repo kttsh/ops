@@ -20,6 +20,12 @@ import monthlyHeadcountPlans from '@/routes/monthlyHeadcountPlans'
 import monthlyCapacities from '@/routes/monthlyCapacities'
 import monthlyIndirectWorkLoads from '@/routes/monthlyIndirectWorkLoads'
 import indirectWorkTypeRatios from '@/routes/indirectWorkTypeRatios'
+import chartViewIndirectWorkItems from '@/routes/chartViewIndirectWorkItems'
+import chartViewProjectItems from '@/routes/chartViewProjectItems'
+import chartColorPalettes from '@/routes/chartColorPalettes'
+import chartColorSettings from '@/routes/chartColorSettings'
+import chartStackOrderSettings from '@/routes/chartStackOrderSettings'
+import projectChangeHistory from '@/routes/projectChangeHistory'
 
 const app = new Hono()
 
@@ -70,6 +76,12 @@ app.route('/headcount-plan-cases/:headcountPlanCaseId/monthly-headcount-plans', 
 app.route('/capacity-scenarios/:capacityScenarioId/monthly-capacities', monthlyCapacities)
 app.route('/indirect-work-cases/:indirectWorkCaseId/monthly-indirect-work-loads', monthlyIndirectWorkLoads)
 app.route('/indirect-work-cases/:indirectWorkCaseId/indirect-work-type-ratios', indirectWorkTypeRatios)
+app.route('/chart-views/:chartViewId/indirect-work-items', chartViewIndirectWorkItems)
+app.route('/chart-views/:chartViewId/project-items', chartViewProjectItems)
+app.route('/chart-color-palettes', chartColorPalettes)
+app.route('/chart-color-settings', chartColorSettings)
+app.route('/chart-stack-order-settings', chartStackOrderSettings)
+app.route('/projects/:projectId/change-history', projectChangeHistory)
 
 // Not Found ハンドラ
 app.notFound((c) => {

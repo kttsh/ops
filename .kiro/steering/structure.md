@@ -9,7 +9,7 @@
 ### Monorepo Root
 **Location**: `/`
 **Purpose**: ワークスペース管理・共通設定
-**Pattern**: `apps/` にアプリ、`packages/` に共有ライブラリ、`docs/` にドキュメント
+**Pattern**: `apps/` にアプリ、`packages/` に共有ライブラリ（現在は未使用）、`docs/` にドキュメント
 
 ### Backend Layers (apps/backend/src/)
 **Purpose**: レイヤードアーキテクチャでリクエストからDBまでの責務を分離
@@ -26,13 +26,15 @@
 **Example**: `businessUnits` エンティティ →
 `routes/businessUnits.ts` → `services/businessUnitService.ts` → `data/businessUnitData.ts` + `transform/businessUnitTransform.ts` + `types/businessUnit.ts`
 
-### Frontend Features (apps/frontend/src/) ※計画中
+### Frontend Features (apps/frontend/src/)
 **Purpose**: 機能単位でコードを凝集し、機能間の依存を最小化
 **Pattern**:
 - `features/[feature]/` → api, components, hooks, stores, types を内包
 - `features/[feature]/index.ts` → パブリック API のエクスポート
 - `components/ui/` → shadcn/ui 等のデザインシステムプリミティブ
-- `routes/` → TanStack Router のファイルベースルーティング
+- `routes/` → TanStack Router のファイルベースルーティング（`routeTree.gen.ts` 自動生成）
+- `styles/` → グローバルスタイル
+- `lib/` → 共有ユーティリティ
 
 ### Documentation
 **Location**: `docs/`

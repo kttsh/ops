@@ -6,13 +6,14 @@ Turborepo + pnpm によるモノレポ構成。バックエンドは Hono によ
 
 ## Core Technologies
 
-- **Language**: TypeScript 5.x（strict mode）
+- **Language**: TypeScript 5.9.x（strict mode）
 - **Runtime**: Node.js 20+
 - **Package Manager**: pnpm 10.x + Turborepo 2.x
 - **Backend Framework**: Hono v4
-- **Frontend Framework**: TanStack Router + TanStack Query + TanStack Table + TanStack Form + shadcn/ui
+- **Frontend Framework**: React 19 + Vite 7 + TanStack Router + TanStack Query + TanStack Table + TanStack Form + shadcn/ui
+- **Styling**: Tailwind CSS v4
 - **Database**: Microsoft SQL Server（mssql ライブラリ、ORM なし・直接 SQL）
-- **Validation**: Zod（バックエンド・フロントエンド共通）
+- **Validation**: Zod（バックエンド Zod v4 / フロントエンド Zod v3）
 
 ## Key Libraries
 
@@ -21,7 +22,10 @@ Turborepo + pnpm によるモノレポ構成。バックエンドは Hono によ
 | API サーバー | `hono`, `@hono/node-server` | HTTP サーバーとルーティング |
 | バリデーション | `zod`, `@hono/zod-validator` | スキーマ定義・リクエスト検証 |
 | DB アクセス | `mssql` | SQL Server 接続・クエリ実行 |
-| テスト | `vitest` | ユニットテスト |
+| テスト | `vitest` v4 | ユニットテスト |
+| スタイリング | `tailwindcss` v4, `@tailwindcss/vite` | ユーティリティ CSS |
+| UI プリミティブ | `@radix-ui/*`, `lucide-react` | shadcn/ui の基盤コンポーネント |
+| 通知 | `sonner` | トースト通知 |
 | 開発 | `tsx` | TypeScript の実行・ホットリロード |
 
 ## Development Standards
@@ -35,7 +39,7 @@ Turborepo + pnpm によるモノレポ構成。バックエンドは Hono によ
 
 ### Code Quality
 
-- ESLint / Prettier は今後導入予定
+- ESLint 9 導入済み（フロントエンド）、バックエンドは今後導入予定
 - `docs/rules/` 配下の規約ドキュメントがコード品質の基準
 - API レスポンスは RFC 9457 Problem Details 形式に準拠
 
@@ -72,7 +76,7 @@ Turborepo + pnpm によるモノレポ構成。バックエンドは Hono によ
 | Hono 採用 | Hono v4 | 軽量・型推論が強力・Edge 対応の将来性 |
 | TanStack エコシステム | Router/Query/Table/Form | 型安全・ファイルベースルーティング・統一的な開発体験 |
 | モノレポ | Turborepo + pnpm | フロントエンド・バックエンド・共有パッケージの統合管理 |
-| Zod 統一 | Zod v4 | バリデーションと型定義の一元化 |
+| Zod 統一 | Zod v4（backend）/ v3（frontend） | バリデーションと型定義の一元化（バージョン統一は今後の課題） |
 
 ---
 _Document standards and patterns, not every dependency_

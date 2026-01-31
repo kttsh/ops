@@ -23,7 +23,7 @@
    - [Monthly Capacity API](#monthly-capacity-api)
    - [Monthly Indirect Work Load API](#monthly-indirect-work-load-api)
    - [Indirect Work Type Ratios API](#indirect-work-type-ratios-api)
-   - [Standard Effort Weights API](#standard-effort-weights-api)
+   - [Standard Effort Weights API](#standard-effort-weights-api)（Masters に統合）
 7. [関連テーブル API](#関連テーブル-api)
    - [Chart View Project Items API](#chart-view-project-items-api)
    - [Chart View Indirect Work Items API](#chart-view-indirect-work-items-api)
@@ -62,22 +62,22 @@
 | 7 | capacity_scenarios | エンティティ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | - | **実装済** |
 | 8 | indirect_work_cases | エンティティ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | - | **実装済** |
 | 9 | chart_views | エンティティ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | - | **実装済** |
-| 10 | standard_effort_masters | エンティティ | - | - | - | - | - | - | - | **未実装** |
+| 10 | standard_effort_masters | エンティティ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | フィルタ | **実装済** |
 | 11 | project_load | ファクト | ✅ | ✅ | ✅ | ✅ | ✅ | - | Bulk Upsert | **実装済** |
-| 12 | monthly_headcount_plan | ファクト | - | - | - | - | - | - | - | **未実装** |
-| 13 | monthly_capacity | ファクト | - | - | - | - | - | - | - | **未実装** |
-| 14 | monthly_indirect_work_load | ファクト | - | - | - | - | - | - | - | **未実装** |
-| 15 | indirect_work_type_ratios | ファクト | - | - | - | - | - | - | - | **未実装** |
-| 16 | standard_effort_weights | ファクト | - | - | - | - | - | - | - | **未実装** |
-| 17 | chart_view_project_items | 関連 | - | - | - | - | - | - | - | **未実装** |
-| 18 | chart_view_indirect_work_items | 関連 | - | - | - | - | - | - | - | **未実装** |
+| 12 | monthly_headcount_plan | ファクト | ✅ | ✅ | ✅ | ✅ | ✅ | - | Bulk Upsert | **実装済** |
+| 13 | monthly_capacity | ファクト | ✅ | ✅ | ✅ | ✅ | ✅ | - | Bulk Upsert | **実装済** |
+| 14 | monthly_indirect_work_load | ファクト | ✅ | ✅ | ✅ | ✅ | ✅ | - | Bulk Upsert | **実装済** |
+| 15 | indirect_work_type_ratios | ファクト | ✅ | ✅ | ✅ | ✅ | ✅ | - | Bulk Upsert | **実装済** |
+| 16 | standard_effort_weights | ファクト | - | - | - | - | - | - | Masters に統合 | **統合済** |
+| 17 | chart_view_project_items | 関連 | ✅ | ✅ | ✅ | ✅ | ✅ | - | 一括表示順序更新 | **実装済** |
+| 18 | chart_view_indirect_work_items | 関連 | ✅ | ✅ | ✅ | ✅ | ✅ | - | - | **実装済** |
 | 19 | project_attachments | 関連 | - | - | - | - | - | - | - | **未実装** |
-| 20 | project_change_history | 関連 | - | - | - | - | - | - | - | **未実装** |
+| 20 | project_change_history | 関連 | ✅ | ✅ | ✅ | - | ✅ | - | - | **実装済** |
 | 21 | chart_stack_order_settings | 設定 | - | - | - | - | - | - | - | **未実装** |
-| 22 | chart_color_settings | 設定 | - | - | - | - | - | - | - | **未実装** |
-| 23 | chart_color_palettes | 設定 | - | - | - | - | - | - | - | **未実装** |
+| 22 | chart_color_settings | 設定 | ✅ | ✅ | ✅ | ✅ | ✅ | - | Bulk Upsert | **実装済** |
+| 23 | chart_color_palettes | 設定 | ✅ | ✅ | ✅ | ✅ | ✅ | - | - | **実装済** |
 
-**実装済: 11/23 テーブル（47.8%）**
+**実装済: 21/23 テーブル（91.3%）** ※ standard_effort_weights は standard_effort_masters に統合
 
 ### レイヤー構成
 
@@ -88,8 +88,9 @@
 | Route | `apps/backend/src/routes/` | エンドポイント定義・バリデーション |
 | Service | `apps/backend/src/services/` | ビジネスロジック |
 | Data | `apps/backend/src/data/` | DB アクセス・クエリ実行 |
+| Transform | `apps/backend/src/transform/` | DB 行 → API レスポンスの変換 |
 
-型定義は `apps/backend/src/types/` に配置。
+型定義は `apps/backend/src/types/` に配置（Zod スキーマ・DB 行型・API レスポンス型）。
 
 ---
 
@@ -813,10 +814,126 @@
 
 ### Standard Effort Masters API
 
-> **ステータス: 未実装**
+BU × 案件タイプごとの標準工数パターンを管理する API。`standard_effort_weights` は本 API にネスト管理される。
 
-BU × 案件タイプごとの標準工数パターンを管理する API。
-対応テーブル: `standard_effort_masters`
+**ベースパス**: `/standard-effort-masters`
+
+**特記事項:**
+- エンティティテーブルのため論理削除/復元あり
+- `standard_effort_weights`（進捗度別重み値）はマスタ詳細に含まれるネストリソース
+- `filter[businessUnitCode]`、`filter[projectTypeCode]` によるフィルタリング対応
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `/standard-effort-masters` | 一覧取得 | 200 |
+| GET | `/standard-effort-masters/:id` | 単一取得（weights 含む） | 200 |
+| POST | `/standard-effort-masters` | 新規作成 | 201 |
+| PUT | `/standard-effort-masters/:id` | 更新 | 200 |
+| DELETE | `/standard-effort-masters/:id` | 論理削除 | 204 |
+| POST | `/standard-effort-masters/:id/actions/restore` | 復元 | 200 |
+
+#### GET /standard-effort-masters - 一覧取得
+
+**クエリパラメータ:**
+
+| パラメータ | 型 | 必須 | デフォルト | 説明 |
+|-----------|-----|:----:|-----------|------|
+| `page[number]` | integer | - | 1 | ページ番号 |
+| `page[size]` | integer | - | 20 | ページサイズ（1〜1000） |
+| `filter[includeDisabled]` | boolean | - | false | 論理削除済みを含むか |
+| `filter[businessUnitCode]` | string | - | - | BUコードでフィルタ |
+| `filter[projectTypeCode]` | string | - | - | 案件タイプコードでフィルタ |
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "standardEffortId": 1,
+      "businessUnitCode": "BU001",
+      "projectTypeCode": "PT001",
+      "name": "標準工数パターンA",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "currentPage": 1,
+      "pageSize": 20,
+      "totalItems": 5,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+#### GET /standard-effort-masters/:id - 単一取得
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": {
+    "standardEffortId": 1,
+    "businessUnitCode": "BU001",
+    "projectTypeCode": "PT001",
+    "name": "標準工数パターンA",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z",
+    "weights": [
+      {
+        "standardEffortWeightId": 1,
+        "progressRate": 10,
+        "weight": 5
+      },
+      {
+        "standardEffortWeightId": 2,
+        "progressRate": 50,
+        "weight": 30
+      }
+    ]
+  }
+}
+```
+
+#### POST /standard-effort-masters - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `businessUnitCode` | string | ✅ | 1〜20文字, `/^[a-zA-Z0-9_-]+$/` | BUコード |
+| `projectTypeCode` | string | ✅ | 1〜20文字, `/^[a-zA-Z0-9_-]+$/` | 案件タイプコード |
+| `name` | string | ✅ | 1〜100文字 | パターン名 |
+| `weights` | array | - | - | 進捗度別重み配列 |
+| `weights[].progressRate` | integer | ✅ | 0〜100 | 進捗率（%） |
+| `weights[].weight` | integer | ✅ | 0以上 | 重み値 |
+
+**レスポンス（201）:**
+
+- `Location` ヘッダ: `/standard-effort-masters/{standardEffortId}`
+- ボディ: `{ "data": { ... } }` （作成されたリソース、weights 含む）
+
+#### PUT /standard-effort-masters/:id - 更新
+
+**リクエストボディ（すべてオプション）:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `name` | string | - | 1〜100文字 | パターン名 |
+| `weights` | array | - | - | 進捗度別重み配列（上書き） |
+
+#### DELETE /standard-effort-masters/:id - 論理削除
+
+**レスポンス（204）:** ボディなし
+
+#### POST /standard-effort-masters/:id/actions/restore - 復元
+
+**レスポンス（200）:** `{ "data": { ... } }` （復元されたリソース）
 
 ---
 
@@ -904,46 +1021,358 @@ BU × 案件タイプごとの標準工数パターンを管理する API。
 
 ### Monthly Headcount Plan API
 
-> **ステータス: 未実装**
+月次人員計画データを管理する API。Headcount Plan Cases のサブリソース。
 
-月次人員計画データを管理する API。
-対応テーブル: `monthly_headcount_plan`
+**ベースパス**: `/headcount-plan-cases/:headcountPlanCaseId/monthly-headcount-plans`
+
+**特記事項:**
+- ファクトテーブルのため物理削除（論理削除/復元なし）
+- ページネーションなし（全件取得）
+- Bulk Upsert エンドポイントあり
+- `businessUnitCode` クエリパラメータによるフィルタリング対応
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `…/monthly-headcount-plans` | 一覧取得 | 200 |
+| GET | `…/monthly-headcount-plans/:monthlyHeadcountPlanId` | 単一取得 | 200 |
+| POST | `…/monthly-headcount-plans` | 新規作成 | 201 |
+| PUT | `…/monthly-headcount-plans/:monthlyHeadcountPlanId` | 更新 | 200 |
+| PUT | `…/monthly-headcount-plans/bulk` | バルク Upsert | 200 |
+| DELETE | `…/monthly-headcount-plans/:monthlyHeadcountPlanId` | 物理削除 | 204 |
+
+#### GET - 一覧取得
+
+**クエリパラメータ:**
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|-----|:----:|------|
+| `businessUnitCode` | string | - | BUコードでフィルタ |
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "monthlyHeadcountPlanId": 1,
+      "headcountPlanCaseId": 1,
+      "businessUnitCode": "BU001",
+      "yearMonth": "202504",
+      "headcount": 10,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### POST - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `businessUnitCode` | string | ✅ | 1〜20文字 | BUコード |
+| `yearMonth` | string | ✅ | YYYYMM形式（月は01〜12） | 年月 |
+| `headcount` | integer | ✅ | 0以上の整数 | 人員数 |
+
+#### PUT /:monthlyHeadcountPlanId - 更新
+
+**リクエストボディ（すべてオプション）:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `businessUnitCode` | string | - | 1〜20文字 | BUコード |
+| `yearMonth` | string | - | YYYYMM形式（月は01〜12） | 年月 |
+| `headcount` | integer | - | 0以上の整数 | 人員数 |
+
+#### PUT /bulk - バルク Upsert
+
+**リクエストボディ:**
+
+```json
+{
+  "items": [
+    { "businessUnitCode": "BU001", "yearMonth": "202504", "headcount": 10 },
+    { "businessUnitCode": "BU001", "yearMonth": "202505", "headcount": 12 }
+  ]
+}
+```
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `items` | array | ✅ | 1件以上 | Upsert対象のアイテム配列 |
+| `items[].businessUnitCode` | string | ✅ | 1〜20文字 | BUコード |
+| `items[].yearMonth` | string | ✅ | YYYYMM形式（月は01〜12） | 年月 |
+| `items[].headcount` | integer | ✅ | 0以上の整数 | 人員数 |
 
 ---
 
 ### Monthly Capacity API
 
-> **ステータス: 未実装**
+月次キャパシティデータを管理する API。Capacity Scenarios のサブリソース。
 
-月次キャパシティデータを管理する API。
-対応テーブル: `monthly_capacity`
+**ベースパス**: `/capacity-scenarios/:capacityScenarioId/monthly-capacities`
+
+**特記事項:**
+- ファクトテーブルのため物理削除（論理削除/復元なし）
+- ページネーションなし（全件取得）
+- Bulk Upsert エンドポイントあり
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `…/monthly-capacities` | 一覧取得 | 200 |
+| GET | `…/monthly-capacities/:monthlyCapacityId` | 単一取得 | 200 |
+| POST | `…/monthly-capacities` | 新規作成 | 201 |
+| PUT | `…/monthly-capacities/:monthlyCapacityId` | 更新 | 200 |
+| PUT | `…/monthly-capacities/bulk` | バルク Upsert | 200 |
+| DELETE | `…/monthly-capacities/:monthlyCapacityId` | 物理削除 | 204 |
+
+#### GET - 一覧取得
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "monthlyCapacityId": 1,
+      "capacityScenarioId": 1,
+      "businessUnitCode": "BU001",
+      "yearMonth": "202504",
+      "capacity": 1600.00,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### POST - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `businessUnitCode` | string | ✅ | 1〜20文字 | BUコード |
+| `yearMonth` | string | ✅ | YYYYMM形式（月は01〜12） | 年月 |
+| `capacity` | number | ✅ | 0〜99999999.99 | キャパシティ（人時） |
+
+#### PUT /:monthlyCapacityId - 更新
+
+**リクエストボディ（すべてオプション）:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `businessUnitCode` | string | - | 1〜20文字 | BUコード |
+| `yearMonth` | string | - | YYYYMM形式（月は01〜12） | 年月 |
+| `capacity` | number | - | 0〜99999999.99 | キャパシティ（人時） |
+
+#### PUT /bulk - バルク Upsert
+
+**リクエストボディ:**
+
+```json
+{
+  "items": [
+    { "businessUnitCode": "BU001", "yearMonth": "202504", "capacity": 1600.00 },
+    { "businessUnitCode": "BU001", "yearMonth": "202505", "capacity": 1600.00 }
+  ]
+}
+```
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `items` | array | ✅ | 1件以上 | Upsert対象のアイテム配列 |
+| `items[].businessUnitCode` | string | ✅ | 1〜20文字 | BUコード |
+| `items[].yearMonth` | string | ✅ | YYYYMM形式（月は01〜12） | 年月 |
+| `items[].capacity` | number | ✅ | 0〜99999999.99 | キャパシティ（人時） |
 
 ---
 
 ### Monthly Indirect Work Load API
 
-> **ステータス: 未実装**
+月次間接作業負荷データを管理する API。Indirect Work Cases のサブリソース。
 
-月次間接作業負荷データを管理する API。
-対応テーブル: `monthly_indirect_work_load`
+**ベースパス**: `/indirect-work-cases/:indirectWorkCaseId/monthly-indirect-work-loads`
+
+**特記事項:**
+- ファクトテーブルのため物理削除（論理削除/復元なし）
+- ページネーションなし（全件取得）
+- Bulk Upsert エンドポイントあり
+- `source` フィールドで算出方法を区別（`calculated` / `manual`）
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `…/monthly-indirect-work-loads` | 一覧取得 | 200 |
+| GET | `…/monthly-indirect-work-loads/:monthlyIndirectWorkLoadId` | 単一取得 | 200 |
+| POST | `…/monthly-indirect-work-loads` | 新規作成 | 201 |
+| PUT | `…/monthly-indirect-work-loads/:monthlyIndirectWorkLoadId` | 更新 | 200 |
+| PUT | `…/monthly-indirect-work-loads/bulk` | バルク Upsert | 200 |
+| DELETE | `…/monthly-indirect-work-loads/:monthlyIndirectWorkLoadId` | 物理削除 | 204 |
+
+#### GET - 一覧取得
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "monthlyIndirectWorkLoadId": 1,
+      "indirectWorkCaseId": 1,
+      "businessUnitCode": "BU001",
+      "yearMonth": "202504",
+      "manhour": 200.00,
+      "source": "manual",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### POST - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `businessUnitCode` | string | ✅ | 1〜20文字 | BUコード |
+| `yearMonth` | string | ✅ | YYYYMM形式（月は01〜12） | 年月 |
+| `manhour` | number | ✅ | 0〜99999999.99 | 工数（人時） |
+| `source` | enum | ✅ | `calculated` \| `manual` | データソース区分 |
+
+#### PUT /:monthlyIndirectWorkLoadId - 更新
+
+**リクエストボディ（すべてオプション）:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `businessUnitCode` | string | - | 1〜20文字 | BUコード |
+| `yearMonth` | string | - | YYYYMM形式（月は01〜12） | 年月 |
+| `manhour` | number | - | 0〜99999999.99 | 工数（人時） |
+| `source` | enum | - | `calculated` \| `manual` | データソース区分 |
+
+#### PUT /bulk - バルク Upsert
+
+**リクエストボディ:**
+
+```json
+{
+  "items": [
+    { "businessUnitCode": "BU001", "yearMonth": "202504", "manhour": 200.00, "source": "manual" },
+    { "businessUnitCode": "BU001", "yearMonth": "202505", "manhour": 180.50, "source": "calculated" }
+  ]
+}
+```
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `items` | array | ✅ | 1件以上 | Upsert対象のアイテム配列 |
+| `items[].businessUnitCode` | string | ✅ | 1〜20文字 | BUコード |
+| `items[].yearMonth` | string | ✅ | YYYYMM形式（月は01〜12） | 年月 |
+| `items[].manhour` | number | ✅ | 0〜99999999.99 | 工数（人時） |
+| `items[].source` | enum | ✅ | `calculated` \| `manual` | データソース区分 |
 
 ---
 
 ### Indirect Work Type Ratios API
 
-> **ステータス: 未実装**
+間接作業の種別ごとの配分比率を管理する API。Indirect Work Cases のサブリソース。
 
-間接作業の種別ごとの配分比率を管理する API。
-対応テーブル: `indirect_work_type_ratios`
+**ベースパス**: `/indirect-work-cases/:indirectWorkCaseId/indirect-work-type-ratios`
+
+**特記事項:**
+- ファクトテーブルのため物理削除（論理削除/復元なし）
+- ページネーションなし（全件取得）
+- Bulk Upsert エンドポイントあり
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `…/indirect-work-type-ratios` | 一覧取得 | 200 |
+| GET | `…/indirect-work-type-ratios/:indirectWorkTypeRatioId` | 単一取得 | 200 |
+| POST | `…/indirect-work-type-ratios` | 新規作成 | 201 |
+| PUT | `…/indirect-work-type-ratios/:indirectWorkTypeRatioId` | 更新 | 200 |
+| PUT | `…/indirect-work-type-ratios/bulk` | バルク Upsert | 200 |
+| DELETE | `…/indirect-work-type-ratios/:indirectWorkTypeRatioId` | 物理削除 | 204 |
+
+#### GET - 一覧取得
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "indirectWorkTypeRatioId": 1,
+      "indirectWorkCaseId": 1,
+      "workTypeCode": "WT001",
+      "fiscalYear": 2025,
+      "ratio": 0.30,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### POST - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `workTypeCode` | string | ✅ | 最大20文字 | 作業種類コード |
+| `fiscalYear` | integer | ✅ | 整数 | 年度 |
+| `ratio` | number | ✅ | 0.0〜1.0 | 配分比率 |
+
+#### PUT /:indirectWorkTypeRatioId - 更新
+
+**リクエストボディ（すべてオプション）:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `workTypeCode` | string | - | 最大20文字 | 作業種類コード |
+| `fiscalYear` | integer | - | 整数 | 年度 |
+| `ratio` | number | - | 0.0〜1.0 | 配分比率 |
+
+#### PUT /bulk - バルク Upsert
+
+**リクエストボディ:**
+
+```json
+{
+  "items": [
+    { "workTypeCode": "WT001", "fiscalYear": 2025, "ratio": 0.30 },
+    { "workTypeCode": "WT002", "fiscalYear": 2025, "ratio": 0.20 }
+  ]
+}
+```
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `items` | array | ✅ | 1件以上 | Upsert対象のアイテム配列 |
+| `items[].workTypeCode` | string | ✅ | 最大20文字 | 作業種類コード |
+| `items[].fiscalYear` | integer | ✅ | 整数 | 年度 |
+| `items[].ratio` | number | ✅ | 0.0〜1.0 | 配分比率 |
 
 ---
 
 ### Standard Effort Weights API
 
-> **ステータス: 未実装**
+> **ステータス: Standard Effort Masters API に統合**
 
-進捗度別の重み値を管理する API。
-対応テーブル: `standard_effort_weights`
+`standard_effort_weights` テーブルのデータは [Standard Effort Masters API](#standard-effort-masters-api) の `weights` フィールドとしてネスト管理される。
+個別の CRUD エンドポイントは提供しない。
 
 ---
 
@@ -951,19 +1380,157 @@ BU × 案件タイプごとの標準工数パターンを管理する API。
 
 ### Chart View Project Items API
 
-> **ステータス: 未実装**
+チャートビューに含まれる案件項目を管理する API。Chart Views のサブリソース。
 
-チャートビューに含まれる案件項目を管理する API。
-対応テーブル: `chart_view_project_items`
+**ベースパス**: `/chart-views/:chartViewId/project-items`
+
+**特記事項:**
+- 関連テーブルのため物理削除（論理削除/復元なし）
+- ページネーションなし（全件取得）
+- 一括表示順序更新エンドポイントあり
+- プロジェクト情報（projectCode, projectName）を JOIN して返却
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `…/project-items` | 一覧取得 | 200 |
+| GET | `…/project-items/:id` | 単一取得 | 200 |
+| POST | `…/project-items` | 新規作成 | 201 |
+| PUT | `…/project-items/:id` | 更新 | 200 |
+| PUT | `…/project-items/display-order` | 一括表示順序更新 | 200 |
+| DELETE | `…/project-items/:id` | 物理削除 | 204 |
+
+#### GET - 一覧取得
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "chartViewProjectItemId": 1,
+      "chartViewId": 1,
+      "projectId": 1,
+      "projectCaseId": 1,
+      "displayOrder": 0,
+      "isVisible": true,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "project": {
+        "projectCode": "PRJ-001",
+        "projectName": "システム刷新プロジェクト"
+      },
+      "projectCase": {
+        "caseName": "ベースケース"
+      }
+    }
+  ]
+}
+```
+
+#### POST - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `projectId` | integer | ✅ | 正の整数 | 案件ID |
+| `projectCaseId` | integer \| null | - | 正の整数 | 案件ケースID |
+| `displayOrder` | integer | - | 0以上, デフォルト0 | 表示順序 |
+| `isVisible` | boolean | - | デフォルト true | 表示フラグ |
+
+#### PUT /:id - 更新
+
+**リクエストボディ（すべてオプション、projectId は変更不可）:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `projectCaseId` | integer \| null | - | 正の整数 | 案件ケースID |
+| `displayOrder` | integer | - | 0以上 | 表示順序 |
+| `isVisible` | boolean | - | - | 表示フラグ |
+
+#### PUT /display-order - 一括表示順序更新
+
+**リクエストボディ:**
+
+```json
+{
+  "items": [
+    { "chartViewProjectItemId": 1, "displayOrder": 0 },
+    { "chartViewProjectItemId": 2, "displayOrder": 1 }
+  ]
+}
+```
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `items` | array | ✅ | 1件以上 | 更新対象の配列 |
+| `items[].chartViewProjectItemId` | integer | ✅ | 正の整数 | 項目ID |
+| `items[].displayOrder` | integer | ✅ | 0以上 | 表示順序 |
 
 ---
 
 ### Chart View Indirect Work Items API
 
-> **ステータス: 未実装**
+チャートビューに含まれる間接作業項目を管理する API。Chart Views のサブリソース。
 
-チャートビューに含まれる間接作業項目を管理する API。
-対応テーブル: `chart_view_indirect_work_items`
+**ベースパス**: `/chart-views/:chartViewId/indirect-work-items`
+
+**特記事項:**
+- 関連テーブルのため物理削除（論理削除/復元なし）
+- ページネーションなし（全件取得）
+- ケース名を JOIN して返却
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `…/indirect-work-items` | 一覧取得 | 200 |
+| GET | `…/indirect-work-items/:chartViewIndirectWorkItemId` | 単一取得 | 200 |
+| POST | `…/indirect-work-items` | 新規作成 | 201 |
+| PUT | `…/indirect-work-items/:chartViewIndirectWorkItemId` | 更新 | 200 |
+| DELETE | `…/indirect-work-items/:chartViewIndirectWorkItemId` | 物理削除 | 204 |
+
+#### GET - 一覧取得
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "chartViewIndirectWorkItemId": 1,
+      "chartViewId": 1,
+      "indirectWorkCaseId": 1,
+      "caseName": "2025年度間接作業",
+      "displayOrder": 0,
+      "isVisible": true,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### POST - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `indirectWorkCaseId` | integer | ✅ | 正の整数 | 間接作業ケースID |
+| `displayOrder` | integer | - | 0以上, デフォルト0 | 表示順序 |
+| `isVisible` | boolean | - | デフォルト true | 表示フラグ |
+
+#### PUT /:chartViewIndirectWorkItemId - 更新
+
+**リクエストボディ（すべてオプション）:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `displayOrder` | integer | - | 0以上 | 表示順序 |
+| `isVisible` | boolean | - | - | 表示フラグ |
 
 ---
 
@@ -978,10 +1545,56 @@ BU × 案件タイプごとの標準工数パターンを管理する API。
 
 ### Project Change History API
 
-> **ステータス: 未実装**
+案件の変更履歴を記録する API。Projects のサブリソース。
 
-案件の変更履歴を記録する API。
-対応テーブル: `project_change_history`
+**ベースパス**: `/projects/:projectId/change-history`
+
+**特記事項:**
+- 関連テーブルのため物理削除（論理削除/復元なし）
+- ページネーションなし（全件取得）
+- 更新（PUT）エンドポイントなし（履歴は書き換え不可）
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `…/change-history` | 一覧取得 | 200 |
+| GET | `…/change-history/:projectChangeHistoryId` | 単一取得 | 200 |
+| POST | `…/change-history` | 新規作成 | 201 |
+| DELETE | `…/change-history/:projectChangeHistoryId` | 物理削除 | 204 |
+
+#### GET - 一覧取得
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "projectChangeHistoryId": 1,
+      "projectId": 1,
+      "changeType": "update",
+      "fieldName": "status",
+      "oldValue": "draft",
+      "newValue": "active",
+      "changedBy": "user@example.com",
+      "changedAt": "2025-01-15T10:30:00.000Z"
+    }
+  ]
+}
+```
+
+#### POST - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `changeType` | string | ✅ | 1〜50文字 | 変更種別（create, update, delete 等） |
+| `fieldName` | string | - | 最大100文字 | 変更フィールド名 |
+| `oldValue` | string | - | 最大1000文字 | 変更前の値 |
+| `newValue` | string | - | 最大1000文字 | 変更後の値 |
+| `changedBy` | string | ✅ | 1〜100文字 | 変更者 |
 
 ---
 
@@ -998,16 +1611,159 @@ BU × 案件タイプごとの標準工数パターンを管理する API。
 
 ### Chart Color Settings API
 
-> **ステータス: 未実装**
+チャートの各要素（案件/間接作業）に割り当てる色を管理する API。
 
-チャートの各要素に割り当てる色を管理する API。
-対応テーブル: `chart_color_settings`
+**ベースパス**: `/chart-color-settings`
+
+**特記事項:**
+- 設定テーブルのため物理削除（論理削除/復元なし）
+- `filter[targetType]` によるフィルタリング対応（`project` / `indirect_work`）
+- ページネーション対応
+- Bulk Upsert エンドポイントあり
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `/chart-color-settings` | 一覧取得 | 200 |
+| GET | `/chart-color-settings/:id` | 単一取得 | 200 |
+| POST | `/chart-color-settings` | 新規作成 | 201 |
+| PUT | `/chart-color-settings/:id` | 更新 | 200 |
+| PUT | `/chart-color-settings/bulk` | 一括 Upsert | 200 |
+| DELETE | `/chart-color-settings/:id` | 物理削除 | 204 |
+
+#### GET /chart-color-settings - 一覧取得
+
+**クエリパラメータ:**
+
+| パラメータ | 型 | 必須 | デフォルト | 説明 |
+|-----------|-----|:----:|-----------|------|
+| `page[number]` | integer | - | 1 | ページ番号 |
+| `page[size]` | integer | - | 20 | ページサイズ（1〜1000） |
+| `filter[targetType]` | enum | - | - | 対象タイプ（`project` \| `indirect_work`） |
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "chartColorSettingId": 1,
+      "targetType": "project",
+      "targetId": 1,
+      "colorCode": "#FF5733",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "currentPage": 1,
+      "pageSize": 20,
+      "totalItems": 10,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+#### POST /chart-color-settings - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `targetType` | enum | ✅ | `project` \| `indirect_work` | 対象タイプ |
+| `targetId` | integer | ✅ | 正の整数 | 対象ID |
+| `colorCode` | string | ✅ | `/^#[0-9A-Fa-f]{6}$/` | カラーコード |
+
+#### PUT /chart-color-settings/:id - 更新
+
+**リクエストボディ（すべてオプション）:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `targetType` | enum | - | `project` \| `indirect_work` | 対象タイプ |
+| `targetId` | integer | - | 正の整数 | 対象ID |
+| `colorCode` | string | - | `/^#[0-9A-Fa-f]{6}$/` | カラーコード |
+
+#### PUT /chart-color-settings/bulk - 一括 Upsert
+
+**リクエストボディ:**
+
+```json
+{
+  "items": [
+    { "targetType": "project", "targetId": 1, "colorCode": "#FF5733" },
+    { "targetType": "indirect_work", "targetId": 2, "colorCode": "#3357FF" }
+  ]
+}
+```
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `items` | array | ✅ | 1件以上 | Upsert対象のアイテム配列 |
+| `items[].targetType` | enum | ✅ | `project` \| `indirect_work` | 対象タイプ |
+| `items[].targetId` | integer | ✅ | 正の整数 | 対象ID |
+| `items[].colorCode` | string | ✅ | `/^#[0-9A-Fa-f]{6}$/` | カラーコード |
 
 ---
 
 ### Chart Color Palettes API
 
-> **ステータス: 未実装**
-
 チャート表示で使用する色の定義を管理する API。
-対応テーブル: `chart_color_palettes`
+
+**ベースパス**: `/chart-color-palettes`
+
+**特記事項:**
+- 設定テーブルのため物理削除（論理削除/復元なし）
+- ページネーションなし（全件取得）
+
+#### エンドポイント一覧
+
+| メソッド | パス | 説明 | ステータス |
+|---------|------|------|-----------:|
+| GET | `/chart-color-palettes` | 一覧取得 | 200 |
+| GET | `/chart-color-palettes/:paletteId` | 単一取得 | 200 |
+| POST | `/chart-color-palettes` | 新規作成 | 201 |
+| PUT | `/chart-color-palettes/:paletteId` | 更新 | 200 |
+| DELETE | `/chart-color-palettes/:paletteId` | 物理削除 | 204 |
+
+#### GET /chart-color-palettes - 一覧取得
+
+**レスポンス（200）:**
+
+```json
+{
+  "data": [
+    {
+      "chartColorPaletteId": 1,
+      "name": "ブルー",
+      "colorCode": "#3357FF",
+      "displayOrder": 0,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### POST /chart-color-palettes - 新規作成
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `name` | string | ✅ | 1〜100文字 | パレット名 |
+| `colorCode` | string | ✅ | `/^#[0-9A-Fa-f]{6}$/` | カラーコード |
+| `displayOrder` | integer | - | 整数, デフォルト0 | 表示順序 |
+
+#### PUT /chart-color-palettes/:paletteId - 更新
+
+**リクエストボディ:**
+
+| フィールド | 型 | 必須 | バリデーション | 説明 |
+|-----------|-----|:----:|--------------|------|
+| `name` | string | ✅ | 1〜100文字 | パレット名 |
+| `colorCode` | string | ✅ | `/^#[0-9A-Fa-f]{6}$/` | カラーコード |
+| `displayOrder` | integer | - | 整数 | 表示順序 |
