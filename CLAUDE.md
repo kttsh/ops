@@ -114,6 +114,14 @@ pnpm --filter frontend test
 - `docs/rules/tanstack-query/error-handling.md` - エラーハンドリング・リトライ・Error Boundary 連携
 - `docs/rules/tanstack-query/advanced-patterns.md` - 依存/並列クエリ・無限スクロール・Suspense・テスト
 
+**Zod を使用したスキーマバリデーション実装時は `docs/rules/zod/` 配下のガイドラインを必ず遵守すること。**
+- `docs/rules/zod/basic-setup.md` - 基本セットアップ・インポート・プリミティブ型・パース方法・型推論
+- `docs/rules/zod/schema-types.md` - オブジェクト・配列・ユニオン・レコード・文字列/数値バリデーション
+- `docs/rules/zod/validation.md` - refine・superRefine・カスタムバリデーション・非同期バリデーション
+- `docs/rules/zod/transforms-pipes.md` - Transform・Pipe・Codec・Preprocess・双方向変換
+- `docs/rules/zod/error-handling.md` - エラーフォーマット・カスタマイズ・国際化（i18n）
+- `docs/rules/zod/advanced-patterns.md` - 再帰型・ブランド型・メタデータ・レジストリ・JSON Schema
+
 - features同士の依存は極力排除する
 - `features/[feature]/index.ts`でパブリックAPIをエクスポート
 - `features/components/`配下にはフォルダを作成しない

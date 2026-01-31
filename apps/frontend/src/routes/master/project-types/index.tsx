@@ -3,35 +3,34 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
-  businessUnitsQueryOptions,
-  businessUnitSearchSchema,
-  useRestoreBusinessUnit,
+  projectTypesQueryOptions,
+  projectTypeSearchSchema,
+  useRestoreProjectType,
   ApiError,
-} from '@/features/business-units'
-import type { BusinessUnit } from '@/features/business-units'
-import { DataTable } from '@/features/business-units/components/DataTable'
-import { DataTableToolbar } from '@/features/business-units/components/DataTableToolbar'
-import { RestoreConfirmDialog } from '@/features/business-units/components/RestoreConfirmDialog'
-import { createColumns } from '@/features/business-units/components/columns'
-export const Route = createFileRoute('/master/business-units/')({
-  validateSearch: businessUnitSearchSchema,
-  component: BusinessUnitListPage,
+} from '@/features/project-types'
+import type { ProjectType } from '@/features/project-types'
+import { DataTable } from '@/features/project-types/components/DataTable'
+import { DataTableToolbar } from '@/features/project-types/components/DataTableToolbar'
+import { RestoreConfirmDialog } from '@/features/project-types/components/RestoreConfirmDialog'
+import { createColumns } from '@/features/project-types/components/columns'
+
+export const Route = createFileRoute('/master/project-types/')({
+  validateSearch: projectTypeSearchSchema,
+  component: ProjectTypeListPage,
 })
 
-function BusinessUnitListPage() {
+function ProjectTypeListPage() {
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const [restoreTarget, setRestoreTarget] = useState<string | null>(null)
 
   const { data, isLoading, isError, error } = useQuery(
-    businessUnitsQueryOptions({
-      page: search.page,
-      pageSize: search.pageSize,
+    projectTypesQueryOptions({
       includeDisabled: search.includeDisabled,
     }),
   )
 
-  const restoreMutation = useRestoreBusinessUnit()
+  const restoreMutation = useRestoreProjectType()
 
   const columns = useMemo(
     () =>
@@ -42,19 +41,11 @@ function BusinessUnitListPage() {
   )
 
   const handleSearchChange = (value: string) => {
-    navigate({ search: (prev) => ({ ...prev, search: value, page: 1 }) })
+    navigate({ search: (prev) => ({ ...prev, search: value }) })
   }
 
   const handleIncludeDisabledChange = (value: boolean) => {
-    navigate({ search: (prev) => ({ ...prev, includeDisabled: value, page: 1 }) })
-  }
-
-  const handlePageChange = (page: number) => {
-    navigate({ search: (prev) => ({ ...prev, page }) })
-  }
-
-  const handlePageSizeChange = (pageSize: number) => {
-    navigate({ search: (prev) => ({ ...prev, pageSize, page: 1 }) })
+    navigate({ search: (prev) => ({ ...prev, includeDisabled: value }) })
   }
 
   const handleRestore = async () => {
@@ -74,9 +65,9 @@ function BusinessUnitListPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">ビジネスユニット</h2>
+        <h2 className="text-2xl font-bold tracking-tight">案件タイプ</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          ビジネスユニットの一覧を管理します
+          案件タイプの一覧を管理します
         </p>
       </div>
 
@@ -91,18 +82,10 @@ function BusinessUnitListPage() {
         columns={columns}
         data={data?.data ?? []}
         globalFilter={search.search}
-        pagination={{
-          currentPage: search.page,
-          pageSize: search.pageSize,
-          totalItems: data?.meta.pagination.totalItems ?? 0,
-          totalPages: data?.meta.pagination.totalPages ?? 0,
-        }}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
         isLoading={isLoading}
         isError={isError}
         errorMessage={error?.message}
-        rowClassName={(row: BusinessUnit) => (row.deletedAt ? 'opacity-50' : '')}
+        rowClassName={(row: ProjectType) => (row.deletedAt ? 'opacity-50' : '')}
       />
 
       <RestoreConfirmDialog

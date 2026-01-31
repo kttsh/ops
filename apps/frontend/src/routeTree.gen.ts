@@ -10,14 +10,32 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MasterWorkTypesIndexRouteImport } from './routes/master/work-types/index'
+import { Route as MasterProjectTypesIndexRouteImport } from './routes/master/project-types/index'
 import { Route as MasterBusinessUnitsIndexRouteImport } from './routes/master/business-units/index'
+import { Route as MasterWorkTypesNewRouteImport } from './routes/master/work-types/new'
+import { Route as MasterProjectTypesNewRouteImport } from './routes/master/project-types/new'
 import { Route as MasterBusinessUnitsNewRouteImport } from './routes/master/business-units/new'
+import { Route as MasterWorkTypesWorkTypeCodeIndexRouteImport } from './routes/master/work-types/$workTypeCode/index'
+import { Route as MasterProjectTypesProjectTypeCodeIndexRouteImport } from './routes/master/project-types/$projectTypeCode/index'
 import { Route as MasterBusinessUnitsBusinessUnitCodeIndexRouteImport } from './routes/master/business-units/$businessUnitCode/index'
+import { Route as MasterWorkTypesWorkTypeCodeEditRouteImport } from './routes/master/work-types/$workTypeCode/edit'
+import { Route as MasterProjectTypesProjectTypeCodeEditRouteImport } from './routes/master/project-types/$projectTypeCode/edit'
 import { Route as MasterBusinessUnitsBusinessUnitCodeEditRouteImport } from './routes/master/business-units/$businessUnitCode/edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasterWorkTypesIndexRoute = MasterWorkTypesIndexRouteImport.update({
+  id: '/master/work-types/',
+  path: '/master/work-types/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasterProjectTypesIndexRoute = MasterProjectTypesIndexRouteImport.update({
+  id: '/master/project-types/',
+  path: '/master/project-types/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MasterBusinessUnitsIndexRoute =
@@ -26,15 +44,49 @@ const MasterBusinessUnitsIndexRoute =
     path: '/master/business-units/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const MasterWorkTypesNewRoute = MasterWorkTypesNewRouteImport.update({
+  id: '/master/work-types/new',
+  path: '/master/work-types/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasterProjectTypesNewRoute = MasterProjectTypesNewRouteImport.update({
+  id: '/master/project-types/new',
+  path: '/master/project-types/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterBusinessUnitsNewRoute = MasterBusinessUnitsNewRouteImport.update({
   id: '/master/business-units/new',
   path: '/master/business-units/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MasterWorkTypesWorkTypeCodeIndexRoute =
+  MasterWorkTypesWorkTypeCodeIndexRouteImport.update({
+    id: '/master/work-types/$workTypeCode/',
+    path: '/master/work-types/$workTypeCode/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MasterProjectTypesProjectTypeCodeIndexRoute =
+  MasterProjectTypesProjectTypeCodeIndexRouteImport.update({
+    id: '/master/project-types/$projectTypeCode/',
+    path: '/master/project-types/$projectTypeCode/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterBusinessUnitsBusinessUnitCodeIndexRoute =
   MasterBusinessUnitsBusinessUnitCodeIndexRouteImport.update({
     id: '/master/business-units/$businessUnitCode/',
     path: '/master/business-units/$businessUnitCode/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MasterWorkTypesWorkTypeCodeEditRoute =
+  MasterWorkTypesWorkTypeCodeEditRouteImport.update({
+    id: '/master/work-types/$workTypeCode/edit',
+    path: '/master/work-types/$workTypeCode/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MasterProjectTypesProjectTypeCodeEditRoute =
+  MasterProjectTypesProjectTypeCodeEditRouteImport.update({
+    id: '/master/project-types/$projectTypeCode/edit',
+    path: '/master/project-types/$projectTypeCode/edit',
     getParentRoute: () => rootRouteImport,
   } as any)
 const MasterBusinessUnitsBusinessUnitCodeEditRoute =
@@ -47,55 +99,111 @@ const MasterBusinessUnitsBusinessUnitCodeEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/master/business-units/new': typeof MasterBusinessUnitsNewRoute
+  '/master/project-types/new': typeof MasterProjectTypesNewRoute
+  '/master/work-types/new': typeof MasterWorkTypesNewRoute
   '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
+  '/master/project-types/': typeof MasterProjectTypesIndexRoute
+  '/master/work-types/': typeof MasterWorkTypesIndexRoute
   '/master/business-units/$businessUnitCode/edit': typeof MasterBusinessUnitsBusinessUnitCodeEditRoute
+  '/master/project-types/$projectTypeCode/edit': typeof MasterProjectTypesProjectTypeCodeEditRoute
+  '/master/work-types/$workTypeCode/edit': typeof MasterWorkTypesWorkTypeCodeEditRoute
   '/master/business-units/$businessUnitCode/': typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute
+  '/master/project-types/$projectTypeCode/': typeof MasterProjectTypesProjectTypeCodeIndexRoute
+  '/master/work-types/$workTypeCode/': typeof MasterWorkTypesWorkTypeCodeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/master/business-units/new': typeof MasterBusinessUnitsNewRoute
+  '/master/project-types/new': typeof MasterProjectTypesNewRoute
+  '/master/work-types/new': typeof MasterWorkTypesNewRoute
   '/master/business-units': typeof MasterBusinessUnitsIndexRoute
+  '/master/project-types': typeof MasterProjectTypesIndexRoute
+  '/master/work-types': typeof MasterWorkTypesIndexRoute
   '/master/business-units/$businessUnitCode/edit': typeof MasterBusinessUnitsBusinessUnitCodeEditRoute
+  '/master/project-types/$projectTypeCode/edit': typeof MasterProjectTypesProjectTypeCodeEditRoute
+  '/master/work-types/$workTypeCode/edit': typeof MasterWorkTypesWorkTypeCodeEditRoute
   '/master/business-units/$businessUnitCode': typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute
+  '/master/project-types/$projectTypeCode': typeof MasterProjectTypesProjectTypeCodeIndexRoute
+  '/master/work-types/$workTypeCode': typeof MasterWorkTypesWorkTypeCodeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/master/business-units/new': typeof MasterBusinessUnitsNewRoute
+  '/master/project-types/new': typeof MasterProjectTypesNewRoute
+  '/master/work-types/new': typeof MasterWorkTypesNewRoute
   '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
+  '/master/project-types/': typeof MasterProjectTypesIndexRoute
+  '/master/work-types/': typeof MasterWorkTypesIndexRoute
   '/master/business-units/$businessUnitCode/edit': typeof MasterBusinessUnitsBusinessUnitCodeEditRoute
+  '/master/project-types/$projectTypeCode/edit': typeof MasterProjectTypesProjectTypeCodeEditRoute
+  '/master/work-types/$workTypeCode/edit': typeof MasterWorkTypesWorkTypeCodeEditRoute
   '/master/business-units/$businessUnitCode/': typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute
+  '/master/project-types/$projectTypeCode/': typeof MasterProjectTypesProjectTypeCodeIndexRoute
+  '/master/work-types/$workTypeCode/': typeof MasterWorkTypesWorkTypeCodeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/master/business-units/new'
+    | '/master/project-types/new'
+    | '/master/work-types/new'
     | '/master/business-units/'
+    | '/master/project-types/'
+    | '/master/work-types/'
     | '/master/business-units/$businessUnitCode/edit'
+    | '/master/project-types/$projectTypeCode/edit'
+    | '/master/work-types/$workTypeCode/edit'
     | '/master/business-units/$businessUnitCode/'
+    | '/master/project-types/$projectTypeCode/'
+    | '/master/work-types/$workTypeCode/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/master/business-units/new'
+    | '/master/project-types/new'
+    | '/master/work-types/new'
     | '/master/business-units'
+    | '/master/project-types'
+    | '/master/work-types'
     | '/master/business-units/$businessUnitCode/edit'
+    | '/master/project-types/$projectTypeCode/edit'
+    | '/master/work-types/$workTypeCode/edit'
     | '/master/business-units/$businessUnitCode'
+    | '/master/project-types/$projectTypeCode'
+    | '/master/work-types/$workTypeCode'
   id:
     | '__root__'
     | '/'
     | '/master/business-units/new'
+    | '/master/project-types/new'
+    | '/master/work-types/new'
     | '/master/business-units/'
+    | '/master/project-types/'
+    | '/master/work-types/'
     | '/master/business-units/$businessUnitCode/edit'
+    | '/master/project-types/$projectTypeCode/edit'
+    | '/master/work-types/$workTypeCode/edit'
     | '/master/business-units/$businessUnitCode/'
+    | '/master/project-types/$projectTypeCode/'
+    | '/master/work-types/$workTypeCode/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MasterBusinessUnitsNewRoute: typeof MasterBusinessUnitsNewRoute
+  MasterProjectTypesNewRoute: typeof MasterProjectTypesNewRoute
+  MasterWorkTypesNewRoute: typeof MasterWorkTypesNewRoute
   MasterBusinessUnitsIndexRoute: typeof MasterBusinessUnitsIndexRoute
+  MasterProjectTypesIndexRoute: typeof MasterProjectTypesIndexRoute
+  MasterWorkTypesIndexRoute: typeof MasterWorkTypesIndexRoute
   MasterBusinessUnitsBusinessUnitCodeEditRoute: typeof MasterBusinessUnitsBusinessUnitCodeEditRoute
+  MasterProjectTypesProjectTypeCodeEditRoute: typeof MasterProjectTypesProjectTypeCodeEditRoute
+  MasterWorkTypesWorkTypeCodeEditRoute: typeof MasterWorkTypesWorkTypeCodeEditRoute
   MasterBusinessUnitsBusinessUnitCodeIndexRoute: typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute
+  MasterProjectTypesProjectTypeCodeIndexRoute: typeof MasterProjectTypesProjectTypeCodeIndexRoute
+  MasterWorkTypesWorkTypeCodeIndexRoute: typeof MasterWorkTypesWorkTypeCodeIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -107,11 +215,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/master/work-types/': {
+      id: '/master/work-types/'
+      path: '/master/work-types'
+      fullPath: '/master/work-types/'
+      preLoaderRoute: typeof MasterWorkTypesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/project-types/': {
+      id: '/master/project-types/'
+      path: '/master/project-types'
+      fullPath: '/master/project-types/'
+      preLoaderRoute: typeof MasterProjectTypesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/master/business-units/': {
       id: '/master/business-units/'
       path: '/master/business-units'
       fullPath: '/master/business-units/'
       preLoaderRoute: typeof MasterBusinessUnitsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/work-types/new': {
+      id: '/master/work-types/new'
+      path: '/master/work-types/new'
+      fullPath: '/master/work-types/new'
+      preLoaderRoute: typeof MasterWorkTypesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/project-types/new': {
+      id: '/master/project-types/new'
+      path: '/master/project-types/new'
+      fullPath: '/master/project-types/new'
+      preLoaderRoute: typeof MasterProjectTypesNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/master/business-units/new': {
@@ -121,11 +257,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MasterBusinessUnitsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/master/work-types/$workTypeCode/': {
+      id: '/master/work-types/$workTypeCode/'
+      path: '/master/work-types/$workTypeCode'
+      fullPath: '/master/work-types/$workTypeCode/'
+      preLoaderRoute: typeof MasterWorkTypesWorkTypeCodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/project-types/$projectTypeCode/': {
+      id: '/master/project-types/$projectTypeCode/'
+      path: '/master/project-types/$projectTypeCode'
+      fullPath: '/master/project-types/$projectTypeCode/'
+      preLoaderRoute: typeof MasterProjectTypesProjectTypeCodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/master/business-units/$businessUnitCode/': {
       id: '/master/business-units/$businessUnitCode/'
       path: '/master/business-units/$businessUnitCode'
       fullPath: '/master/business-units/$businessUnitCode/'
       preLoaderRoute: typeof MasterBusinessUnitsBusinessUnitCodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/work-types/$workTypeCode/edit': {
+      id: '/master/work-types/$workTypeCode/edit'
+      path: '/master/work-types/$workTypeCode/edit'
+      fullPath: '/master/work-types/$workTypeCode/edit'
+      preLoaderRoute: typeof MasterWorkTypesWorkTypeCodeEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/project-types/$projectTypeCode/edit': {
+      id: '/master/project-types/$projectTypeCode/edit'
+      path: '/master/project-types/$projectTypeCode/edit'
+      fullPath: '/master/project-types/$projectTypeCode/edit'
+      preLoaderRoute: typeof MasterProjectTypesProjectTypeCodeEditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/master/business-units/$businessUnitCode/edit': {
@@ -141,11 +305,21 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MasterBusinessUnitsNewRoute: MasterBusinessUnitsNewRoute,
+  MasterProjectTypesNewRoute: MasterProjectTypesNewRoute,
+  MasterWorkTypesNewRoute: MasterWorkTypesNewRoute,
   MasterBusinessUnitsIndexRoute: MasterBusinessUnitsIndexRoute,
+  MasterProjectTypesIndexRoute: MasterProjectTypesIndexRoute,
+  MasterWorkTypesIndexRoute: MasterWorkTypesIndexRoute,
   MasterBusinessUnitsBusinessUnitCodeEditRoute:
     MasterBusinessUnitsBusinessUnitCodeEditRoute,
+  MasterProjectTypesProjectTypeCodeEditRoute:
+    MasterProjectTypesProjectTypeCodeEditRoute,
+  MasterWorkTypesWorkTypeCodeEditRoute: MasterWorkTypesWorkTypeCodeEditRoute,
   MasterBusinessUnitsBusinessUnitCodeIndexRoute:
     MasterBusinessUnitsBusinessUnitCodeIndexRoute,
+  MasterProjectTypesProjectTypeCodeIndexRoute:
+    MasterProjectTypesProjectTypeCodeIndexRoute,
+  MasterWorkTypesWorkTypeCodeIndexRoute: MasterWorkTypesWorkTypeCodeIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
