@@ -3,40 +3,41 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
-  businessUnitsQueryOptions,
-  businessUnitSearchSchema,
-  useRestoreBusinessUnit,
+  projectsQueryOptions,
+  projectSearchSchema,
+  useRestoreProject,
   ApiError,
-} from '@/features/business-units'
-import type { BusinessUnit } from '@/features/business-units'
+} from '@/features/projects'
+import type { Project } from '@/features/projects'
 import { DataTable } from '@/features/business-units/components/DataTable'
-import { DataTableToolbar } from '@/features/business-units/components/DataTableToolbar'
-import { RestoreConfirmDialog } from '@/features/business-units/components/RestoreConfirmDialog'
-import { createColumns } from '@/features/business-units/components/columns'
-export const Route = createFileRoute('/master/business-units/')({
-  validateSearch: businessUnitSearchSchema,
-  component: BusinessUnitListPage,
+import { DataTableToolbar } from '@/components/shared/DataTableToolbar'
+import { RestoreConfirmDialog } from '@/features/projects/components/RestoreConfirmDialog'
+import { createColumns } from '@/features/projects/components/columns'
+
+export const Route = createFileRoute('/master/projects/')({
+  validateSearch: projectSearchSchema,
+  component: ProjectListPage,
 })
 
-function BusinessUnitListPage() {
+function ProjectListPage() {
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
-  const [restoreTarget, setRestoreTarget] = useState<string | null>(null)
+  const [restoreTarget, setRestoreTarget] = useState<number | null>(null)
 
   const { data, isLoading, isError, error } = useQuery(
-    businessUnitsQueryOptions({
+    projectsQueryOptions({
       page: search.page,
       pageSize: search.pageSize,
       includeDisabled: search.includeDisabled,
     }),
   )
 
-  const restoreMutation = useRestoreBusinessUnit()
+  const restoreMutation = useRestoreProject()
 
   const columns = useMemo(
     () =>
       createColumns({
-        onRestore: search.includeDisabled ? (code) => setRestoreTarget(code) : undefined,
+        onRestore: search.includeDisabled ? (id) => setRestoreTarget(id) : undefined,
       }),
     [search.includeDisabled],
   )
@@ -58,7 +59,7 @@ function BusinessUnitListPage() {
   }
 
   const handleRestore = async () => {
-    if (!restoreTarget) return
+    if (restoreTarget === null) return
     try {
       await restoreMutation.mutateAsync(restoreTarget)
       toast.success('復元しました')
@@ -74,9 +75,9 @@ function BusinessUnitListPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">ビジネスユニット</h2>
+        <h2 className="text-2xl font-bold tracking-tight">案件</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          ビジネスユニットの一覧を管理します
+          案件の一覧を管理します
         </p>
       </div>
 
@@ -85,7 +86,7 @@ function BusinessUnitListPage() {
         onSearchChange={handleSearchChange}
         includeDisabled={search.includeDisabled}
         onIncludeDisabledChange={handleIncludeDisabledChange}
-        newItemHref="/master/business-units/new"
+        newItemHref="/master/projects/new"
       />
 
       <DataTable
@@ -103,11 +104,11 @@ function BusinessUnitListPage() {
         isLoading={isLoading}
         isError={isError}
         errorMessage={error?.message}
-        rowClassName={(row: BusinessUnit) => (row.deletedAt ? 'opacity-50' : '')}
+        rowClassName={(row: Project) => (row.deletedAt ? 'opacity-50' : '')}
       />
 
       <RestoreConfirmDialog
-        open={!!restoreTarget}
+        open={restoreTarget !== null}
         onOpenChange={(open) => !open && setRestoreTarget(null)}
         onConfirm={handleRestore}
         isLoading={restoreMutation.isPending}

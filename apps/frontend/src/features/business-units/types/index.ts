@@ -1,5 +1,13 @@
 import { z } from 'zod'
 
+// --- 共通型を共有レイヤーから re-export ---
+export type {
+  PaginatedResponse,
+  SingleResponse,
+  ProblemDetails,
+  SelectOption,
+} from '@/lib/api'
+
 // --- API レスポンス型 ---
 
 export type BusinessUnit = {
@@ -9,34 +17,6 @@ export type BusinessUnit = {
   createdAt: string
   updatedAt: string
   deletedAt?: string | null
-}
-
-export type PaginatedResponse<T> = {
-  data: T[]
-  meta: {
-    pagination: {
-      currentPage: number
-      pageSize: number
-      totalItems: number
-      totalPages: number
-    }
-  }
-}
-
-export type SingleResponse<T> = {
-  data: T
-}
-
-export type ProblemDetails = {
-  type: string
-  status: number
-  title: string
-  detail: string
-  instance?: string
-  errors?: Array<{
-    field: string
-    message: string
-  }>
 }
 
 // --- Zod スキーマ ---

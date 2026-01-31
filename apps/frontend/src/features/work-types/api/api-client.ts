@@ -1,3 +1,4 @@
+import { API_BASE_URL, ApiError, handleResponse } from '@/lib/api'
 import type {
   WorkType,
   WorkTypeListParams,
@@ -5,31 +6,9 @@ import type {
   UpdateWorkTypeInput,
   PaginatedResponse,
   SingleResponse,
-  ProblemDetails,
 } from '@/features/work-types/types'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
-
-export class ApiError extends Error {
-  readonly problemDetails: ProblemDetails
-
-  constructor(problemDetails: ProblemDetails) {
-    super(problemDetails.detail)
-    this.name = 'ApiError'
-    this.problemDetails = problemDetails
-  }
-}
-
-async function handleResponse<T>(response: Response): Promise<T> {
-  if (!response.ok) {
-    const problemDetails: ProblemDetails = await response.json()
-    throw new ApiError(problemDetails)
-  }
-  if (response.status === 204) {
-    return undefined as T
-  }
-  return response.json() as Promise<T>
-}
+export { ApiError }
 
 export async function fetchWorkTypes(
   params: WorkTypeListParams,

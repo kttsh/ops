@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { Menu, Building2, FolderKanban, Palette, ChevronRight } from 'lucide-react'
+import { Menu, Building2, FolderKanban, Palette, Briefcase, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
@@ -14,6 +14,11 @@ const menuItems = [
         label: 'ビジネスユニット',
         href: '/master/business-units',
         icon: Building2,
+      },
+      {
+        label: '案件',
+        href: '/master/projects',
+        icon: Briefcase,
       },
       {
         label: '案件タイプ',

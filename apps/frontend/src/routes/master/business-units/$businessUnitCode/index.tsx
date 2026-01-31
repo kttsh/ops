@@ -9,7 +9,7 @@ import {
   useDeleteBusinessUnit,
   ApiError,
 } from '@/features/business-units'
-import { DeleteConfirmDialog } from '@/features/business-units/components/DeleteConfirmDialog'
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog'
 
 export const Route = createFileRoute('/master/business-units/$businessUnitCode/')({
   component: BusinessUnitDetailPage,
@@ -121,7 +121,8 @@ function BusinessUnitDetailPage() {
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleDelete}
         isDeleting={deleteMutation.isPending}
-        businessUnitName={bu.name}
+        entityLabel="ビジネスユニット"
+        entityName={bu.name}
       />
     </div>
   )
