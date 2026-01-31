@@ -1,6 +1,6 @@
 # 操業山積ダッシュボード システム要件定義書
 
-> **Version**: 1.2.0
+> **Version**: 1.3.0
 > **Last Updated**: 2026-01-31
 > **Status**: 実装整合性レビュー済み
 
@@ -1351,6 +1351,12 @@
 | GET | `/chart-color-palettes` | パレット一覧 |
 | POST | `/chart-color-palettes` | パレット追加 |
 
+### 集約チャートデータ
+
+| メソッド | パス | 説明 |
+|----------|------|------|
+| GET | `/chart-data` | ダッシュボード用集約データ取得（案件工数+間接工数+キャパシティ） |
+
 ### 案件変更履歴
 
 | メソッド | パス | 説明 |
@@ -1390,6 +1396,19 @@
 | filter[businessUnitCode] | string | - | ビジネスユニットコードでフィルタ |
 | filter[projectTypeCode] | string | - | 案件タイプコードでフィルタ |
 
+### 集約チャートデータ（GET /chart-data）
+
+| パラメータ | 型 | 必須 | 説明 |
+|------------|-----|:----:|------|
+| businessUnitCodes | string (CSV) | ○ | 対象BUコード（カンマ区切り、各1〜20文字） |
+| startYearMonth | string | ○ | 開始年月（YYYYMM形式、月01〜12） |
+| endYearMonth | string | ○ | 終了年月（YYYYMM形式、月01〜12、startYearMonth以降） |
+| chartViewId | number | - | チャートビューID（指定時はビュー設定に基づく案件・間接作業項目を使用） |
+| capacityScenarioIds | string (CSV) | - | キャパシティシナリオID（カンマ区切り、未指定時はキャパシティ空） |
+| indirectWorkCaseIds | string (CSV) | - | 間接作業ケースID（カンマ区切り、未指定かつchartViewId未指定時はisPrimary=trueを使用） |
+
+**バリデーション**: 期間は60ヶ月以内。startYearMonth ≤ endYearMonth。
+
 ---
 
 ## 付録C: 実装状況サマリ
@@ -1410,8 +1429,8 @@
 | バックエンド | 標準工数マスタCRUD | ✅ 実装済み |
 | バックエンド | チャートビュー・設定CRUD | ✅ 実装済み |
 | バックエンド | ヘルスチェック | ✅ 実装済み |
-| バックエンド | 集約チャートデータAPI | ❌ 未実装（別紙: chart-data-api-spec.md） |
-| バックエンド | 間接工数種類別内訳の導出 | ❌ 未実装（別紙: indirect-work-type-breakdown-spec.md） |
+| バックエンド | 集約チャートデータAPI | ✅ 実装済み（詳細: chart-data-api-spec.md） |
+| バックエンド | 間接工数種類別内訳の導出 | ✅ 実装済み（チャートデータAPI内で導出、詳細: indirect-work-type-breakdown-spec.md） |
 | フロントエンド | マスタ管理画面（BU, ProjectType, WorkType, Project） | ✅ 実装済み |
 | フロントエンド | 操業山積ダッシュボード | ❌ 未実装 |
 | フロントエンド | ケーススタディ画面 | ❌ 未実装 |
@@ -1426,3 +1445,4 @@
 | 2026-01-31 | 1.0.0 | 現行実装からの要件抽出による初版作成 |
 | 2026-01-31 | 1.1.0 | 実装コードベースとの用語・構造整合性レビュー |
 | 2026-01-31 | 1.2.0 | #1 案件CRUDルートマウント・#4 ヘルスチェック実装の反映、残課題の別紙化 |
+| 2026-01-31 | 1.3.0 | #2 集約チャートデータAPI・#3 間接工数種類別内訳の実装反映、付録A/B/Cの更新 |

@@ -198,9 +198,13 @@
 | scenario_name | NVARCHAR(100) | NO | - | シナリオ名 |
 | is_primary | BIT | NO | 0 | プライマリシナリオフラグ |
 | description | NVARCHAR(500) | YES | NULL | 説明 |
+| hours_per_person | DECIMAL(10,2) | NO | 160.00 | 1人当たり月間労働時間（時間） |
 | created_at | DATETIME2 | NO | GETDATE() | 作成日時 |
 | updated_at | DATETIME2 | NO | GETDATE() | 更新日時 |
 | deleted_at | DATETIME2 | YES | NULL | 削除日時（論理削除） |
+
+**制約:**
+- CK_capacity_scenarios_hours_per_person - CHECK (hours_per_person > 0 AND hours_per_person <= 744)
 
 **インデックス:**
 - PK_capacity_scenarios (capacity_scenario_id) - 主キー

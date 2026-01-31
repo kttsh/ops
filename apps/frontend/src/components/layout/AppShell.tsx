@@ -1,12 +1,22 @@
 import { useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { Menu, Building2, FolderKanban, Palette, Briefcase, ChevronRight } from 'lucide-react'
+import { Menu, Building2, FolderKanban, Palette, Briefcase, BarChart3, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 
 const menuItems = [
+  {
+    label: 'ダッシュボード',
+    children: [
+      {
+        label: '山積ダッシュボード',
+        href: '/workload',
+        icon: BarChart3,
+      },
+    ],
+  },
   {
     label: 'マスタ管理',
     children: [

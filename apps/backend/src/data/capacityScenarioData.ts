@@ -4,7 +4,7 @@ import type { CapacityScenarioRow } from '@/types/capacityScenario'
 
 const BASE_SELECT = `
   capacity_scenario_id, scenario_name, is_primary,
-  description, created_at, updated_at, deleted_at`
+  description, hours_per_person, created_at, updated_at, deleted_at`
 
 export const capacityScenarioData = {
   async findAll(params: {
@@ -74,6 +74,7 @@ export const capacityScenarioData = {
     scenarioName: string
     isPrimary: boolean
     description: string | null
+    hoursPerPerson: number
   }): Promise<CapacityScenarioRow> {
     const pool = await getPool()
     const result = await pool
@@ -81,10 +82,11 @@ export const capacityScenarioData = {
       .input('scenarioName', sql.NVarChar, data.scenarioName)
       .input('isPrimary', sql.Bit, data.isPrimary)
       .input('description', sql.NVarChar, data.description)
+      .input('hoursPerPerson', sql.Decimal(10, 2), data.hoursPerPerson)
       .query<{ capacity_scenario_id: number }>(
-        `INSERT INTO capacity_scenarios (scenario_name, is_primary, description)
+        `INSERT INTO capacity_scenarios (scenario_name, is_primary, description, hours_per_person)
          OUTPUT INSERTED.capacity_scenario_id
-         VALUES (@scenarioName, @isPrimary, @description)`,
+         VALUES (@scenarioName, @isPrimary, @description, @hoursPerPerson)`,
       )
 
     const id = result.recordset[0].capacity_scenario_id
@@ -97,6 +99,7 @@ export const capacityScenarioData = {
       scenarioName?: string
       isPrimary?: boolean
       description?: string | null
+      hoursPerPerson?: number
     },
   ): Promise<CapacityScenarioRow | undefined> {
     const pool = await getPool()
@@ -114,6 +117,10 @@ export const capacityScenarioData = {
     if (data.description !== undefined) {
       setClauses.push('description = @description')
       request.input('description', sql.NVarChar, data.description)
+    }
+    if (data.hoursPerPerson !== undefined) {
+      setClauses.push('hours_per_person = @hoursPerPerson')
+      request.input('hoursPerPerson', sql.Decimal(10, 2), data.hoursPerPerson)
     }
 
     const result = await request.query<{ capacity_scenario_id: number }>(
@@ -136,7 +143,7 @@ export const capacityScenarioData = {
         `UPDATE capacity_scenarios
          SET deleted_at = GETDATE(), updated_at = GETDATE()
          OUTPUT INSERTED.capacity_scenario_id, INSERTED.scenario_name, INSERTED.is_primary,
-                INSERTED.description,
+                INSERTED.description, INSERTED.hours_per_person,
                 INSERTED.created_at, INSERTED.updated_at, INSERTED.deleted_at
          WHERE capacity_scenario_id = @id AND deleted_at IS NULL`,
       )
@@ -153,7 +160,7 @@ export const capacityScenarioData = {
         `UPDATE capacity_scenarios
          SET deleted_at = NULL, updated_at = GETDATE()
          OUTPUT INSERTED.capacity_scenario_id, INSERTED.scenario_name, INSERTED.is_primary,
-                INSERTED.description,
+                INSERTED.description, INSERTED.hours_per_person,
                 INSERTED.created_at, INSERTED.updated_at, INSERTED.deleted_at
          WHERE capacity_scenario_id = @id AND deleted_at IS NOT NULL`,
       )

@@ -161,6 +161,49 @@ export const monthlyHeadcountPlanData = {
     return this.findAll(headcountPlanCaseId)
   },
 
+  async findForCalculation(params: {
+    headcountPlanCaseId: number
+    businessUnitCodes?: string[]
+    yearMonthFrom?: string
+    yearMonthTo?: string
+  }): Promise<MonthlyHeadcountPlanRow[]> {
+    const pool = await getPool()
+    const request = pool
+      .request()
+      .input('headcountPlanCaseId', sql.Int, params.headcountPlanCaseId)
+
+    const whereClauses = ['mhp.headcount_plan_case_id = @headcountPlanCaseId']
+
+    if (params.businessUnitCodes && params.businessUnitCodes.length > 0) {
+      const buParams: string[] = []
+      params.businessUnitCodes.forEach((code, index) => {
+        const paramName = `buCode${index}`
+        buParams.push(`@${paramName}`)
+        request.input(paramName, sql.VarChar(20), code)
+      })
+      whereClauses.push(`mhp.business_unit_code IN (${buParams.join(', ')})`)
+    }
+
+    if (params.yearMonthFrom) {
+      whereClauses.push('mhp.year_month >= @yearMonthFrom')
+      request.input('yearMonthFrom', sql.Char(6), params.yearMonthFrom)
+    }
+
+    if (params.yearMonthTo) {
+      whereClauses.push('mhp.year_month <= @yearMonthTo')
+      request.input('yearMonthTo', sql.Char(6), params.yearMonthTo)
+    }
+
+    const result = await request.query<MonthlyHeadcountPlanRow>(
+      `SELECT ${SELECT_COLUMNS}
+       FROM monthly_headcount_plan mhp
+       WHERE ${whereClauses.join(' AND ')}
+       ORDER BY mhp.business_unit_code ASC, mhp.year_month ASC`,
+    )
+
+    return result.recordset
+  },
+
   async headcountPlanCaseExists(headcountPlanCaseId: number): Promise<boolean> {
     const pool = await getPool()
     const result = await pool

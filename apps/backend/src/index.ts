@@ -27,6 +27,7 @@ import chartColorPalettes from '@/routes/chartColorPalettes'
 import chartColorSettings from '@/routes/chartColorSettings'
 import chartStackOrderSettings from '@/routes/chartStackOrderSettings'
 import projectChangeHistory from '@/routes/projectChangeHistory'
+import chartData from '@/routes/chartData'
 import health from '@/routes/health'
 
 const app = new Hono()
@@ -85,6 +86,8 @@ app.route('/chart-color-palettes', chartColorPalettes)
 app.route('/chart-color-settings', chartColorSettings)
 app.route('/chart-stack-order-settings', chartStackOrderSettings)
 app.route('/projects/:projectId/change-history', projectChangeHistory)
+
+app.route('/chart-data', chartData)
 
 app.route('/health', health)
 

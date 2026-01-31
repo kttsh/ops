@@ -61,9 +61,9 @@ INSERT INTO chart_color_palettes (name, color_code, display_order) VALUES
 -- -----------------------------------------------------------------------------
 -- capacity_scenarios: キャパシティシナリオ
 -- -----------------------------------------------------------------------------
-INSERT INTO capacity_scenarios (scenario_name, is_primary, description) VALUES
-(N'標準シナリオ', 1, N'通常の稼働率を想定したベースシナリオ'),
-(N'楽観シナリオ', 0, N'残業込みの最大稼働シナリオ');
+INSERT INTO capacity_scenarios (scenario_name, is_primary, description, hours_per_person) VALUES
+(N'標準シナリオ', 1, N'通常の稼働率を想定したベースシナリオ', 128.00),
+(N'楽観シナリオ', 0, N'残業込みの最大稼働シナリオ', 162.00);
 
 -- -----------------------------------------------------------------------------
 -- headcount_plan_cases: 人員計画ケース

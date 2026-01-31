@@ -13,6 +13,7 @@ vi.mock('@/services/capacityScenarioService', () => ({
     update: vi.fn(),
     delete: vi.fn(),
     restore: vi.fn(),
+    calculate: vi.fn(),
   },
 }))
 
@@ -59,6 +60,7 @@ const sampleScenario = {
   scenarioName: '標準シナリオ',
   isPrimary: true,
   description: '標準的なキャパシティ計画',
+  hoursPerPerson: 128.00,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
 }
@@ -68,6 +70,7 @@ const sampleScenario2 = {
   scenarioName: '楽観シナリオ',
   isPrimary: false,
   description: null,
+  hoursPerPerson: 162.00,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
 }
@@ -98,6 +101,17 @@ describe('GET /capacity-scenarios', () => {
       totalItems: 2,
       totalPages: 1,
     })
+  })
+
+  test('レスポンスに hoursPerPerson が含まれる', async () => {
+    mockedService.findAll.mockResolvedValue({
+      items: [sampleScenario],
+      totalCount: 1,
+    })
+
+    const res = await app.request('/capacity-scenarios')
+    const body = await res.json()
+    expect(body.data[0].hoursPerPerson).toBe(128.00)
   })
 
   test('page[number] と page[size] でページネーションする', async () => {
@@ -175,7 +189,7 @@ describe('GET /capacity-scenarios/:id', () => {
     app = createApp()
   })
 
-  test('指定IDのキャパシティシナリオを data オブジェクトで返す', async () => {
+  test('指定IDのキャパシティシナリオを data オブジェクトで返す（hoursPerPerson 含む）', async () => {
     mockedService.findById.mockResolvedValue(sampleScenario)
 
     const res = await app.request('/capacity-scenarios/1')
@@ -183,6 +197,7 @@ describe('GET /capacity-scenarios/:id', () => {
 
     const body = await res.json()
     expect(body.data).toMatchObject(sampleScenario)
+    expect(body.data.hoursPerPerson).toBe(128.00)
   })
 
   test('存在しないIDで 404 を返す', async () => {
@@ -215,6 +230,7 @@ describe('POST /capacity-scenarios', () => {
         scenarioName: '標準シナリオ',
         isPrimary: true,
         description: '標準的なキャパシティ計画',
+        hoursPerPerson: 128.00,
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
@@ -223,6 +239,70 @@ describe('POST /capacity-scenarios', () => {
 
     const body = await res.json()
     expect(body.data).toMatchObject(sampleScenario)
+  })
+
+  test('hoursPerPerson 省略時にデフォルト値 160.00 が使われる', async () => {
+    mockedService.create.mockResolvedValue({ ...sampleScenario, hoursPerPerson: 160.00 })
+
+    const res = await app.request('/capacity-scenarios', {
+      method: 'POST',
+      body: JSON.stringify({
+        scenarioName: 'テストシナリオ',
+      }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(201)
+
+    expect(mockedService.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scenarioName: 'テストシナリオ',
+        isPrimary: false,
+        hoursPerPerson: 160.00,
+      }),
+    )
+  })
+
+  test('hoursPerPerson 指定時にその値が使われる', async () => {
+    mockedService.create.mockResolvedValue(sampleScenario)
+
+    await app.request('/capacity-scenarios', {
+      method: 'POST',
+      body: JSON.stringify({
+        scenarioName: '標準シナリオ',
+        hoursPerPerson: 128.00,
+      }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+
+    expect(mockedService.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        hoursPerPerson: 128.00,
+      }),
+    )
+  })
+
+  test('hoursPerPerson = 0 で 422 を返す', async () => {
+    const res = await app.request('/capacity-scenarios', {
+      method: 'POST',
+      body: JSON.stringify({
+        scenarioName: 'テスト',
+        hoursPerPerson: 0,
+      }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(422)
+  })
+
+  test('hoursPerPerson = 744.01 で 422 を返す', async () => {
+    const res = await app.request('/capacity-scenarios', {
+      method: 'POST',
+      body: JSON.stringify({
+        scenarioName: 'テスト',
+        hoursPerPerson: 744.01,
+      }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(422)
   })
 
   test('isPrimary 省略時にデフォルト値 false が使われる', async () => {
@@ -327,6 +407,45 @@ describe('PUT /capacity-scenarios/:id', () => {
 
     const body = await res.json()
     expect(body.data).toMatchObject(updatedScenario)
+  })
+
+  test('hoursPerPerson の更新で 200 を返す', async () => {
+    const updatedScenario = { ...sampleScenario, hoursPerPerson: 180.00 }
+    mockedService.update.mockResolvedValue(updatedScenario)
+
+    const res = await app.request('/capacity-scenarios/1', {
+      method: 'PUT',
+      body: JSON.stringify({ hoursPerPerson: 180.00 }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(200)
+
+    const body = await res.json()
+    expect(body.data.hoursPerPerson).toBe(180.00)
+  })
+
+  test('hoursPerPerson 省略時は既存値が維持される（サービスに undefined が渡る）', async () => {
+    mockedService.update.mockResolvedValue(sampleScenario)
+
+    await app.request('/capacity-scenarios/1', {
+      method: 'PUT',
+      body: JSON.stringify({ scenarioName: '更新テスト' }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+
+    expect(mockedService.update).toHaveBeenCalledWith(
+      1,
+      expect.not.objectContaining({ hoursPerPerson: expect.anything() }),
+    )
+  })
+
+  test('hoursPerPerson = 0 で 422 を返す', async () => {
+    const res = await app.request('/capacity-scenarios/1', {
+      method: 'PUT',
+      body: JSON.stringify({ hoursPerPerson: 0 }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(422)
   })
 
   test('存在しないIDで 404 を返す', async () => {
@@ -453,5 +572,165 @@ describe('POST /capacity-scenarios/:id/actions/restore', () => {
 
     const body = await res.json()
     expect(body.type).toContain('conflict')
+  })
+})
+
+describe('POST /capacity-scenarios/:id/actions/calculate', () => {
+  let app: ReturnType<typeof createApp>
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    app = createApp()
+  })
+
+  const sampleCalculateResult = {
+    calculated: 2,
+    hoursPerPerson: 128.00,
+    items: [
+      {
+        monthlyCapacityId: 1,
+        capacityScenarioId: 1,
+        businessUnitCode: 'PLANT',
+        yearMonth: '202601',
+        capacity: 1280.00,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+      },
+      {
+        monthlyCapacityId: 2,
+        capacityScenarioId: 1,
+        businessUnitCode: 'PLANT',
+        yearMonth: '202602',
+        capacity: 1536.00,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+      },
+    ],
+  }
+
+  test('正常計算で 200 を返す', async () => {
+    mockedService.calculate.mockResolvedValue(sampleCalculateResult)
+
+    const res = await app.request('/capacity-scenarios/1/actions/calculate', {
+      method: 'POST',
+      body: JSON.stringify({ headcountPlanCaseId: 1 }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(200)
+
+    const body = await res.json()
+    expect(body.data.calculated).toBe(2)
+    expect(body.data.hoursPerPerson).toBe(128.00)
+    expect(body.data.items).toHaveLength(2)
+  })
+
+  test('全パラメータ指定で正常に呼び出される', async () => {
+    mockedService.calculate.mockResolvedValue(sampleCalculateResult)
+
+    const res = await app.request('/capacity-scenarios/1/actions/calculate', {
+      method: 'POST',
+      body: JSON.stringify({
+        headcountPlanCaseId: 1,
+        businessUnitCodes: ['PLANT', 'TRANS'],
+        yearMonthFrom: '202601',
+        yearMonthTo: '202612',
+      }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(200)
+
+    expect(mockedService.calculate).toHaveBeenCalledWith(
+      1,
+      {
+        headcountPlanCaseId: 1,
+        businessUnitCodes: ['PLANT', 'TRANS'],
+        yearMonthFrom: '202601',
+        yearMonthTo: '202612',
+      },
+    )
+  })
+
+  test('headcountPlanCaseId 未指定で 422 を返す', async () => {
+    const res = await app.request('/capacity-scenarios/1/actions/calculate', {
+      method: 'POST',
+      body: JSON.stringify({}),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(422)
+
+    const body = await res.json()
+    expect(body.type).toContain('validation-error')
+  })
+
+  test('headcountPlanCaseId = 0 で 422 を返す', async () => {
+    const res = await app.request('/capacity-scenarios/1/actions/calculate', {
+      method: 'POST',
+      body: JSON.stringify({ headcountPlanCaseId: 0 }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(422)
+  })
+
+  test('yearMonthFrom が不正形式で 422 を返す', async () => {
+    const res = await app.request('/capacity-scenarios/1/actions/calculate', {
+      method: 'POST',
+      body: JSON.stringify({
+        headcountPlanCaseId: 1,
+        yearMonthFrom: '2026',
+      }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(422)
+  })
+
+  test('シナリオ不在で 404 を返す', async () => {
+    mockedService.calculate.mockRejectedValue(
+      new HTTPException(404, { message: "Capacity scenario with ID '999' not found" }),
+    )
+
+    const res = await app.request('/capacity-scenarios/999/actions/calculate', {
+      method: 'POST',
+      body: JSON.stringify({ headcountPlanCaseId: 1 }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(404)
+
+    const body = await res.json()
+    expect(body.type).toContain('resource-not-found')
+  })
+
+  test('人員計画ケース不在で 404 を返す', async () => {
+    mockedService.calculate.mockRejectedValue(
+      new HTTPException(404, { message: "Headcount plan case with ID '999' not found" }),
+    )
+
+    const res = await app.request('/capacity-scenarios/1/actions/calculate', {
+      method: 'POST',
+      body: JSON.stringify({ headcountPlanCaseId: 999 }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(404)
+
+    const body = await res.json()
+    expect(body.type).toContain('resource-not-found')
+  })
+
+  test('対象データ不在で 422 を返す', async () => {
+    mockedService.calculate.mockRejectedValue(
+      new HTTPException(422, { message: 'No headcount plan data found for the specified conditions' }),
+    )
+
+    const res = await app.request('/capacity-scenarios/1/actions/calculate', {
+      method: 'POST',
+      body: JSON.stringify({
+        headcountPlanCaseId: 1,
+        businessUnitCodes: ['NONEXIST'],
+      }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+    expect(res.status).toBe(422)
+
+    const body = await res.json()
+    expect(body.type).toContain('validation-error')
   })
 })

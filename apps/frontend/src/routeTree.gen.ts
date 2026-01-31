@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkloadIndexRouteImport } from './routes/workload/index'
 import { Route as MasterWorkTypesIndexRouteImport } from './routes/master/work-types/index'
 import { Route as MasterProjectsIndexRouteImport } from './routes/master/projects/index'
 import { Route as MasterProjectTypesIndexRouteImport } from './routes/master/project-types/index'
@@ -30,6 +31,11 @@ import { Route as MasterBusinessUnitsBusinessUnitCodeEditRouteImport } from './r
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkloadIndexRoute = WorkloadIndexRouteImport.update({
+  id: '/workload/',
+  path: '/workload/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MasterWorkTypesIndexRoute = MasterWorkTypesIndexRouteImport.update({
@@ -124,6 +130,7 @@ const MasterBusinessUnitsBusinessUnitCodeEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/workload/': typeof WorkloadIndexRoute
   '/master/business-units/new': typeof MasterBusinessUnitsNewRoute
   '/master/project-types/new': typeof MasterProjectTypesNewRoute
   '/master/projects/new': typeof MasterProjectsNewRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/workload': typeof WorkloadIndexRoute
   '/master/business-units/new': typeof MasterBusinessUnitsNewRoute
   '/master/project-types/new': typeof MasterProjectTypesNewRoute
   '/master/projects/new': typeof MasterProjectsNewRoute
@@ -163,6 +171,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/workload/': typeof WorkloadIndexRoute
   '/master/business-units/new': typeof MasterBusinessUnitsNewRoute
   '/master/project-types/new': typeof MasterProjectTypesNewRoute
   '/master/projects/new': typeof MasterProjectsNewRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/workload/'
     | '/master/business-units/new'
     | '/master/project-types/new'
     | '/master/projects/new'
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/workload'
     | '/master/business-units/new'
     | '/master/project-types/new'
     | '/master/projects/new'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/workload/'
     | '/master/business-units/new'
     | '/master/project-types/new'
     | '/master/projects/new'
@@ -242,6 +254,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  WorkloadIndexRoute: typeof WorkloadIndexRoute
   MasterBusinessUnitsNewRoute: typeof MasterBusinessUnitsNewRoute
   MasterProjectTypesNewRoute: typeof MasterProjectTypesNewRoute
   MasterProjectsNewRoute: typeof MasterProjectsNewRoute
@@ -267,6 +280,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workload/': {
+      id: '/workload/'
+      path: '/workload'
+      fullPath: '/workload/'
+      preLoaderRoute: typeof WorkloadIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/master/work-types/': {
@@ -386,6 +406,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  WorkloadIndexRoute: WorkloadIndexRoute,
   MasterBusinessUnitsNewRoute: MasterBusinessUnitsNewRoute,
   MasterProjectTypesNewRoute: MasterProjectTypesNewRoute,
   MasterProjectsNewRoute: MasterProjectsNewRoute,

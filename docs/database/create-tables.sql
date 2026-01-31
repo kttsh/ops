@@ -195,10 +195,12 @@ CREATE TABLE capacity_scenarios (
     scenario_name NVARCHAR(100) NOT NULL,
     is_primary BIT NOT NULL CONSTRAINT DF_capacity_scenarios_is_primary DEFAULT 0,
     description NVARCHAR(500) NULL,
+    hours_per_person DECIMAL(10, 2) NOT NULL CONSTRAINT DF_capacity_scenarios_hours_per_person DEFAULT 160.00,
     created_at DATETIME2 NOT NULL CONSTRAINT DF_capacity_scenarios_created_at DEFAULT GETDATE(),
     updated_at DATETIME2 NOT NULL CONSTRAINT DF_capacity_scenarios_updated_at DEFAULT GETDATE(),
     deleted_at DATETIME2 NULL,
-    CONSTRAINT PK_capacity_scenarios PRIMARY KEY (capacity_scenario_id)
+    CONSTRAINT PK_capacity_scenarios PRIMARY KEY (capacity_scenario_id),
+    CONSTRAINT CK_capacity_scenarios_hours_per_person CHECK (hours_per_person > 0 AND hours_per_person <= 744)
 );
 
 -- -----------------------------------------------------------------------------

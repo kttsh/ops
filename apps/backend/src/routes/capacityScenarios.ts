@@ -5,6 +5,7 @@ import {
   capacityScenarioListQuerySchema,
   createCapacityScenarioSchema,
   updateCapacityScenarioSchema,
+  calculateCapacitySchema,
 } from '@/types/capacityScenario'
 
 const app = new Hono()
@@ -73,6 +74,17 @@ const app = new Hono()
     const restored = await capacityScenarioService.restore(id)
     return c.json({ data: restored }, 200)
   })
+  // POST /:id/actions/calculate - 自動計算
+  .post(
+    '/:id/actions/calculate',
+    validate('json', calculateCapacitySchema),
+    async (c) => {
+      const id = Number(c.req.param('id'))
+      const body = c.req.valid('json')
+      const result = await capacityScenarioService.calculate(id, body)
+      return c.json({ data: result }, 200)
+    },
+  )
 
 export default app
 

@@ -6,6 +6,7 @@ export function toCapacityScenarioResponse(row: CapacityScenarioRow): CapacitySc
     scenarioName: row.scenario_name,
     isPrimary: row.is_primary,
     description: row.description,
+    hoursPerPerson: row.hours_per_person,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
   }

@@ -2,7 +2,7 @@
 
 > **Version**: 1.0.0
 > **Last Updated**: 2026-01-31
-> **Status**: ドラフト
+> **Status**: 実装済み（方式A: バックエンド導出）
 > **親文書**: dashboard-requirements.md（付録C #3）
 
 ---

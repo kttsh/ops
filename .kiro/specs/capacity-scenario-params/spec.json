@@ -1,9 +1,9 @@
 {
-  "feature_name": "main-dashboard",
-  "created_at": "2026-01-31T11:40:04Z",
-  "updated_at": "2026-02-01T06:00:00Z",
+  "feature_name": "capacity-scenario-params",
+  "created_at": "2026-01-31T00:00:00.000Z",
+  "updated_at": "2026-01-31T00:00:00.000Z",
   "language": "ja",
-  "phase": "tasks-generated",
+  "phase": "implementation-complete",
   "approvals": {
     "requirements": {
       "generated": true,
