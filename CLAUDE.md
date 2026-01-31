@@ -10,6 +10,10 @@ Turborepo + pnpm を使用したモノレポ構成のフルスタックアプリ
 
 業務ロジック実装前に docs/domain/ 配下の関連ドキュメントを確認すること
 
+## Git
+
+Git運用時は docs/rules/git-workflow.md を参照
+
 ## 開発コマンド
 
 ```bash
