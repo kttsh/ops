@@ -10,7 +10,7 @@ export const projectService = {
     page: number
     pageSize: number
     includeDisabled: boolean
-    businessUnitCode?: string
+    businessUnitCodes?: string[]
     status?: string
   }): Promise<{ items: Project[]; totalCount: number }> {
     const result = await projectData.findAll(params)

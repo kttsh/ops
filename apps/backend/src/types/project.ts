@@ -56,6 +56,7 @@ export const updateProjectSchema = z
 export const projectListQuerySchema = paginationQuerySchema.extend({
   'filter[includeDisabled]': z.coerce.boolean().default(false),
   'filter[businessUnitCode]': z.string().optional(),
+  'filter[businessUnitCodes]': z.string().optional(),
   'filter[status]': z.string().optional(),
 })
 

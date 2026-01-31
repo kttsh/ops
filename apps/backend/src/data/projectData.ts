@@ -18,7 +18,7 @@ export const projectData = {
     page: number
     pageSize: number
     includeDisabled: boolean
-    businessUnitCode?: string
+    businessUnitCodes?: string[]
     status?: string
   }): Promise<{ items: ProjectRow[]; totalCount: number }> {
     const pool = await getPool()
@@ -28,8 +28,9 @@ export const projectData = {
     if (!params.includeDisabled) {
       whereClauses.push('p.deleted_at IS NULL')
     }
-    if (params.businessUnitCode) {
-      whereClauses.push('p.business_unit_code = @businessUnitCode')
+    if (params.businessUnitCodes && params.businessUnitCodes.length > 0) {
+      const buPlaceholders = params.businessUnitCodes.map((_, i) => `@bu${i}`)
+      whereClauses.push(`p.business_unit_code IN (${buPlaceholders.join(',')})`)
     }
     if (params.status) {
       whereClauses.push('p.status = @status')
@@ -46,9 +47,11 @@ export const projectData = {
 
     const countRequest = pool.request()
 
-    if (params.businessUnitCode) {
-      itemsRequest.input('businessUnitCode', sql.VarChar, params.businessUnitCode)
-      countRequest.input('businessUnitCode', sql.VarChar, params.businessUnitCode)
+    if (params.businessUnitCodes && params.businessUnitCodes.length > 0) {
+      params.businessUnitCodes.forEach((code, i) => {
+        itemsRequest.input(`bu${i}`, sql.VarChar, code)
+        countRequest.input(`bu${i}`, sql.VarChar, code)
+      })
     }
     if (params.status) {
       itemsRequest.input('status', sql.VarChar, params.status)
@@ -69,8 +72,9 @@ export const projectData = {
     if (!params.includeDisabled) {
       countWhereClauses.push('deleted_at IS NULL')
     }
-    if (params.businessUnitCode) {
-      countWhereClauses.push('business_unit_code = @businessUnitCode')
+    if (params.businessUnitCodes && params.businessUnitCodes.length > 0) {
+      const buPlaceholders = params.businessUnitCodes.map((_, i) => `@bu${i}`)
+      countWhereClauses.push(`business_unit_code IN (${buPlaceholders.join(',')})`)
     }
     if (params.status) {
       countWhereClauses.push('status = @status')

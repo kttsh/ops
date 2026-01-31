@@ -31,30 +31,8 @@ export function createColumns(options: {
 }): ColumnDef<Project>[] {
   return [
     {
-      accessorKey: 'projectCode',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="-ml-3 h-8"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          案件コード
-          <ArrowUpDown className="ml-1 h-3 w-3" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <Link
-          to="/master/projects/$projectId"
-          params={{ projectId: String(row.original.projectId) }}
-          className="font-medium text-primary hover:underline"
-        >
-          {row.original.projectCode}
-        </Link>
-      ),
-    },
-    {
       accessorKey: 'name',
+      minSize: 320,
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -65,6 +43,15 @@ export function createColumns(options: {
           名称
           <ArrowUpDown className="ml-1 h-3 w-3" />
         </Button>
+      ),
+      cell: ({ row }) => (
+        <Link
+          to="/master/projects/$projectId"
+          params={{ projectId: String(row.original.projectId) }}
+          className="font-medium text-primary hover:underline"
+        >
+          {row.original.name}
+        </Link>
       ),
     },
     {
@@ -114,15 +101,22 @@ export function createColumns(options: {
     {
       accessorKey: 'totalManhour',
       header: ({ column }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="-ml-3 h-8"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          総工数
-          <ArrowUpDown className="ml-1 h-3 w-3" />
-        </Button>
+        <div className="flex justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            総工数
+            <ArrowUpDown className="ml-1 h-3 w-3" />
+          </Button>
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="text-right">
+          {row.original.totalManhour?.toLocaleString('ja-JP') ?? '—'}
+        </div>
       ),
     },
     {
@@ -131,11 +125,9 @@ export function createColumns(options: {
       cell: ({ row }) => {
         const value = row.original.status
         const label = getStatusLabel(value)
-        return value === 'confirmed' ? (
-          <Badge variant="success">{label}</Badge>
-        ) : (
-          <Badge variant="secondary">{label}</Badge>
-        )
+        const variant =
+          value === 'confirmed' ? 'success' : value === 'planning' ? 'default' : 'secondary'
+        return <Badge variant={variant}>{label}</Badge>
       },
     },
     {
