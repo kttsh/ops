@@ -20,6 +20,8 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 
+const PAGE_SIZES = [10, 20, 50, 100] as const
+
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
@@ -129,43 +131,49 @@ export function DataTable<TData>({
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>表示件数</span>
-          <select
-            value={pagination.pageSize}
-            onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="rounded-lg border border-input bg-background px-2 py-1 text-sm"
-          >
-            {[10, 20, 50, 100].map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-          <span>
-            / 全 {pagination.totalItems} 件
-          </span>
+          {pagination.totalItems > PAGE_SIZES[0] ? (
+            <>
+              <span>表示件数</span>
+              <select
+                value={pagination.pageSize}
+                onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                className="rounded-lg border border-input bg-background px-2 py-1 text-sm"
+              >
+                {PAGE_SIZES.map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+              <span>/ 全 {pagination.totalItems} 件</span>
+            </>
+          ) : (
+            <span>全 {pagination.totalItems} 件</span>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(pagination.currentPage - 1)}
-            disabled={pagination.currentPage <= 1}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            {pagination.currentPage} / {pagination.totalPages || 1}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(pagination.currentPage + 1)}
-            disabled={pagination.currentPage >= pagination.totalPages}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+        {pagination.totalPages > 1 && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(pagination.currentPage - 1)}
+              disabled={pagination.currentPage <= 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              {pagination.currentPage} / {pagination.totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(pagination.currentPage + 1)}
+              disabled={pagination.currentPage >= pagination.totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )
