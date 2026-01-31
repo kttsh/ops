@@ -366,6 +366,111 @@ const { data = [] } = useQuery({
 
 ---
 
+## グローバル検索の IME（日本語入力）対応
+
+グローバル検索の入力フィールドでは、IME による日本語変換を正しくサポートするために **必ず composition イベントを考慮** すること。
+
+### 問題
+
+`onChange` で即座に状態更新（`setGlobalFilter` や `navigate()` など）を行うと、IME の変換プロセスが中断され、漢字変換ができなくなる。
+
+### 必須要件
+
+1. **ローカル state で入力値を管理** し、IME 変換中は親への状態伝播を抑制する
+2. **`compositionstart` / `compositionend` イベント** を監視し、変換中フラグを管理する
+3. **debounce（300ms 推奨）** を併用し、タイピング中の不要な状態更新を抑制する
+
+### 推奨実装パターン: DebouncedSearchInput コンポーネント
+
+IME 対応の検索入力は **専用コンポーネントとして分離** し、再利用可能にすること。
+
+```tsx
+import { useState, useRef, useCallback } from 'react'
+import { Input } from '@/components/ui/input'
+
+interface DebouncedSearchInputProps {
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  className?: string
+  delay?: number
+}
+
+export function DebouncedSearchInput({
+  value,
+  onChange,
+  placeholder,
+  className,
+  delay = 300,
+}: DebouncedSearchInputProps) {
+  const [localValue, setLocalValue] = useState(value)
+  const [prevValue, setPrevValue] = useState(value)
+  const [isComposing, setIsComposing] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
+
+  // 外部 value の変更を同期（ブラウザバック等）
+  if (prevValue !== value && !isComposing) {
+    setPrevValue(value)
+    setLocalValue(value)
+  }
+
+  const emitChange = useCallback(
+    (nextValue: string) => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+      }
+      timerRef.current = setTimeout(() => {
+        onChange(nextValue)
+      }, delay)
+    },
+    [onChange, delay],
+  )
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const next = e.target.value
+    setLocalValue(next)
+    if (!isComposing) {
+      emitChange(next)
+    }
+  }
+
+  const handleCompositionStart = () => {
+    setIsComposing(true)
+  }
+
+  const handleCompositionEnd = (e: React.CompositionEvent<HTMLInputElement>) => {
+    setIsComposing(false)
+    const next = e.currentTarget.value
+    setLocalValue(next)
+    emitChange(next)
+  }
+
+  return (
+    <Input
+      placeholder={placeholder}
+      value={localValue}
+      onChange={handleChange}
+      onCompositionStart={handleCompositionStart}
+      onCompositionEnd={handleCompositionEnd}
+      className={className}
+    />
+  )
+}
+```
+
+### 使用例
+
+```tsx
+<DebouncedSearchInput
+  value={search}
+  onChange={onSearchChange}
+  placeholder="コードまたは名称で検索..."
+  className="pl-9"
+/>
+```
+
+---
+
 ## 状態の組み合わせパターン
 
 ソートとフィルタを同時に使用する場合の推奨パターン:
@@ -398,11 +503,11 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      {/* グローバル検索 */}
-      <Input
-        placeholder="検索..."
+      {/* グローバル検索（IME対応必須） */}
+      <DebouncedSearchInput
         value={globalFilter}
-        onChange={(e) => setGlobalFilter(e.target.value)}
+        onChange={setGlobalFilter}
+        placeholder="検索..."
         className="max-w-sm"
       />
 
@@ -420,3 +525,4 @@ export function DataTable<TData, TValue>({
 - ソート・フィルタの状態を `useReactTable` 外部で直接操作しない
 - `manualSorting` / `manualFiltering` を `true` にしたまま `getSortedRowModel` / `getFilteredRowModel` を渡さない（パフォーマンス上の問題になる）
 - フィルタ関数内で副作用を発生させない
+- **グローバル検索の `<Input>` で `onChange` から直接 `setGlobalFilter` や `navigate()` を呼ばない**（IME 変換が壊れるため。必ず `DebouncedSearchInput` パターンを使用すること）
