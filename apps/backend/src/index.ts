@@ -16,6 +16,10 @@ import chartViews from '@/routes/chartViews'
 import capacityScenarios from '@/routes/capacityScenarios'
 import projectLoads from '@/routes/projectLoads'
 import standardEffortMasters from '@/routes/standardEffortMasters'
+import monthlyHeadcountPlans from '@/routes/monthlyHeadcountPlans'
+import monthlyCapacities from '@/routes/monthlyCapacities'
+import monthlyIndirectWorkLoads from '@/routes/monthlyIndirectWorkLoads'
+import indirectWorkTypeRatios from '@/routes/indirectWorkTypeRatios'
 
 const app = new Hono()
 
@@ -62,6 +66,10 @@ app.route('/chart-views', chartViews)
 app.route('/capacity-scenarios', capacityScenarios)
 app.route('/project-cases/:projectCaseId/project-loads', projectLoads)
 app.route('/standard-effort-masters', standardEffortMasters)
+app.route('/headcount-plan-cases/:headcountPlanCaseId/monthly-headcount-plans', monthlyHeadcountPlans)
+app.route('/capacity-scenarios/:capacityScenarioId/monthly-capacities', monthlyCapacities)
+app.route('/indirect-work-cases/:indirectWorkCaseId/monthly-indirect-work-loads', monthlyIndirectWorkLoads)
+app.route('/indirect-work-cases/:indirectWorkCaseId/indirect-work-type-ratios', indirectWorkTypeRatios)
 
 // Not Found ハンドラ
 app.notFound((c) => {
