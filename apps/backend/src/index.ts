@@ -7,6 +7,8 @@ import { HTTPException } from 'hono/http-exception'
 import { problemResponse, getProblemType, getStatusTitle } from '@/utils/errorHelper'
 import type { StatusCode } from 'hono/utils/http-status'
 import businessUnits from '@/routes/businessUnits'
+import projectTypes from '@/routes/projectTypes'
+import workTypes from '@/routes/workTypes'
 
 const app = new Hono()
 
@@ -44,6 +46,8 @@ app.onError((err, c) => {
 
 // ルートのマウント
 app.route('/business-units', businessUnits)
+app.route('/project-types', projectTypes)
+app.route('/work-types', workTypes)
 
 // Not Found ハンドラ
 app.notFound((c) => {
