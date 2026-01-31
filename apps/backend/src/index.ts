@@ -11,6 +11,10 @@ import projectTypes from '@/routes/projectTypes'
 import workTypes from '@/routes/workTypes'
 import projectCases from '@/routes/projectCases'
 import headcountPlanCases from '@/routes/headcountPlanCases'
+import indirectWorkCases from '@/routes/indirectWorkCases'
+import chartViews from '@/routes/chartViews'
+import capacityScenarios from '@/routes/capacityScenarios'
+import projectLoads from '@/routes/projectLoads'
 
 const app = new Hono()
 
@@ -52,6 +56,10 @@ app.route('/project-types', projectTypes)
 app.route('/work-types', workTypes)
 app.route('/projects/:projectId/project-cases', projectCases)
 app.route('/headcount-plan-cases', headcountPlanCases)
+app.route('/indirect-work-cases', indirectWorkCases)
+app.route('/chart-views', chartViews)
+app.route('/capacity-scenarios', capacityScenarios)
+app.route('/project-cases/:projectCaseId/project-loads', projectLoads)
 
 // Not Found ハンドラ
 app.notFound((c) => {
