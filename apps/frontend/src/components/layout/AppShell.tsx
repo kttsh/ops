@@ -84,6 +84,8 @@ function SidebarNav() {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sheetOpen, setSheetOpen] = useState(false)
+  const routerState = useRouterState()
+  const currentPath = routerState.location.pathname
 
   return (
     <div className="flex h-screen">
@@ -118,7 +120,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-4xl px-6 py-8 animate-in fade-in duration-300">
+          <div className={cn(
+            'animate-in fade-in duration-300',
+            currentPath.startsWith('/workload') ? 'h-full' : 'mx-auto max-w-4xl px-6 py-8',
+          )}>
             {children}
           </div>
         </main>

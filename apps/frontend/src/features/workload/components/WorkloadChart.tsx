@@ -21,6 +21,7 @@ interface WorkloadChartProps {
   seriesConfig: ChartSeriesConfig
   activeMonth: string | null
   dispatch: React.Dispatch<LegendAction>
+  isFetching?: boolean
 }
 
 function WorkloadChartInner({
@@ -28,14 +29,16 @@ function WorkloadChartInner({
   seriesConfig,
   activeMonth,
   dispatch,
+  isFetching,
 }: WorkloadChartProps) {
   const rafRef = useRef<number | null>(null)
 
   const handleMouseMove = useCallback(
-    (state: { activeLabel?: string }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (state: any) => {
       if (!state?.activeLabel) return
       // yearMonth を抽出（YYYY/MM → YYYYMM）
-      const label = state.activeLabel
+      const label = String(state.activeLabel)
       const yearMonth = label.replace('/', '')
       if (rafRef.current !== null) return
       rafRef.current = requestAnimationFrame(() => {
@@ -55,9 +58,10 @@ function WorkloadChartInner({
   }, [dispatch])
 
   const handleClick = useCallback(
-    (state: { activeLabel?: string } | null) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (state: any) => {
       if (!state?.activeLabel) return
-      const yearMonth = state.activeLabel.replace('/', '')
+      const yearMonth = String(state.activeLabel).replace('/', '')
       dispatch({ type: 'CLICK', yearMonth })
     },
     [dispatch],
@@ -70,7 +74,12 @@ function WorkloadChartInner({
   if (data.length === 0) return null
 
   return (
-    <div className="h-[400px] w-full" style={{ contain: 'content' }}>
+    <div className="relative h-[400px] w-full" style={{ contain: 'content' }}>
+      {isFetching && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      )}
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={data}
@@ -78,6 +87,7 @@ function WorkloadChartInner({
           onMouseLeave={handleMouseLeave}
           onClick={handleClick}
           margin={{ top: 8, right: 8, left: 8, bottom: 0 }}
+          accessibilityLayer={false}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis

@@ -13,15 +13,16 @@ export interface UseTableDataReturn {
   filteredRows: TableRow[]
 }
 
+const CURRENT_YEAR = new Date().getFullYear()
+
 export function useTableData(rawResponse: ChartDataResponse | undefined): UseTableDataReturn {
-  const now = new Date()
-  const [selectedYear, setSelectedYear] = useState(now.getFullYear())
+  const [selectedYear, setSelectedYear] = useState(CURRENT_YEAR)
   const [searchText, setSearchText] = useState('')
   const [rowTypeFilter, setRowTypeFilter] = useState<TableRowType | 'all'>('all')
 
   const { rows, availableYears } = useMemo(() => {
     if (!rawResponse) {
-      return { rows: [] as TableRow[], availableYears: [now.getFullYear()] }
+      return { rows: [] as TableRow[], availableYears: [CURRENT_YEAR] }
     }
 
     const allRows: TableRow[] = []
@@ -92,8 +93,8 @@ export function useTableData(rawResponse: ChartDataResponse | undefined): UseTab
 
     const years = Array.from(yearSet).sort()
 
-    return { rows: allRows, availableYears: years.length > 0 ? years : [now.getFullYear()] }
-  }, [rawResponse, now])
+    return { rows: allRows, availableYears: years.length > 0 ? years : [CURRENT_YEAR] }
+  }, [rawResponse])
 
   const filteredRows = useMemo(() => {
     let result = rows

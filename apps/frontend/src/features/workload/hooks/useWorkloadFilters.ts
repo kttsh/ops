@@ -51,7 +51,6 @@ export function useWorkloadFilters(): UseWorkloadFiltersReturn {
 
     const now = new Date()
     const currentYear = now.getFullYear()
-    const currentMonth = now.getMonth() + 1
     const defaultFrom = `${currentYear}01`
     const defaultTo = `${currentYear + 3}12`
 

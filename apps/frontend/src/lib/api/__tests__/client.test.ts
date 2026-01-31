@@ -73,7 +73,7 @@ describe('handleResponse', () => {
 
     await expect(handleResponse(response)).rejects.toThrow(ApiError)
     try {
-      await handleResponse(response.clone ? new Response(JSON.stringify(problemDetails), { status: 409 }) : response)
+      await handleResponse(new Response(JSON.stringify(problemDetails), { status: 409 }))
     } catch (err) {
       expect(err).toBeInstanceOf(ApiError)
       expect((err as ApiError).problemDetails.status).toBe(409)
