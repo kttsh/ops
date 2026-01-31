@@ -15,6 +15,7 @@ import indirectWorkCases from '@/routes/indirectWorkCases'
 import chartViews from '@/routes/chartViews'
 import capacityScenarios from '@/routes/capacityScenarios'
 import projectLoads from '@/routes/projectLoads'
+import standardEffortMasters from '@/routes/standardEffortMasters'
 
 const app = new Hono()
 
@@ -60,6 +61,7 @@ app.route('/indirect-work-cases', indirectWorkCases)
 app.route('/chart-views', chartViews)
 app.route('/capacity-scenarios', capacityScenarios)
 app.route('/project-cases/:projectCaseId/project-loads', projectLoads)
+app.route('/standard-effort-masters', standardEffortMasters)
 
 // Not Found ハンドラ
 app.notFound((c) => {

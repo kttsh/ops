@@ -1,9 +1,9 @@
 {
-  "feature_name": "standard-effort-masters-crud-api",
-  "created_at": "2026-01-31T00:00:00+09:00",
-  "updated_at": "2026-01-31T12:00:00+09:00",
+  "feature_name": "indirect-work-type-ratios-crud-api",
+  "created_at": "2026-01-31T05:58:46Z",
+  "updated_at": "2026-01-31T06:10:00Z",
   "language": "ja",
-  "phase": "implementation-complete",
+  "phase": "tasks-generated",
   "approvals": {
     "requirements": {
       "generated": true,
