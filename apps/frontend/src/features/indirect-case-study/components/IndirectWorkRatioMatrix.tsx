@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -33,6 +33,7 @@ export function IndirectWorkRatioMatrix({
 }: IndirectWorkRatioMatrixProps) {
   // key: `${fiscalYear}-${workTypeCode}`, value: ratio (0-100 for display)
   const [localData, setLocalData] = useState<Record<string, number>>({})
+  const [prevDataId, setPrevDataId] = useState<unknown>(null)
 
   const { data: ratiosData, isLoading: ratiosLoading } = useQuery(
     indirectWorkTypeRatiosQueryOptions(indirectWorkCaseId),
@@ -42,20 +43,24 @@ export function IndirectWorkRatioMatrix({
     workTypesQueryOptions({ includeDisabled: false }),
   )
 
-  const fiscalYears = useMemo(generateFiscalYears, [])
+  const fiscalYears = useMemo(() => generateFiscalYears(), [])
 
-  // APIデータからローカルデータを初期化
-  useEffect(() => {
-    if (!ratiosData?.data) return
+  // APIデータからローカルデータを初期化（レンダー中に派生stateとして更新）
+  if (ratiosData?.data && ratiosData !== prevDataId) {
     const map: Record<string, number> = {}
     ratiosData.data.forEach((item: IndirectWorkTypeRatio) => {
       map[`${item.fiscalYear}-${item.workTypeCode}`] = item.ratio * 100
     })
     setLocalData(map)
+    setPrevDataId(ratiosData)
     onDirtyChange(false)
-  }, [ratiosData, onDirtyChange])
+  }
 
   // ローカルデータ変更時に親に通知
+  const onLocalDataChangeRef = useRef(onLocalDataChange)
+  useEffect(() => {
+    onLocalDataChangeRef.current = onLocalDataChange
+  })
   useEffect(() => {
     const items = Object.entries(localData).map(([key, ratioPercent]) => {
       const [fyStr, workTypeCode] = key.split('-')
@@ -65,8 +70,8 @@ export function IndirectWorkRatioMatrix({
         ratio: ratioPercent / 100, // 0-1に変換
       }
     })
-    onLocalDataChange({ items })
-  }, [localData, onLocalDataChange])
+    onLocalDataChangeRef.current({ items })
+  }, [localData])
 
   const handleChange = useCallback(
     (fiscalYear: number, workTypeCode: string, value: number) => {

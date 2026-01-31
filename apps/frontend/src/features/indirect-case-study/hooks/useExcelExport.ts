@@ -7,8 +7,7 @@ export function useExcelExport() {
   const exportToExcel = useCallback(async (params: ExcelExportParams) => {
     setIsExporting(true)
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const XLSX = (await import('xlsx' as any)) as any
+      const XLSX = await import('xlsx')
       const { tableData, headcountPlanCaseName, scenarioName, indirectWorkCaseName, fiscalYear } =
         params
 

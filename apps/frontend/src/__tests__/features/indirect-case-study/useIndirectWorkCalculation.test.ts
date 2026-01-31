@@ -4,7 +4,6 @@ import {
   getTotalRatioForFiscalYear,
 } from '@/features/indirect-case-study/hooks/useIndirectWorkCalculation'
 import type {
-  MonthlyCapacity,
   IndirectWorkTypeRatio,
 } from '@/features/indirect-case-study/types'
 

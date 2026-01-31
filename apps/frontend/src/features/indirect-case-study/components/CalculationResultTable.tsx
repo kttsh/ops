@@ -62,7 +62,7 @@ export function CalculationResultTable({
   indirectWorkCaseName,
 }: CalculationResultTableProps) {
   const [isBreakdownExpanded, setIsBreakdownExpanded] = useState(true)
-  const fyOptions = useMemo(generateFiscalYearOptions, [])
+  const fyOptions = useMemo(() => generateFiscalYearOptions(), [])
 
   const yearMonths = useMemo(
     () => MONTHS.map((m) => getYearMonth(fiscalYear, m)),

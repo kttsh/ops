@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useCapacityCalculation } from './useCapacityCalculation'
@@ -94,8 +94,10 @@ export function useIndirectCaseStudyPage({ businessUnitCode }: UseIndirectCaseSt
   const bulkRatioMutation = useBulkUpdateIndirectWorkTypeRatios()
   const bulkIndirectWorkLoadsMutation = useBulkSaveMonthlyIndirectWorkLoads()
 
-  // BU変更時にリセット
-  useEffect(() => {
+  // BU変更時にリセット（レンダー中に派生stateとして更新）
+  const [prevBusinessUnitCode, setPrevBusinessUnitCode] = useState(businessUnitCode)
+  if (businessUnitCode !== prevBusinessUnitCode) {
+    setPrevBusinessUnitCode(businessUnitCode)
     setSelectedHeadcountPlanCaseId(null)
     setSelectedCapacityScenarioId(null)
     setSelectedIndirectWorkCaseId(null)
@@ -108,7 +110,7 @@ export function useIndirectCaseStudyPage({ businessUnitCode }: UseIndirectCaseSt
     setRatioLocalData(null)
     capacityCalc.reset()
     indirectCalc.reset()
-  }, [businessUnitCode])
+  }
 
   // キャパシティ計算
   const calculateCapacity = useCallback(async () => {

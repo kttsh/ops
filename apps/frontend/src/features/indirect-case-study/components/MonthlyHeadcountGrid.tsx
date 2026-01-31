@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -59,31 +59,36 @@ export function MonthlyHeadcountGrid({
 }: MonthlyHeadcountGridProps) {
   const [localData, setLocalData] = useState<Record<string, number>>({})
   const [bulkDialogOpen, setBulkDialogOpen] = useState(false)
+  const [prevDataId, setPrevDataId] = useState<unknown>(null)
 
   const { data, isLoading } = useQuery(
     monthlyHeadcountPlansQueryOptions(headcountPlanCaseId, businessUnitCode),
   )
 
-  // APIデータからローカルデータを初期化
-  useEffect(() => {
-    if (!data?.data) return
+  // APIデータからローカルデータを初期化（レンダー中に派生stateとして更新）
+  if (data?.data && data !== prevDataId) {
     const map: Record<string, number> = {}
     data.data.forEach((item: MonthlyHeadcountPlan) => {
       map[item.yearMonth] = item.headcount
     })
     setLocalData(map)
+    setPrevDataId(data)
     onDirtyChange(false)
-  }, [data, onDirtyChange])
+  }
 
   // ローカルデータの変更を親に通知
+  const onLocalDataChangeRef = useRef(onLocalDataChange)
+  useEffect(() => {
+    onLocalDataChangeRef.current = onLocalDataChange
+  })
   useEffect(() => {
     const items = Object.entries(localData).map(([yearMonth, headcount]) => ({
       businessUnitCode,
       yearMonth,
       headcount,
     }))
-    onLocalDataChange({ items })
-  }, [localData, businessUnitCode, onLocalDataChange])
+    onLocalDataChangeRef.current({ items })
+  }, [localData, businessUnitCode])
 
   const handleChange = useCallback(
     (yearMonth: string, value: number) => {
@@ -110,7 +115,7 @@ export function MonthlyHeadcountGrid({
     [onDirtyChange],
   )
 
-  const fyOptions = useMemo(generateFiscalYearOptions, [])
+  const fyOptions = useMemo(() => generateFiscalYearOptions(), [])
 
   if (isLoading) {
     return (

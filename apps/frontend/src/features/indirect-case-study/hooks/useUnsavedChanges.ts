@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useBlocker } from '@tanstack/react-router'
 
 type UseUnsavedChangesParams = {
@@ -7,55 +7,54 @@ type UseUnsavedChangesParams = {
 }
 
 export function useUnsavedChanges({ isDirty, onSave }: UseUnsavedChangesParams) {
-  const [showDialog, setShowDialog] = useState(false)
+  // guardAction用のダイアログ制御（ルートナビゲーション以外の保護対象アクション）
+  const [actionDialogOpen, setActionDialogOpen] = useState(false)
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null)
 
-  const { proceed, reset, status } = useBlocker({
-    condition: isDirty,
+  const blocker = useBlocker({
+    shouldBlockFn: () => isDirty,
+    enableBeforeUnload: () => isDirty,
+    withResolver: true,
   })
 
-  useEffect(() => {
-    if (status === 'blocked') {
-      setShowDialog(true)
-    }
-  }, [status])
-
-  // ブラウザタブ閉じ対応
-  useEffect(() => {
-    const handler = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
-        e.preventDefault()
-      }
-    }
-    window.addEventListener('beforeunload', handler)
-    return () => window.removeEventListener('beforeunload', handler)
-  }, [isDirty])
+  // ルートナビゲーションブロック時はblocker.statusで判定
+  const showDialog = blocker.status === 'blocked' || actionDialogOpen
 
   const handleCancelLeave = useCallback(() => {
-    setShowDialog(false)
+    setActionDialogOpen(false)
     setPendingAction(null)
-    reset?.()
-  }, [reset])
+    if (blocker.status === 'blocked') {
+      blocker.reset()
+    }
+  }, [blocker])
 
   const handleConfirmLeave = useCallback(() => {
-    setShowDialog(false)
-    setPendingAction(null)
-    proceed?.()
-  }, [proceed])
+    setActionDialogOpen(false)
+    if (pendingAction) {
+      pendingAction()
+      setPendingAction(null)
+    } else if (blocker.status === 'blocked') {
+      blocker.proceed()
+    }
+  }, [blocker, pendingAction])
 
   const handleSaveAndLeave = useCallback(async () => {
     if (onSave) {
       await onSave()
     }
-    setShowDialog(false)
-    setPendingAction(null)
-    proceed?.()
-  }, [onSave, proceed])
+    setActionDialogOpen(false)
+    if (pendingAction) {
+      pendingAction()
+      setPendingAction(null)
+    } else if (blocker.status === 'blocked') {
+      blocker.proceed()
+    }
+  }, [onSave, blocker, pendingAction])
 
   const guardAction = useCallback(
     (action: () => void) => {
       if (isDirty) {
-        setShowDialog(true)
+        setActionDialogOpen(true)
         setPendingAction(() => action)
         return false
       }
@@ -66,7 +65,7 @@ export function useUnsavedChanges({ isDirty, onSave }: UseUnsavedChangesParams) 
   )
 
   const handleConfirmAction = useCallback(() => {
-    setShowDialog(false)
+    setActionDialogOpen(false)
     if (pendingAction) {
       pendingAction()
       setPendingAction(null)
@@ -77,7 +76,7 @@ export function useUnsavedChanges({ isDirty, onSave }: UseUnsavedChangesParams) 
     if (onSave) {
       await onSave()
     }
-    setShowDialog(false)
+    setActionDialogOpen(false)
     if (pendingAction) {
       pendingAction()
       setPendingAction(null)
@@ -86,7 +85,7 @@ export function useUnsavedChanges({ isDirty, onSave }: UseUnsavedChangesParams) 
 
   return {
     showDialog,
-    setShowDialog,
+    setShowDialog: setActionDialogOpen,
     handleCancelLeave,
     handleConfirmLeave,
     handleSaveAndLeave,
