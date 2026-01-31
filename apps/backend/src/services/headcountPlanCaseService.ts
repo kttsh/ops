@@ -13,6 +13,7 @@ export const headcountPlanCaseService = {
     page: number
     pageSize: number
     includeDisabled: boolean
+    businessUnitCode?: string
   }): Promise<{ items: HeadcountPlanCase[]; totalCount: number }> {
     const result = await headcountPlanCaseData.findAll(params)
     return {

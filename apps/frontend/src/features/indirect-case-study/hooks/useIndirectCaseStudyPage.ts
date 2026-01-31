@@ -52,6 +52,11 @@ export function useIndirectCaseStudyPage({ businessUnitCode }: UseIndirectCaseSt
   const [ratioDirty, setRatioDirty] = useState(false)
   const [indirectWorkResultDirty, setIndirectWorkResultDirty] = useState(false)
 
+  // includeDisabled（削除済みを含む）トグル
+  const [hpcIncludeDisabled, setHpcIncludeDisabled] = useState(false)
+  const [csIncludeDisabled, setCsIncludeDisabled] = useState(false)
+  const [iwcIncludeDisabled, setIwcIncludeDisabled] = useState(false)
+
   // 保存用ローカルデータ
   const [headcountLocalData, setHeadcountLocalData] = useState<BulkMonthlyHeadcountInput | null>(
     null,
@@ -66,18 +71,18 @@ export function useIndirectCaseStudyPage({ businessUnitCode }: UseIndirectCaseSt
   const headcountCasesQuery = useQuery(
     headcountPlanCasesQueryOptions({
       businessUnitCode,
-      includeDisabled: false,
+      includeDisabled: hpcIncludeDisabled,
     }),
   )
 
   const capacityScenariosQuery = useQuery(
-    capacityScenariosQueryOptions({ includeDisabled: false }),
+    capacityScenariosQueryOptions({ includeDisabled: csIncludeDisabled }),
   )
 
   const indirectWorkCasesQuery = useQuery(
     indirectWorkCasesQueryOptions({
       businessUnitCode,
-      includeDisabled: false,
+      includeDisabled: iwcIncludeDisabled,
     }),
   )
 
@@ -252,5 +257,13 @@ export function useIndirectCaseStudyPage({ businessUnitCode }: UseIndirectCaseSt
     // ローカルデータ更新
     setHeadcountLocalData,
     setRatioLocalData,
+
+    // includeDisabled
+    hpcIncludeDisabled,
+    setHpcIncludeDisabled,
+    csIncludeDisabled,
+    setCsIncludeDisabled,
+    iwcIncludeDisabled,
+    setIwcIncludeDisabled,
   }
 }

@@ -133,7 +133,7 @@ export function IndirectWorkCaseList({
                 type="radio"
                 name="indirect-work-case"
                 checked={isSelected}
-                onChange={() => onSelect(item.indirectWorkCaseId)}
+                readOnly
                 disabled={isDeleted}
                 className="shrink-0"
               />

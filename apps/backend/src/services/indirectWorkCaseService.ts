@@ -13,6 +13,7 @@ export const indirectWorkCaseService = {
     page: number
     pageSize: number
     includeDisabled: boolean
+    businessUnitCode?: string
   }): Promise<{ items: IndirectWorkCase[]; totalCount: number }> {
     const result = await indirectWorkCaseData.findAll(params)
     return {

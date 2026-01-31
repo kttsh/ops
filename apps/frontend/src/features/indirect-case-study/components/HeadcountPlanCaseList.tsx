@@ -130,7 +130,7 @@ export function HeadcountPlanCaseList({
                 type="radio"
                 name="headcount-plan-case"
                 checked={isSelected}
-                onChange={() => onSelect(item.headcountPlanCaseId)}
+                readOnly
                 disabled={isDeleted}
                 className="shrink-0"
               />

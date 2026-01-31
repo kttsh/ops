@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { Loader2, Calculator } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -58,6 +58,14 @@ interface SettingsPanelProps {
   // ローカルデータ
   onHeadcountLocalDataChange: (data: BulkMonthlyHeadcountInput) => void
   onRatioLocalDataChange: (data: BulkIndirectWorkRatioInput) => void
+
+  // includeDisabled
+  hpcIncludeDisabled: boolean
+  onHpcIncludeDisabledChange: (value: boolean) => void
+  csIncludeDisabled: boolean
+  onCsIncludeDisabledChange: (value: boolean) => void
+  iwcIncludeDisabled: boolean
+  onIwcIncludeDisabledChange: (value: boolean) => void
 }
 
 export function SettingsPanel({
@@ -89,10 +97,13 @@ export function SettingsPanel({
   ratioDirty,
   onHeadcountLocalDataChange,
   onRatioLocalDataChange,
+  hpcIncludeDisabled,
+  onHpcIncludeDisabledChange,
+  csIncludeDisabled,
+  onCsIncludeDisabledChange,
+  iwcIncludeDisabled,
+  onIwcIncludeDisabledChange,
 }: SettingsPanelProps) {
-  const [hpcIncludeDisabled, setHpcIncludeDisabled] = useState(false)
-  const [csIncludeDisabled, setCsIncludeDisabled] = useState(false)
-  const [iwcIncludeDisabled, setIwcIncludeDisabled] = useState(false)
 
   const handleHeadcountDirtyChange = useCallback(
     (dirty: boolean) => onHeadcountDirtyChange(dirty),
@@ -117,7 +128,7 @@ export function SettingsPanel({
           businessUnitCode={businessUnitCode}
           isLoading={isLoadingCases}
           includeDisabled={hpcIncludeDisabled}
-          onIncludeDisabledChange={setHpcIncludeDisabled}
+          onIncludeDisabledChange={onHpcIncludeDisabledChange}
         />
 
         {selectedHeadcountPlanCaseId && (
@@ -137,7 +148,7 @@ export function SettingsPanel({
           onSelect={onSelectCapacityScenario}
           isLoading={isLoadingCases}
           includeDisabled={csIncludeDisabled}
-          onIncludeDisabledChange={setCsIncludeDisabled}
+          onIncludeDisabledChange={onCsIncludeDisabledChange}
         />
 
         <div className="flex gap-2">
@@ -180,7 +191,7 @@ export function SettingsPanel({
           businessUnitCode={businessUnitCode}
           isLoading={isLoadingCases}
           includeDisabled={iwcIncludeDisabled}
-          onIncludeDisabledChange={setIwcIncludeDisabled}
+          onIncludeDisabledChange={onIwcIncludeDisabledChange}
         />
 
         {selectedIndirectWorkCaseId && (

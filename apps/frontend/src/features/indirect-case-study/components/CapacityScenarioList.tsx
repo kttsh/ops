@@ -136,7 +136,7 @@ export function CapacityScenarioList({
                 type="radio"
                 name="capacity-scenario"
                 checked={isSelected}
-                onChange={() => onSelect(item.capacityScenarioId)}
+                readOnly
                 disabled={isDeleted}
                 className="shrink-0"
               />

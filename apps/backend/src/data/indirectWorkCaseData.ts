@@ -18,15 +18,27 @@ export const indirectWorkCaseData = {
     page: number
     pageSize: number
     includeDisabled: boolean
+    businessUnitCode?: string
   }): Promise<{ items: IndirectWorkCaseRow[]; totalCount: number }> {
     const pool = await getPool()
     const offset = (params.page - 1) * params.pageSize
-    const whereClause = params.includeDisabled ? '' : 'WHERE iwc.deleted_at IS NULL'
+    const conditions: string[] = []
+    if (!params.includeDisabled) {
+      conditions.push('iwc.deleted_at IS NULL')
+    }
+    if (params.businessUnitCode) {
+      conditions.push('iwc.business_unit_code = @businessUnitCode')
+    }
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
-    const itemsResult = await pool
+    const itemsRequest = pool
       .request()
       .input('offset', sql.Int, offset)
       .input('pageSize', sql.Int, params.pageSize)
+    if (params.businessUnitCode) {
+      itemsRequest.input('businessUnitCode', sql.VarChar, params.businessUnitCode)
+    }
+    const itemsResult = await itemsRequest
       .query<IndirectWorkCaseRow>(
         `SELECT ${BASE_SELECT}
          ${FROM_WITH_JOIN}
@@ -35,8 +47,11 @@ export const indirectWorkCaseData = {
          OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY`,
       )
 
-    const countResult = await pool
-      .request()
+    const countRequest = pool.request()
+    if (params.businessUnitCode) {
+      countRequest.input('businessUnitCode', sql.VarChar, params.businessUnitCode)
+    }
+    const countResult = await countRequest
       .query<{ totalCount: number }>(
         `SELECT COUNT(*) AS totalCount
          FROM indirect_work_cases iwc

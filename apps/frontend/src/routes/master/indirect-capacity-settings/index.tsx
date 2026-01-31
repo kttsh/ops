@@ -146,6 +146,12 @@ function IndirectCapacitySettingsPage() {
             ratioDirty={page.ratioDirty}
             onHeadcountLocalDataChange={page.setHeadcountLocalData}
             onRatioLocalDataChange={page.setRatioLocalData}
+            hpcIncludeDisabled={page.hpcIncludeDisabled}
+            onHpcIncludeDisabledChange={page.setHpcIncludeDisabled}
+            csIncludeDisabled={page.csIncludeDisabled}
+            onCsIncludeDisabledChange={page.setCsIncludeDisabled}
+            iwcIncludeDisabled={page.iwcIncludeDisabled}
+            onIwcIncludeDisabledChange={page.setIwcIncludeDisabled}
           />
         </div>
         <div className="overflow-y-auto">

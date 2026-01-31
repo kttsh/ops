@@ -30,6 +30,7 @@ export const updateHeadcountPlanCaseSchema = z.object({
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
 export const headcountPlanCaseListQuerySchema = paginationQuerySchema.extend({
   'filter[includeDisabled]': z.coerce.boolean().default(false),
+  'filter[businessUnitCode]': z.string().max(20).optional(),
 })
 
 // --- TypeScript 型 ---

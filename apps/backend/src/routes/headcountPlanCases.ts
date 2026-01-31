@@ -18,6 +18,7 @@ const app = new Hono()
         page: query['page[number]'],
         pageSize: query['page[size]'],
         includeDisabled: query['filter[includeDisabled]'],
+        businessUnitCode: query['filter[businessUnitCode]'],
       })
 
       return c.json({
