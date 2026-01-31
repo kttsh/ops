@@ -213,6 +213,73 @@ const table = useReactTable({
 })
 ```
 
+### ページサイズ選択肢の定数化
+
+ページサイズの選択肢はマジックナンバーを避け、定数として定義すること。
+
+```tsx
+const PAGE_SIZES = [10, 20, 50, 100] as const
+```
+
+### ページネーション UI の条件付き表示（必須）
+
+データ件数が少ない場合、不要な UI コントロールを非表示にして視覚的なノイズを減らすこと。
+
+#### ページサイズ切替セレクト
+
+`totalItems` が `PAGE_SIZES` の最小値以下の場合、ページサイズ切替セレクトを **非表示** にする。全件が既に表示されているため、切替操作は不要。件数表示（「全 N 件」）は引き続き表示する。
+
+```tsx
+const PAGE_SIZES = [10, 20, 50, 100] as const
+
+{pagination.totalItems > PAGE_SIZES[0] ? (
+  <>
+    <span>表示件数</span>
+    <select
+      value={pagination.pageSize}
+      onChange={(e) => onPageSizeChange(Number(e.target.value))}
+    >
+      {PAGE_SIZES.map((size) => (
+        <option key={size} value={size}>{size}</option>
+      ))}
+    </select>
+    <span>/ 全 {pagination.totalItems} 件</span>
+  </>
+) : (
+  <span>全 {pagination.totalItems} 件</span>
+)}
+```
+
+#### ページネーションコントロール
+
+`totalPages` が 1 以下の場合、ページネーションコントロール（前/次ボタン、ページ番号表示）を **非表示** にする。1 ページに全件が収まっている場合、ページ遷移操作は不要。
+
+```tsx
+{pagination.totalPages > 1 && (
+  <div className="flex items-center gap-2">
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => onPageChange(pagination.currentPage - 1)}
+      disabled={pagination.currentPage <= 1}
+    >
+      <ChevronLeft className="h-4 w-4" />
+    </Button>
+    <span className="text-sm text-muted-foreground">
+      {pagination.currentPage} / {pagination.totalPages}
+    </span>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => onPageChange(pagination.currentPage + 1)}
+      disabled={pagination.currentPage >= pagination.totalPages}
+    >
+      <ChevronRight className="h-4 w-4" />
+    </Button>
+  </div>
+)}
+```
+
 ---
 
 ## サーバーサイドページネーション
@@ -530,3 +597,6 @@ export function DataTable<TData, TValue>({
 - ページネーション UI で `getCanPreviousPage()` / `getCanNextPage()` によるボタンの無効化チェックを省略しない
 - 行選択カラムに `enableSorting: false` と `enableHiding: false` を設定しないまま使用しない
 - `getSelectedRowModel()` を `manualPagination` と併用する際、現在ページのデータのみが返却される制約を考慮する
+- **全件が1ページに収まるデータでページネーションコントロールを表示しない**（`totalPages <= 1` で非表示にすること）
+- **全件が最小ページサイズ以下のデータでページサイズ切替セレクトを表示しない**（`totalItems <= PAGE_SIZES[0]` で非表示にすること）
+- ページサイズの選択肢にマジックナンバーを使わない（定数 `PAGE_SIZES` として定義すること）
