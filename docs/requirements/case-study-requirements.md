@@ -1,8 +1,8 @@
 # ケーススタディ機能 要件定義書
 
-> **Version**: 1.0.0
+> **Version**: 2.0.0
 > **Last Updated**: 2026-02-01
-> **Status**: 現行実装からの要件抽出
+> **Status**: 実装準拠（バックエンドAPI実装済み、フロントエンドUI未実装）
 > **対象機能**: ケーススタディ（案件工数見積シミュレーション）
 
 ---
@@ -53,10 +53,21 @@
 
 | 関連機能 | 関係性 | 説明 |
 |----------|--------|------|
-| プロジェクト管理 | 参照（上流） | 案件情報（コード、リビジョン、総工数、開始年月、期間）をケーススタディの基盤データとして使用 |
-| 標準工数マスタ | 参照（上流） | 自動計算モード時に標準工数パターン（進捗率×重み付け）を参照 |
-| ビジネスユニットマスタ | 参照（上流） | 案件フィルタリング用のBU情報を参照 |
-| 操業山積ダッシュボード | 供給（下流） | ケースの月別工数データをチャート表示に供給 |
+| プロジェクト管理（projects テーブル） | 参照（上流） | 案件ID（projectId）を外部キーとして使用。ケースは案件に従属する |
+| 標準工数マスタ（standard_effort_masters） | 参照（上流） | STANDARD計算モード時に標準工数パターン（progressRate × weight）を参照 |
+| ビジネスユニットマスタ（business_units） | 参照（上流） | 案件フィルタリング用のBU情報を参照 |
+| 月別工数（project_load） | 子リソース | ケースに紐づく月別工数データ。独立したCRUDリソースとして管理 |
+| チャートビュー案件アイテム（chart_view_project_items） | 参照（下流） | ケースの月別工数データをチャート表示に供給。projectCaseId で紐付け |
+
+### 1.4 実装状況
+
+| レイヤー | 状態 | 備考 |
+|----------|:----:|------|
+| バックエンドAPI（ProjectCase） | ✅ 実装済み | CRUD + restore |
+| バックエンドAPI（ProjectLoad） | ✅ 実装済み | CRUD + bulk upsert |
+| バックエンドAPI（StandardEffortMaster） | ✅ 実装済み | CRUD + restore |
+| フロントエンド画面 | ❌ 未実装 | ルーティング・UI コンポーネント未作成 |
+| フロントエンド feature モジュール | ❌ 未実装 | `features/case-study/` 未作成 |
 
 ---
 
@@ -87,9 +98,9 @@
    └── BUフィルタリング → 案件検索 → 対象案件の選択
 
 2. ケース作成
-   ├── 自動計算モード
-   │   └── 標準工数タイプ選択 → 重み付けプレビュー確認 → ケース作成
-   └── 手動入力モード
+   ├── STANDARD計算モード
+   │   └── 標準工数マスタ選択 → 重み付けプレビュー確認 → ケース作成
+   └── MANUAL計算モード
        └── ケース作成 → 月別工数管理画面で個別入力
 
 3. 工数の確認・編集
@@ -118,25 +129,26 @@
 
 ### 3.2 利用シナリオ
 
-#### シナリオ1: 新規案件の工数見積作成（自動計算）
+#### シナリオ1: 新規案件の工数見積作成（STANDARD計算モード）
 
 **前提条件**: 案件がプロジェクト管理機能で登録済み
 **アクター**: 計画担当者
 
 1. ケーススタディ画面にアクセスする
 2. BUフィルタで対象部門を選択する
-3. 案件コンボボックスから対象案件を選択する
+3. 案件セレクタから対象案件を選択する
 4. 「新規作成」ボタンをクリックする
 5. ケース名（例:「初期集中型ケース」）を入力する
-6. 計算モードで「自動計算」を選択する
-7. 標準工数タイプ一覧から適切なタイプを選択する
+6. 計算モードで「STANDARD」を選択する
+7. 標準工数マスタ一覧から適切なものを選択する
 8. 進捗率×重み付けのプレビューを確認する
-9. 「作成」ボタンをクリックする
-10. 月別工数テーブルとチャートで生成された工数分布を確認する
+9. 開始年月・期間月数・総工数を入力する
+10. 「作成」ボタンをクリックする
+11. 月別工数テーブルとチャートで生成された工数分布を確認する
 
 #### シナリオ2: 既存ケースの手動調整
 
-**前提条件**: 自動計算で作成されたケースが存在
+**前提条件**: 作成済みのケースが存在
 **アクター**: プロジェクトマネージャー
 
 1. ケーススタディ画面で対象案件を選択する
@@ -153,7 +165,7 @@
 
 1. ケース一覧から各ケースカードを順次クリックする
 2. 各ケースの月別工数チャートを確認する
-3. 重み付けチャート（自動計算ケースの場合）を比較する
+3. 重み付けチャート（STANDARDモードケースの場合）を比較する
 4. 最適なケースを特定する
 
 #### シナリオ4: 手動入力によるケース作成
@@ -163,7 +175,7 @@
 
 1. 「新規作成」ボタンをクリックする
 2. ケース名を入力する
-3. 計算モードで「手動入力」を選択する
+3. 計算モードで「MANUAL」を選択する
 4. 説明欄にケースの想定条件を記載する
 5. 「作成」ボタンをクリックする
 6. 工数カードの「編集」ボタンから月別工数を個別に入力する
@@ -179,18 +191,19 @@
 |----|--------|:------:|------|
 | F-CS-001 | 案件選択 | 高 | ケーススタディ対象の案件を選択 |
 | F-CS-002 | BUフィルタリング | 高 | ビジネスユニットによる案件の絞り込み |
-| F-CS-003 | ケース一覧表示 | 高 | 案件に紐づくケースの横スクロール一覧表示 |
-| F-CS-004 | ケース新規作成 | 高 | 自動/手動モードでのケース作成 |
+| F-CS-003 | ケース一覧表示 | 高 | 案件に紐づくケースの一覧表示 |
+| F-CS-004 | ケース新規作成 | 高 | STANDARD/MANUALモードでのケース作成 |
 | F-CS-005 | ケース編集 | 高 | 既存ケースのメタ情報修正 |
 | F-CS-006 | ケース削除 | 中 | ケースの論理削除（確認ダイアログ付き） |
-| F-CS-007 | 月別工数テーブル表示 | 高 | ケースの月別工数をテーブルで表示 |
-| F-CS-008 | 月別工数インライン編集 | 高 | テーブル上での月別工数の直接編集 |
-| F-CS-009 | 月別工数チャート表示 | 高 | 月別工数のエリアチャートによる可視化 |
-| F-CS-010 | 年ナビゲーション | 高 | テーブル・チャートの表示対象年の切替 |
-| F-CS-011 | 未保存変更の保護 | 中 | 年切替時の未保存データの保護 |
-| F-CS-012 | 標準工数タイプ選択 | 高 | 自動計算用の標準工数パターン選択 |
-| F-CS-013 | 標準工数プレビュー | 高 | 選択した標準工数の重み付け分布表示 |
-| F-CS-014 | 重み付けチャート表示 | 中 | 選択ケースの標準工数重み付けの棒グラフ表示 |
+| F-CS-007 | ケース復元 | 低 | 論理削除済みケースの復元 |
+| F-CS-008 | 月別工数テーブル表示 | 高 | ケースの月別工数をテーブルで表示 |
+| F-CS-009 | 月別工数インライン編集 | 高 | テーブル上での月別工数の直接編集 |
+| F-CS-010 | 月別工数チャート表示 | 高 | 月別工数のエリアチャートによる可視化 |
+| F-CS-011 | 年ナビゲーション | 高 | テーブル・チャートの表示対象年の切替 |
+| F-CS-012 | 未保存変更の保護 | 中 | 年切替時の未保存データの保護 |
+| F-CS-013 | 標準工数マスタ選択 | 高 | STANDARD計算モード用の標準工数パターン選択 |
+| F-CS-014 | 標準工数プレビュー | 高 | 選択した標準工数の重み付け分布表示 |
+| F-CS-015 | 重み付けチャート表示 | 中 | 選択ケースの標準工数重み付けの棒グラフ表示 |
 
 ---
 
@@ -208,16 +221,14 @@
 **案件コンボボックス**
 - ポップオーバー型のコンボボックスUI
 - 検索入力欄による案件名のインクリメンタルサーチ
-- 選択中の案件は案件名+略称（括弧書き）で表示
-  - 例:「○○プロジェクト（PJ略称）」
-  - 略称が未設定の場合は案件名のみ表示
+- 選択中の案件は案件名で表示
 
 #### インタラクション
 
 | 操作 | 動作 |
 |------|------|
 | コンボボックスのボタンクリック | ポップオーバーを展開、案件一覧を表示 |
-| 検索欄への入力 | 案件名・略称で部分一致フィルタリング |
+| 検索欄への入力 | 案件名で部分一致フィルタリング |
 | 案件アイテムの選択 | 案件を選択し、ポップオーバーを閉じる。ケース一覧を更新 |
 | BUフィルタ変更 | フィルタ結果の先頭案件を自動選択 |
 
@@ -225,7 +236,7 @@
 - 画面初回表示時、フィルタ結果の先頭案件を自動選択する
 - BUフィルタ変更時、フィルタ結果の先頭案件を自動選択する
 - 案件が未選択の場合、ケース一覧以降の要素は表示しない
-- 案件データはプロジェクト管理機能から取得する
+- 案件データは `/projects` API から取得する
 
 ---
 
@@ -249,7 +260,7 @@
 | 特定BU選択 | 当該BUに属する案件のみ表示。先頭案件を自動選択 |
 
 #### ビジネスルール
-- BUマスタはAPI（`/api/masters/biz-unit`）から取得
+- BUマスタは `/business-units` API から取得
 - BU未選択は許容しない（「すべてのBU」がデフォルト）
 
 ---
@@ -257,7 +268,7 @@
 ### 4.4 F-CS-003: ケース一覧表示
 
 #### 概要
-選択した案件に紐づくケースを横スクロール形式で一覧表示する。
+選択した案件に紐づくケースを一覧表示する。
 
 #### 画面要素
 
@@ -266,13 +277,14 @@
 - 右上に「新規作成」ボタン（+アイコン付き）
 - 横スクロール可能なカードリスト
 
-**各ケースカード（240px固定幅）**
+**各ケースカード**
 
 | 表示項目 | 説明 |
 |----------|------|
-| ケース番号 | 「No.{caseNo}」形式（薄字、小サイズ） |
-| 計算モードバッジ | 「自動」（プライマリカラー）/「手動」（セカンダリカラー） |
 | ケース名 | 太字、テキスト省略（truncate） |
+| 計算モードバッジ | 「STANDARD」（プライマリカラー）/「MANUAL」（セカンダリカラー） |
+| プライマリバッジ | isPrimary=true の場合に表示 |
+| 説明 | 省略表示 |
 | 編集ボタン | ペンアイコン（ゴースト） |
 | 削除ボタン | ゴミ箱アイコン（ゴースト、赤色） |
 
@@ -290,10 +302,10 @@
 - 非選択カード: 通常の枠線
 
 #### ビジネスルール
-- ケースは最新リビジョンのものを取得する
-- 論理削除済みのケースは表示しない（デフォルト）
+- 論理削除済みのケースはデフォルトで非表示（`filter[includeDisabled]=false`）
 - ケースが0件の場合、「ケースが見つかりませんでした」メッセージを表示
 - データ読み込み中は「読み込み中...」を表示
+- ページネーション対応（API はページネーション付き）
 
 ---
 
@@ -315,29 +327,27 @@
 | 項目 | 型 | 必須 | 初期値 | UI部品 | バリデーション |
 |------|-----|:----:|--------|--------|----------------|
 | ケース名 | 文字列 | ○ | 空文字 | テキスト入力 | 空でないこと、100文字以内 |
-| 計算モード | 列挙値 | ○ | 自動 | ラジオボタン | 必須 |
-| 標準工数タイプ | 数値 | △ | 未選択 | セレクトボックス | 自動モード時は必須 |
-| 説明 | 文字列 | - | 空 | テキストエリア | 500文字以内 |
-| リビジョン | 数値 | ○ | （案件のリビジョン） | 非表示 | 数値であること |
+| 計算モード | 列挙値 | ○ | MANUAL | ラジオボタン | STANDARD/MANUAL |
+| 標準工数マスタ | 数値 | △ | 未選択 | セレクトボックス | STANDARDモード時は必須 |
+| 説明 | 文字列 | - | null | テキストエリア | 500文字以内 |
+| プライマリ | 真偽値 | - | false | チェックボックス | - |
+| 開始年月 | 文字列 | - | null | 年月ピッカー | YYYYMM形式の6桁数字 |
+| 期間月数 | 数値 | - | null | 数値入力 | 正の整数 |
+| 総工数 | 数値 | - | null | 数値入力 | 0以上の整数 |
 
 #### 計算モード詳細
 
-**自動計算モード（auto）**
+**STANDARDモード**
 - 標準工数マスタから選択した工数パターンを適用
-- 標準工数タイプ選択が必須
-- 標準工数の進捗率×重み付けに基づき、案件の総工数を月別に自動分配
+- `standardEffortId` の指定が必須
+- 標準工数の進捗率×重み付けに基づき、案件の総工数を月別に自動分配（※自動分配ロジックは未実装）
 - 標準工数を選択すると、重み付け分布のプレビューを表示
 
-**手動入力モード（manual）**
-- 標準工数タイプの選択は不要（入力不可）
+**MANUALモード**
+- 標準工数マスタの選択は不要（入力不可）
 - 作成時は月別工数データなし
-- 情報パネル:「マニュアルモードでは、月別工数を手動で入力します。工数データは別途、月別工数管理画面で入力してください。」
-- 作成後、工数カードの編集機能を使って月別工数を入力する
-
-#### ケース番号の採番
-- ケース番号は自動採番される（ユーザーは指定不可）
-- 同一案件・同一リビジョン内で一意の連番
-- バックエンドで`getNextCaseNo`により次番号を取得
+- 情報パネル:「MANUALモードでは、月別工数を手動で入力します。工数データは別途、月別工数管理画面で入力してください。」
+- 作成後、月別工数の編集機能を使って個別入力する
 
 #### ダイアログ操作
 
@@ -356,7 +366,7 @@
 ### 4.6 F-CS-005: ケース編集
 
 #### 概要
-既存ケースのメタ情報（ケース名、計算モード、標準工数タイプ、説明）を編集する。
+既存ケースのメタ情報（ケース名、計算モード、標準工数マスタ、説明、プライマリフラグ等）を編集する。
 
 #### 画面要素
 
@@ -368,6 +378,7 @@
 #### 入力項目
 - ケース作成ダイアログと同一の入力項目
 - 各項目の初期値は選択中のケースの現在値がプリセットされる
+- 全項目がオプショナル（部分更新対応）
 
 #### ダイアログ操作
 
@@ -382,8 +393,9 @@
 - 送信中: ボタンテキストが「更新中...」に変化、ボタン無効化
 
 #### ビジネスルール
-- 計算モードの変更は可能（auto → manual、manual → auto）
-- 計算モードをmanualからautoに変更する場合、標準工数タイプの選択が必須になる
+- 計算モードの変更は可能（STANDARD → MANUAL、MANUAL → STANDARD）
+- 計算モードをMANUALからSTANDARDに変更する場合、`standardEffortId` の指定が必須になる
+- `standardEffortId` を null に設定可能（MANUALモード時）
 
 ---
 
@@ -397,8 +409,8 @@
 **削除確認ダイアログ（AlertDialog）**
 - タイトル:「ケースを削除しますか？」
 - 本文:
-  - ケース名（太字）+ケース番号
-  - 「この操作は取り消せません。削除されたケースは論理削除され、復元することはできません。」
+  - ケース名（太字）
+  - 「この操作により、ケースが無効化されます。」
 
 #### ダイアログ操作
 
@@ -413,14 +425,28 @@
 - 削除中: ボタンテキストが「削除中...」に変化、ボタン無効化
 
 #### ビジネスルール
-- 削除は論理削除（isDeletedフラグ）
+- 削除は論理削除（`deleted_at` タイムスタンプを設定）
 - 削除されたケースが現在表示中の場合、選択状態をクリアする
-- 削除時にはリビジョン番号を指定する
-- 削除者はシステムが自動設定（現行は"system"固定）
+- 他リソースから参照されている場合は削除不可（409 Conflict）
+  - `project_load` に紐づくデータが存在する場合
+  - `chart_view_project_items` に紐づくデータが存在する場合
+- API レスポンスは 204 No Content（レスポンスボディなし）
 
 ---
 
-### 4.8 F-CS-007: 月別工数テーブル表示
+### 4.8 F-CS-007: ケース復元
+
+#### 概要
+論理削除されたケースを復元する。
+
+#### ビジネスルール
+- 論理削除済み（`deleted_at IS NOT NULL`）のケースのみ復元可能
+- 既に有効なケース（`deleted_at IS NULL`）に対する復元リクエストは 409 Conflict
+- 復元成功時は復元後のケースオブジェクトを返却
+
+---
+
+### 4.9 F-CS-008: 月別工数テーブル表示
 
 #### 概要
 選択されたケースの月別工数を年単位のテーブル（1月〜12月）で表示する。
@@ -429,14 +455,13 @@
 
 **工数カード**
 - カードタイトル:「工数」
-- サブタイトル:「No.{caseNo} | {caseName}」
+- サブタイトル:「{ケース名}」
 - 右上に「編集」ボタン
 
 **月別テーブル**
 - 列: 1月〜12月（固定12列）
 - 行: 1行（選択されたケースの月別工数データ）
 - 年ナビゲーション: 前年/翌年切替（年表示付き）
-- 年の範囲: 最小年〜最大年（現行は2025〜2027で固定）
 
 #### 数値フォーマット
 - 日本語ロケール表示（カンマ区切り）
@@ -444,11 +469,12 @@
 
 #### ビジネスルール
 - データが存在しない月は0として表示
+- 月別工数データは `/project-cases/:projectCaseId/project-loads` API から取得
 - データ読み込み中は「工数データがありません」メッセージまたはローディング表示
 
 ---
 
-### 4.9 F-CS-008: 月別工数インライン編集
+### 4.10 F-CS-009: 月別工数インライン編集
 
 #### 概要
 テーブル上で月別工数を直接編集する機能。
@@ -469,6 +495,7 @@
 | 高さ | 32px |
 | テキスト配置 | 中央揃え |
 | 最小値 | 0 |
+| 最大値 | 99,999,999 |
 | ステップ | 1 |
 | スピンボタン | 非表示（ブラウザデフォルトのスピンボタンを抑制） |
 
@@ -479,23 +506,23 @@
 | 「編集」ボタンクリック | 編集モードに切替。全月の値が入力フィールドに変化 |
 | 値入力 | 入力フィールドへの数値入力（ローカル状態に保持） |
 | フォーカスアウト（blur） | 入力値のバリデーション。不正値の場合は元の値に復元 |
-| 「保存」ボタンクリック | 変更された月のみAPIに送信。成功でトースト通知 |
+| 「保存」ボタンクリック | 変更内容を bulk upsert API で一括送信。成功でトースト通知 |
 | 「キャンセル」ボタンクリック | 編集内容を破棄し、読み取りモードに復帰 |
 
 #### 変更追跡
 - 元の値と編集後の値をMapで管理（key: YYYYMM、value: 工数値）
-- 元の値と同じ値に戻した場合、変更リストから除外
-- 保存時は変更のあった月のデータのみAPIに送信
+- 保存時は bulk upsert API（`PUT /project-cases/:id/project-loads/bulk`）で一括送信
+- リクエストボディ: `{ items: [{ yearMonth, manhour }, ...] }`
 
 #### フィードバック
-- 保存成功: APIからのメッセージまたは「工数データを保存しました」トースト通知
+- 保存成功:「工数データを保存しました」トースト通知
 - 保存失敗:「工数データの保存に失敗しました」エラートースト通知
 - 変更なし:「変更がありません」情報トースト通知
 - 保存中: 「保存」ボタンのテキストが「保存中...」に変化
 
 ---
 
-### 4.10 F-CS-009: 月別工数チャート表示
+### 4.11 F-CS-010: 月別工数チャート表示
 
 #### 概要
 選択されたケースの月別工数をエリアチャートで可視化する。
@@ -517,10 +544,6 @@
 - 値の表示形式:「{工数値} 工数」
 - ラベルの表示形式:「年月 {YYYY/MM}」
 
-#### カラーパレット
-- キャパシティケース用カラーパレットの第1色を使用
-- フォールバック: CSSカスタムプロパティ `--primary`
-
 #### ビジネスルール
 - 表示対象年に月次工数データが1件もない場合、「月次工数データがありません」メッセージを表示
 - データが存在しない月は0として描画
@@ -529,7 +552,7 @@
 
 ---
 
-### 4.11 F-CS-010: 年ナビゲーション
+### 4.12 F-CS-011: 年ナビゲーション
 
 #### 概要
 月別工数テーブル・チャートの表示対象年を切り替える。
@@ -540,7 +563,7 @@
 |------|------|
 | 操作 | 前年/翌年ボタン |
 | 表示 | 「{XXXX}年」 |
-| 範囲 | 最小年〜最大年（現行: 2025〜2027） |
+| 範囲 | 案件の開始年月〜終了年月に基づく動的範囲（※未実装の場合は固定範囲） |
 | 範囲制約 | 最小年で前年ボタン無効化、最大年で翌年ボタン無効化 |
 
 #### 連動
@@ -549,7 +572,7 @@
 
 ---
 
-### 4.12 F-CS-011: 未保存変更の保護
+### 4.13 F-CS-012: 未保存変更の保護
 
 #### 概要
 編集モードで未保存の変更がある状態で年を切り替えようとした場合、データ損失を防ぐための確認ダイアログを表示する。
@@ -575,30 +598,30 @@
 
 ---
 
-### 4.13 F-CS-012: 標準工数タイプ選択
+### 4.14 F-CS-013: 標準工数マスタ選択
 
 #### 概要
-自動計算モードで使用する標準工数パターンを選択する。
+STANDARDモードで使用する標準工数パターンを選択する。
 
 #### 画面要素
 
-**標準工数タイプセレクトボックス**
-- ラベル:「標準工数タイプ」
-- プレースホルダー:「標準工数タイプを選択」（読み込み中は「読み込み中...」）
-- 選択肢: 標準工数マスタのstdManhourType一覧
+**標準工数マスタセレクトボックス**
+- ラベル:「標準工数マスタ」
+- プレースホルダー:「標準工数マスタを選択」（読み込み中は「読み込み中...」）
+- 選択肢: 標準工数マスタの name 一覧
 
 #### データソース
-- API: `/api/masters/standard-workloads`
-- フィルタ: bizUnitCode、constructionTypeCode（オプション）
+- API: `/standard-effort-masters`
+- フィルタ: `filter[businessUnitCode]`、`filter[projectTypeCode]`（オプション）
 
 #### ビジネスルール
-- 自動モード時のみ表示・操作可能
-- 選択変更時に標準工数詳細（重み付け）を非同期取得
-- 自動モードでは選択必須（未選択時にフォーム送信不可）
+- STANDARDモード時のみ表示・操作可能
+- 選択変更時に標準工数詳細（重み付け: weights 配列）を非同期取得
+- STANDARDモードでは選択必須（未選択時にフォーム送信不可）
 
 ---
 
-### 4.14 F-CS-013: 標準工数プレビュー
+### 4.15 F-CS-014: 標準工数プレビュー
 
 #### 概要
 選択した標準工数の詳細情報と重み付け分布をプレビュー表示する。
@@ -606,32 +629,30 @@
 #### 画面要素
 
 **プレビューカード**
-- タイトル:「{stdManhourType} - 工数配分プレビュー」
-- 計算根拠の表示（存在する場合）
-- 備考の表示（存在する場合）
+- タイトル:「{name} - 工数配分プレビュー」
 
 **重み付けテーブル**
-- 列: 進捗度(%)、重み
+- 列: 進捗率(%)、重み
 - 行: 進捗率ごとのエントリ（0%, 5%, 10%, ..., 100%）
 - 最大高さ: 256px（オーバーフロー時スクロール）
-- 重みは整数表示（四捨五入）
+- 重みは整数表示
 
 #### 表示条件
-- 標準工数タイプが選択されている場合のみ表示
-- 未選択時:「標準工数タイプを選択してください」メッセージ
+- 標準工数マスタが選択されている場合のみ表示
+- 未選択時:「標準工数マスタを選択してください」メッセージ
 - データ読み込み中:「読み込み中...」メッセージ
 
 ---
 
-### 4.15 F-CS-014: 重み付けチャート表示
+### 4.16 F-CS-015: 重み付けチャート表示
 
 #### 概要
-ダッシュボード上で、選択中のケース（自動計算モード）の標準工数重み付け分布を棒グラフで表示する。
+ダッシュボード上で、選択中のケース（STANDARDモード）の標準工数重み付け分布を棒グラフで表示する。
 
 #### 画面要素
 
 **重み付けチャートカード**
-- ヘッダー: ケース番号+ケース名+計算モードバッジ
+- ヘッダー: ケース名+計算モードバッジ
 - ラベル:「進捗率ごとの重み」
 
 **棒グラフ仕様**
@@ -661,10 +682,11 @@
 
 ### 5.1 画面一覧
 
-| ID | 画面名 | パス | 説明 |
+| ID | 画面名 | パス（予定） | 説明 |
 |----|--------|------|------|
-| S-CS-001 | ケーススタディ（独立） | `/case-study` | 案件選択+ケーススタディの統合ダッシュボード |
-| S-CS-002 | ケーススタディ（案件配下） | `/projects/{PJCode}/case-study` | 案件管理画面からの遷移先（案件固定） |
+| S-CS-001 | ケーススタディ（案件配下） | `/master/projects/{projectId}/case-study` | 案件管理画面からの遷移先（案件固定） |
+
+> **注**: フロントエンド画面は未実装。上記パスは既存のルーティング構成（`/master/projects/$projectId/...`）に準拠した提案。
 
 ### 5.2 画面レイアウト
 
@@ -672,11 +694,6 @@
 ┌──────────────────────────────────────────────────────┐
 │ ケーススタディ（ページタイトル、h1）                    │
 ├──────────────────────────────────────────────────────┤
-│                                                      │
-│ ┌──────────────────────────────────────────────────┐ │
-│ │ 案件選択カード                                    │ │
-│ │  [BUフィルタ ▼]  [案件コンボボックス          ▼] │ │
-│ └──────────────────────────────────────────────────┘ │
 │                                                      │
 │ ┌──────────────────────────────────────────────────┐ │
 │ │ ケース一覧カード                    [＋ 新規作成] │ │
@@ -689,7 +706,7 @@
 │                                                      │
 │ ┌──────────────────────────────────────────────────┐ │
 │ │ 工数カード                   [編集] / [保存][×] │ │
-│ │  No.{N} | {ケース名}                              │ │
+│ │  {ケース名}                                      │ │
 │ │ ┌────────────────────────────────────────────────┐│ │
 │ │ │ ◀ {XXXX}年 ▶                                  ││ │
 │ │ │ 1月  | 2月  | 3月  | ... | 12月               ││ │
@@ -706,8 +723,8 @@
 │ └──────────────────────────────────────────────────┘ │
 │                                                      │
 │ ┌──────────────────────────────────────────────────┐ │
-│ │ 重み付けチャートカード（自動モードケース選択時）    │ │
-│ │  No.{N} {ケース名} [自動/手動]                    │ │
+│ │ 重み付けチャートカード（STANDARDモードケース選択時）│ │
+│ │  {ケース名} [STANDARD/MANUAL]                    │ │
 │ │ 進捗率ごとの重み                                  │ │
 │ │ ┌────────────────────────────────────────────────┐│ │
 │ │ │  ██   ██                                      ││ │
@@ -728,129 +745,116 @@
 | ケース削除確認ダイアログ | 「削除」ボタン | AlertDialog |
 | 未保存変更確認ダイアログ | 年切替操作（未保存変更あり時） | AlertDialog |
 
-### 5.4 画面遷移
-
-```
-┌──────────────────┐
-│ ナビゲーション   │
-│ メニュー         │
-└────┬─────────────┘
-     │
-     ├──── /case-study ────────┐
-     │                         │
-     │               ┌────────┴────────┐
-     │               │ ケーススタディ    │
-     │               │ ダッシュボード    │
-     │               └────────┬────────┘
-     │                        │
-     │              ┌─────────┼──────────┐
-     │              │         │          │
-     │         ダイアログ  ダイアログ  ダイアログ
-     │         (作成)     (編集)     (削除)
-     │
-     └──── /projects ── /projects/{PJCode}/case-study
-                        （案件固定でのケーススタディ）
-```
-
 ---
 
 ## 6. データ要件
 
 ### 6.1 エンティティ定義
 
-#### 6.1.1 プロジェクトケース（ProjectCase）
+#### 6.1.1 プロジェクトケース（project_cases テーブル）
 
 案件に対する工数見積シナリオを表すエンティティ。
 
-| 属性 | 型 | 必須 | 説明 |
-|------|-----|:----:|------|
-| projectCode | string | ○ | 案件コード（例:「PRJ001」） |
-| projectRevision | number | ○ | 案件リビジョン番号 |
-| caseNo | number | ○ | ケース番号（案件×リビジョン内で一意） |
-| caseName | string | ○ | ケース名 |
-| calculationMode | "auto" \| "manual" | ○ | 計算モード |
-| stdManhourId | number | - | 標準工数ID（autoモード時のみ有効） |
-| description | string | - | ケースの説明 |
-| createdAt | Date | ○ | 作成日時 |
-| updatedAt | Date | ○ | 更新日時 |
-| createdBy | string | ○ | 作成者ID |
-| updatedBy | string | ○ | 更新者ID |
-| isDeleted | boolean | ○ | 論理削除フラグ |
+| カラム | DB型 | 必須 | 説明 |
+|--------|------|:----:|------|
+| project_case_id | INT | ○ | 主キー（自動採番） |
+| project_id | INT | ○ | 案件ID（projects テーブルへの外部キー） |
+| case_name | NVARCHAR(100) | ○ | ケース名 |
+| is_primary | BIT | ○ | プライマリフラグ（デフォルト: false） |
+| description | NVARCHAR(500) | - | ケースの説明 |
+| calculation_type | VARCHAR | ○ | 計算モード（'STANDARD' / 'MANUAL'） |
+| standard_effort_id | INT | - | 標準工数マスタID（STANDARDモード時のみ有効、standard_effort_masters への外部キー） |
+| start_year_month | CHAR(6) | - | 開始年月（YYYYMM形式） |
+| duration_months | INT | - | 期間月数（正の整数） |
+| total_manhour | INT | - | 総工数（0以上の整数） |
+| created_at | DATETIME | ○ | 作成日時 |
+| updated_at | DATETIME | ○ | 更新日時 |
+| deleted_at | DATETIME | - | 論理削除日時（NULL = 有効） |
 
-**複合主キー**: (projectCode, projectRevision, caseNo)
+**主キー**: project_case_id（自動採番）
 
-#### 6.1.2 プロジェクトケース詳細（ProjectCaseDetail）
+**JOINフィールド（API レスポンスのみ）**:
+- project_name: projects テーブルから取得
+- standard_effort_name: standard_effort_masters テーブルから取得
 
-プロジェクトケースに案件基本情報と月別工数を付加した詳細エンティティ。
+#### 6.1.2 月別工数（project_load テーブル）
 
-| 属性 | 型 | 説明 |
-|------|-----|------|
-| （ProjectCaseの全属性） | - | 基本属性を継承 |
-| projectInfo.startYearMonth | number | 案件開始年月（YYYYMM） |
-| projectInfo.totalMonths | number | 総期間（月数） |
-| projectInfo.totalManhour | number | 総工数 |
-| monthlyWorkloads[] | Array | 月別工数配列 |
-| monthlyWorkloads[].yearMonth | number | 年月（YYYYMM） |
-| monthlyWorkloads[].manhour | number | 当月工数 |
-| stdManhourType | string | 標準工数タイプ名（autoモード時） |
+プロジェクトケースに紐づく月別工数データ。独立したリソースとして管理。
 
-#### 6.1.3 標準工数（StandardWorkload）
+| カラム | DB型 | 必須 | 説明 |
+|--------|------|:----:|------|
+| project_load_id | INT | ○ | 主キー（自動採番） |
+| project_case_id | INT | ○ | プロジェクトケースID（外部キー） |
+| year_month | CHAR(6) | ○ | 年月（YYYYMM形式、月は01〜12） |
+| manhour | INT | ○ | 当月工数（0以上の整数、最大99,999,999） |
+| created_at | DATETIME | ○ | 作成日時 |
+| updated_at | DATETIME | ○ | 更新日時 |
 
-工事種別ごとに定義された工数分配パターンのマスタデータ。
+**一意制約**: (project_case_id, year_month) の組み合わせで一意
 
-| 属性 | 型 | 必須 | 説明 |
-|------|-----|:----:|------|
-| stdManhourId | number | ○ | 標準工数ID（主キー） |
-| bizUnitCode | string | ○ | ビジネスユニットコード |
-| stdManhourType | string | ○ | 標準工数タイプ名 |
-| constructionTypeCode | string | ○ | 工事種別コード |
-| stdManhourCalcBasis | string | - | 計算根拠の説明 |
-| stdManhourNotes | string | - | 備考 |
-| createdAt | Date | ○ | 作成日時 |
-| updatedAt | Date | ○ | 更新日時 |
-| isDeleted | boolean | ○ | 論理削除フラグ |
+#### 6.1.3 標準工数マスタ（standard_effort_masters テーブル）
 
-#### 6.1.4 標準工数重み付け（StandardWorkloadWeight）
+工事種別・BUごとに定義された工数分配パターンのマスタデータ。
 
-標準工数の進捗率ごとの重み付け設定。
+| カラム | DB型 | 必須 | 説明 |
+|--------|------|:----:|------|
+| standard_effort_id | INT | ○ | 主キー（自動採番） |
+| business_unit_code | VARCHAR(20) | ○ | ビジネスユニットコード（`/^[a-zA-Z0-9_-]+$/`） |
+| project_type_code | VARCHAR(20) | ○ | 工事種別コード（`/^[a-zA-Z0-9_-]+$/`） |
+| name | NVARCHAR(100) | ○ | 標準工数マスタ名 |
+| created_at | DATETIME | ○ | 作成日時 |
+| updated_at | DATETIME | ○ | 更新日時 |
+| deleted_at | DATETIME | - | 論理削除日時（NULL = 有効） |
 
-| 属性 | 型 | 必須 | 説明 |
-|------|-----|:----:|------|
-| stdManhourId | number | ○ | 標準工数ID（外部キー） |
-| progressRatio | number | ○ | 進捗率（0, 5, 10, ..., 100） |
-| weight | number | ○ | 重み値 |
+#### 6.1.4 標準工数重み付け（standard_effort_weights テーブル）
+
+標準工数マスタの進捗率ごとの重み付け設定。
+
+| カラム | DB型 | 必須 | 説明 |
+|--------|------|:----:|------|
+| standard_effort_weight_id | INT | ○ | 主キー（自動採番） |
+| standard_effort_id | INT | ○ | 標準工数マスタID（外部キー） |
+| progress_rate | INT | ○ | 進捗率（0〜100の整数） |
+| weight | INT | ○ | 重み値（0以上の整数） |
+| created_at | DATETIME | ○ | 作成日時 |
+| updated_at | DATETIME | ○ | 更新日時 |
 
 ### 6.2 エンティティ関連図
 
 ```
-案件 (Project)
+案件 (projects)
   │
-  ├── 1:N ──── プロジェクトケース (ProjectCase)
+  ├── 1:N ──── プロジェクトケース (project_cases)
   │               │
-  │               └── 1:N ──── 月別工数 (MonthlyWorkload)
+  │               └── 1:N ──── 月別工数 (project_load)
   │
-  └── N:1 ──── ビジネスユニット (BizUnit)
+  └── N:1 ──── ビジネスユニット (business_units)
 
-標準工数 (StandardWorkload)
+標準工数マスタ (standard_effort_masters)
   │
-  ├── 1:N ──── 標準工数重み付け (StandardWorkloadWeight)
+  ├── 1:N ──── 標準工数重み付け (standard_effort_weights)
   │
-  ├── N:1 ──── ビジネスユニット (BizUnit)
+  ├── N:1 ──── ビジネスユニット (business_units)
   │
-  └── N:1 ──── 工事種別 (ConstructionType)
+  └── N:1 ──── 工事種別 (project_types)
 
-プロジェクトケース ──── N:1 ──── 標準工数（autoモード時のみ参照）
+プロジェクトケース ──── N:1 ──── 標準工数マスタ（STANDARDモード時のみ参照）
+
+チャートビュー案件アイテム (chart_view_project_items)
+  │
+  └── N:1 ──── プロジェクトケース（任意参照、NULL許容）
 ```
 
 ### 6.3 データ制約
 
 | 制約 | 説明 |
 |------|------|
-| ケース番号の一意性 | 同一案件コード×リビジョン内でケース番号が一意 |
-| 論理削除 | 物理削除は行わず、isDeletedフラグによる論理削除 |
-| 月別工数の非負制約 | 月別工数値は0以上であること |
-| 年月形式 | YYYYMM形式の整数（例: 202601） |
-| 標準工数の読み取り専用性 | 標準工数マスタはケーススタディ機能からは参照のみ（別途管理） |
+| 月別工数の一意性 | 同一ケース内で year_month が一意 |
+| 論理削除 | project_cases, standard_effort_masters は deleted_at による論理削除。project_load は物理削除 |
+| 月別工数の非負制約 | manhour は 0 以上 99,999,999 以下の整数 |
+| 年月形式 | YYYYMM形式の6桁文字列。月部分は01〜12 |
+| 標準工数マスタの参照整合性 | STANDARDモードの場合、指定された standardEffortId が standard_effort_masters に存在すること |
+| 削除時の参照チェック | project_load または chart_view_project_items からの参照がある場合、ケースの削除は不可（409 Conflict） |
 
 ---
 
@@ -861,30 +865,38 @@
 #### ケース作成・編集フォーム
 
 | 項目 | ルール | エラーメッセージ |
-|------|--------|-----------------|
-| ケース名 | 空でないこと | 「ケース名は必須です」 |
-| ケース名 | 100文字以内 | 「ケース名は100文字以内で入力してください」 |
-| 計算モード | auto/manualのいずれか | - |
-| 標準工数タイプ | autoモード時は必須 | 「自動計算モードの場合、標準工数タイプの選択は必須です」 |
-| 説明 | 500文字以内 | 「説明は500文字以内で入力してください」 |
+|------|--------|-----------------| 
+| ケース名 | 空でないこと（min: 1） | （必須エラー） |
+| ケース名 | 100文字以内 | （最大長エラー） |
+| 計算モード | STANDARD/MANUALのいずれか | - |
+| 標準工数マスタ | STANDARDモード時は必須 | 「STANDARDモードの場合、標準工数マスタの選択は必須です」 |
+| 説明 | 500文字以内 | （最大長エラー） |
+| 開始年月 | YYYYMM形式の6桁数字 | （形式エラー） |
+| 期間月数 | 正の整数 | （数値エラー） |
+| 総工数 | 0以上の整数 | （数値エラー） |
 
 #### 月別工数入力
 
 | 項目 | ルール | 動作 |
 |------|--------|------|
-| 工数値 | 数値であること | 非数値の場合、元の値に復元 |
-| 工数値 | 0以上であること | 負値の場合、元の値に復元 |
+| 工数値 | 整数であること | 非整数の場合、元の値に復元 |
+| 工数値 | 0以上 99,999,999 以下 | 範囲外の場合、元の値に復元 |
 
 ### 7.2 バックエンドバリデーション
 
 | 検証項目 | 説明 | HTTPステータス |
 |----------|------|:--------------:|
-| 案件存在チェック | 指定された案件コード+リビジョンの案件が存在すること | 404 |
+| 案件存在チェック | 指定された projectId の案件が存在すること | 404 |
 | ケース存在チェック | 更新・削除時に対象ケースが存在すること | 404 |
-| 標準工数存在チェック | autoモードで指定されたstdManhourIdが存在すること | 400 |
-| autoモード必須チェック | autoモードの場合stdManhourIdが必須 | 400 |
-| 月次工数非負チェック | 月次工数が0以上であること | 400 |
-| リクエストボディ検証 | Valibotスキーマによる構造検証 | 422 |
+| ケース所属チェック | ケースの project_id がパスの projectId と一致すること | 404 |
+| 標準工数マスタ存在チェック | STANDARDモードで指定された standardEffortId が存在すること | 422 |
+| STANDARDモード必須チェック | STANDARDモードの場合 standardEffortId が必須 | 422 |
+| 削除時の参照チェック | project_load / chart_view_project_items からの参照がないこと | 409 |
+| 復元時の状態チェック | 対象ケースが論理削除済みであること | 409 |
+| 月別工数の年月重複チェック | 同一ケース内で year_month が一意であること（作成・更新時） | 409 |
+| bulk upsert の年月重複チェック | items 配列内で yearMonth が重複していないこと | 422 |
+| リクエストボディ検証 | Zod スキーマによる構造検証 | 422 |
+| パスパラメータ検証 | ID が正の整数であること | 422 |
 
 ---
 
@@ -892,276 +904,424 @@
 
 ### 8.1 API一覧
 
+#### プロジェクトケース
+
 | メソッド | パス | 説明 |
 |----------|------|------|
-| GET | `/api/projects/{projectCode}/cases` | ケース一覧取得 |
-| GET | `/api/projects/{projectCode}/cases/{caseNo}` | ケース詳細取得 |
-| POST | `/api/projects/{projectCode}/cases` | ケース作成 |
-| PUT | `/api/projects/{projectCode}/cases/{caseNo}` | ケース更新 |
-| PUT | `/api/projects/{projectCode}/cases/{caseNo}/monthly-workloads` | 月別工数更新 |
-| DELETE | `/api/projects/{projectCode}/cases/{caseNo}` | ケース削除 |
-| GET | `/api/masters/standard-workloads` | 標準工数一覧取得 |
-| GET | `/api/masters/standard-workloads/{id}` | 標準工数詳細取得 |
+| GET | `/projects/:projectId/project-cases` | ケース一覧取得（ページネーション付き） |
+| GET | `/projects/:projectId/project-cases/:projectCaseId` | ケース詳細取得 |
+| POST | `/projects/:projectId/project-cases` | ケース作成 |
+| PUT | `/projects/:projectId/project-cases/:projectCaseId` | ケース更新 |
+| DELETE | `/projects/:projectId/project-cases/:projectCaseId` | ケース論理削除 |
+| POST | `/projects/:projectId/project-cases/:projectCaseId/actions/restore` | ケース復元 |
+
+#### 月別工数
+
+| メソッド | パス | 説明 |
+|----------|------|------|
+| GET | `/project-cases/:projectCaseId/project-loads` | 月別工数一覧取得 |
+| GET | `/project-cases/:projectCaseId/project-loads/:projectLoadId` | 月別工数詳細取得 |
+| POST | `/project-cases/:projectCaseId/project-loads` | 月別工数作成 |
+| PUT | `/project-cases/:projectCaseId/project-loads/:projectLoadId` | 月別工数更新 |
+| PUT | `/project-cases/:projectCaseId/project-loads/bulk` | 月別工数一括 Upsert |
+| DELETE | `/project-cases/:projectCaseId/project-loads/:projectLoadId` | 月別工数物理削除 |
+
+#### 標準工数マスタ
+
+| メソッド | パス | 説明 |
+|----------|------|------|
+| GET | `/standard-effort-masters` | 標準工数マスタ一覧取得（ページネーション付き） |
+| GET | `/standard-effort-masters/:id` | 標準工数マスタ詳細取得（weights 含む） |
+| POST | `/standard-effort-masters` | 標準工数マスタ作成 |
+| PUT | `/standard-effort-masters/:id` | 標準工数マスタ更新 |
+| DELETE | `/standard-effort-masters/:id` | 標準工数マスタ論理削除 |
+| POST | `/standard-effort-masters/:id/actions/restore` | 標準工数マスタ復元 |
 
 ### 8.2 API詳細仕様
 
-#### GET `/api/projects/{projectCode}/cases`
+#### GET `/projects/:projectId/project-cases`
 
-**説明**: 案件に紐づくケース一覧を取得
+**説明**: 案件に紐づくケース一覧を取得（ページネーション付き）
 
 **パスパラメータ**:
 
 | パラメータ | 型 | 必須 | 説明 |
 |------------|-----|:----:|------|
-| projectCode | string | ○ | 案件コード |
+| projectId | number | ○ | 案件ID（正の整数） |
 
 **クエリパラメータ**:
 
 | パラメータ | 型 | 必須 | デフォルト | 説明 |
 |------------|-----|:----:|-----------|------|
-| revision | number | - | 0 | リビジョン番号 |
-| includeDeleted | boolean | - | false | 削除済みケースを含むか |
+| page[number] | number | - | 1 | ページ番号 |
+| page[size] | number | - | 20 | 1ページあたりの件数 |
+| filter[includeDisabled] | boolean | - | false | 論理削除済みケースを含むか |
 
 **レスポンス** (200):
-```
+```json
 {
   "data": [
     {
-      "projectCode": "PRJ001",
-      "projectRevision": 0,
-      "caseNo": 1,
+      "projectCaseId": 1,
+      "projectId": 10,
       "caseName": "標準ケース",
-      "calculationMode": "auto",
-      "stdManhourId": 101,
-      "stdManhourType": "EPC標準",
-      "description": "...",
+      "isPrimary": false,
+      "description": null,
+      "calculationType": "STANDARD",
+      "standardEffortId": 5,
+      "startYearMonth": "202601",
+      "durationMonths": 12,
+      "totalManhour": 1200,
       "createdAt": "2026-01-15T09:00:00.000Z",
       "updatedAt": "2026-01-20T14:30:00.000Z",
-      "createdBy": "system",
-      "updatedBy": "system",
-      "isDeleted": false
+      "projectName": "○○プロジェクト",
+      "standardEffortName": "EPC標準"
     }
-  ]
+  ],
+  "meta": {
+    "pagination": {
+      "currentPage": 1,
+      "pageSize": 20,
+      "totalItems": 3,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+**エラーレスポンス** (404): 案件が存在しない場合
+```json
+{
+  "type": "https://example.com/problems/resource-not-found",
+  "status": 404,
+  "title": "Resource Not Found",
+  "detail": "Project with ID '999' not found",
+  "instance": "/projects/999/project-cases",
+  "timestamp": "2026-02-01T10:00:00.000Z"
 }
 ```
 
 ---
 
-#### GET `/api/projects/{projectCode}/cases/{caseNo}`
+#### GET `/projects/:projectId/project-cases/:projectCaseId`
 
-**説明**: ケース詳細（月別工数含む）を取得
+**説明**: ケース詳細を取得
 
 **パスパラメータ**:
 
 | パラメータ | 型 | 必須 | 説明 |
 |------------|-----|:----:|------|
-| projectCode | string | ○ | 案件コード |
-| caseNo | number | ○ | ケース番号 |
-
-**クエリパラメータ**:
-
-| パラメータ | 型 | 必須 | デフォルト | 説明 |
-|------------|-----|:----:|-----------|------|
-| revision | number | - | 0 | リビジョン番号 |
+| projectId | number | ○ | 案件ID |
+| projectCaseId | number | ○ | ケースID |
 
 **レスポンス** (200):
-```
+```json
 {
-  "projectCode": "PRJ001",
-  "projectRevision": 0,
-  "caseNo": 1,
-  "caseName": "標準ケース",
-  "calculationMode": "auto",
-  "stdManhourId": 101,
-  "stdManhourType": "EPC標準",
-  "description": "...",
-  "projectInfo": {
-    "startYearMonth": 202601,
-    "totalMonths": 12,
-    "totalManhour": 1200
-  },
-  "monthlyWorkloads": [
-    { "yearMonth": 202601, "manhour": 80 },
-    { "yearMonth": 202602, "manhour": 120 }
-  ],
-  "createdAt": "...",
-  "updatedAt": "...",
-  "createdBy": "system",
-  "updatedBy": "system",
-  "isDeleted": false
-}
-```
-
-**エラーレスポンス** (404):
-```
-{
-  "error": "ケースが見つかりません",
-  "message": "Case not found: PRJ001/0/99"
+  "data": {
+    "projectCaseId": 1,
+    "projectId": 10,
+    "caseName": "標準ケース",
+    "isPrimary": false,
+    "description": "初期集中型パターン",
+    "calculationType": "STANDARD",
+    "standardEffortId": 5,
+    "startYearMonth": "202601",
+    "durationMonths": 12,
+    "totalManhour": 1200,
+    "createdAt": "2026-01-15T09:00:00.000Z",
+    "updatedAt": "2026-01-20T14:30:00.000Z",
+    "projectName": "○○プロジェクト",
+    "standardEffortName": "EPC標準"
+  }
 }
 ```
 
 ---
 
-#### POST `/api/projects/{projectCode}/cases`
+#### POST `/projects/:projectId/project-cases`
 
 **説明**: 新規ケースを作成
 
-**パスパラメータ**:
-
-| パラメータ | 型 | 必須 | 説明 |
-|------------|-----|:----:|------|
-| projectCode | string | ○ | 案件コード |
-
 **リクエストボディ**:
-```
+```json
 {
   "caseName": "初期集中型ケース",
-  "calculationMode": "auto",
-  "stdManhourId": 101,
+  "calculationType": "STANDARD",
+  "standardEffortId": 5,
+  "isPrimary": false,
   "description": "初期段階に工数を集中させたパターン",
-  "revision": 0
+  "startYearMonth": "202601",
+  "durationMonths": 12,
+  "totalManhour": 1200
 }
 ```
 
 **レスポンス** (201):
-```
+```json
 {
-  "caseNo": 2,
-  "message": "ケースが作成されました"
+  "data": {
+    "projectCaseId": 2,
+    "projectId": 10,
+    "caseName": "初期集中型ケース",
+    "isPrimary": false,
+    "description": "初期段階に工数を集中させたパターン",
+    "calculationType": "STANDARD",
+    "standardEffortId": 5,
+    "startYearMonth": "202601",
+    "durationMonths": 12,
+    "totalManhour": 1200,
+    "createdAt": "2026-02-01T10:00:00.000Z",
+    "updatedAt": "2026-02-01T10:00:00.000Z",
+    "projectName": "○○プロジェクト",
+    "standardEffortName": "EPC標準"
+  }
 }
 ```
 
+**Location ヘッダー**: `/projects/10/project-cases/2`
+
 ---
 
-#### PUT `/api/projects/{projectCode}/cases/{caseNo}`
+#### PUT `/projects/:projectId/project-cases/:projectCaseId`
 
-**説明**: 既存ケースを更新
+**説明**: 既存ケースを更新（部分更新対応）
 
-**リクエストボディ**:
-```
+**リクエストボディ**（全フィールドオプション）:
+```json
 {
   "caseName": "初期集中型ケース（修正）",
-  "calculationMode": "auto",
-  "stdManhourId": 102,
-  "description": "説明を更新",
-  "revision": 0
+  "description": "説明を更新"
 }
 ```
 
-**レスポンス** (200): 更新後のケースオブジェクト
+**レスポンス** (200): 更新後のケースオブジェクト（`{ "data": {...} }` 形式）
 
 ---
 
-#### PUT `/api/projects/{projectCode}/cases/{caseNo}/monthly-workloads`
-
-**説明**: ケースの月別工数を更新
-
-**リクエストボディ**:
-```
-{
-  "revision": 0,
-  "resourceType": "TOTAL",
-  "monthlyWorkloads": [
-    { "yearMonth": 202601, "manhour": 100 },
-    { "yearMonth": 202602, "manhour": 150 }
-  ]
-}
-```
-
-**レスポンス** (200):
-```
-{
-  "message": "月次工数を更新しました",
-  "monthlyWorkloads": [
-    { "yearMonth": 202601, "manhour": 100 },
-    { "yearMonth": 202602, "manhour": 150 }
-  ]
-}
-```
-
-**ビジネスルール**:
-- 同一yearMonthの複数エントリがある場合、最後の値を採用
-- yearMonthは整数に切り捨て（小数部分を除去）
-- manhourは数値に変換（NaNは除外）
-
----
-
-#### DELETE `/api/projects/{projectCode}/cases/{caseNo}`
+#### DELETE `/projects/:projectId/project-cases/:projectCaseId`
 
 **説明**: ケースを論理削除
 
-**クエリパラメータ**:
+**レスポンス** (204): No Content（レスポンスボディなし）
 
-| パラメータ | 型 | 必須 | 説明 |
-|------------|-----|:----:|------|
-| revision | number | - | リビジョン番号 |
-
-**レスポンス** (200):
-```
+**エラーレスポンス** (409): 参照が存在する場合
+```json
 {
-  "message": "ケースが削除されました"
+  "type": "https://example.com/problems/conflict",
+  "status": 409,
+  "title": "Conflict",
+  "detail": "Project case with ID '1' is referenced by other resources and cannot be deleted",
+  "instance": "/projects/10/project-cases/1",
+  "timestamp": "2026-02-01T10:00:00.000Z"
 }
 ```
 
 ---
 
-#### GET `/api/masters/standard-workloads`
+#### POST `/projects/:projectId/project-cases/:projectCaseId/actions/restore`
 
-**説明**: 標準工数一覧を取得（読み取り専用）
+**説明**: 論理削除されたケースを復元
 
-**クエリパラメータ**:
+**レスポンス** (200): 復元後のケースオブジェクト（`{ "data": {...} }` 形式）
 
-| パラメータ | 型 | 必須 | 説明 |
-|------------|-----|:----:|------|
-| bizUnitCode | string | - | BUコードでフィルタ |
-| constructionTypeCode | string | - | 工事種別コードでフィルタ |
+**エラーレスポンス** (409): 既に有効なケースの場合
+
+---
+
+#### GET `/project-cases/:projectCaseId/project-loads`
+
+**説明**: ケースに紐づく月別工数一覧を取得
 
 **レスポンス** (200):
-```
+```json
 {
   "data": [
     {
-      "stdManhourId": 101,
-      "stdManhourType": "EPC標準",
-      "bizUnitCode": "BU001",
-      "constructionTypeCode": "CT001",
-      "createdAt": "...",
-      "updatedAt": "...",
-      "isDeleted": false
+      "projectLoadId": 1,
+      "projectCaseId": 1,
+      "yearMonth": "202601",
+      "manhour": 80,
+      "createdAt": "2026-01-15T09:00:00.000Z",
+      "updatedAt": "2026-01-15T09:00:00.000Z"
+    },
+    {
+      "projectLoadId": 2,
+      "projectCaseId": 1,
+      "yearMonth": "202602",
+      "manhour": 120,
+      "createdAt": "2026-01-15T09:00:00.000Z",
+      "updatedAt": "2026-01-15T09:00:00.000Z"
     }
   ]
 }
 ```
 
+> **注**: ページネーションなし（ケースに紐づく全件を返却）
+
 ---
 
-#### GET `/api/masters/standard-workloads/{id}`
+#### POST `/project-cases/:projectCaseId/project-loads`
 
-**説明**: 標準工数詳細（重み付け含む）を取得
+**説明**: 月別工数を個別作成
 
-**パスパラメータ**:
+**リクエストボディ**:
+```json
+{
+  "yearMonth": "202603",
+  "manhour": 100
+}
+```
+
+**レスポンス** (201): 作成された月別工数オブジェクト
+
+**エラーレスポンス** (409): 同一年月のデータが既に存在する場合
+
+---
+
+#### PUT `/project-cases/:projectCaseId/project-loads/bulk`
+
+**説明**: 月別工数を一括 Upsert（存在する年月は更新、存在しない年月は作成）
+
+**リクエストボディ**:
+```json
+{
+  "items": [
+    { "yearMonth": "202601", "manhour": 100 },
+    { "yearMonth": "202602", "manhour": 150 },
+    { "yearMonth": "202603", "manhour": 120 }
+  ]
+}
+```
+
+**レスポンス** (200): Upsert 後の全月別工数配列
+
+**バリデーション**:
+- items 配列は1件以上必須
+- items 配列内で yearMonth の重複は不可（422）
+
+---
+
+#### DELETE `/project-cases/:projectCaseId/project-loads/:projectLoadId`
+
+**説明**: 月別工数を物理削除
+
+**レスポンス** (204): No Content
+
+---
+
+#### GET `/standard-effort-masters`
+
+**説明**: 標準工数マスタ一覧を取得（ページネーション付き）
+
+**クエリパラメータ**:
 
 | パラメータ | 型 | 必須 | 説明 |
 |------------|-----|:----:|------|
-| id | number | ○ | 標準工数ID |
+| page[number] | number | - | ページ番号 |
+| page[size] | number | - | 1ページあたりの件数 |
+| filter[includeDisabled] | boolean | - | 論理削除済みを含むか |
+| filter[businessUnitCode] | string | - | BUコードでフィルタ |
+| filter[projectTypeCode] | string | - | 工事種別コードでフィルタ |
 
 **レスポンス** (200):
-```
+```json
 {
-  "stdManhourId": 101,
-  "stdManhourType": "EPC標準",
-  "bizUnitCode": "BU001",
-  "constructionTypeCode": "CT001",
-  "stdManhourCalcBasis": "過去5年の実績平均",
-  "stdManhourNotes": "大型案件向け",
-  "weights": [
-    { "stdManhourId": 101, "progressRatio": 0, "weight": 5 },
-    { "stdManhourId": 101, "progressRatio": 5, "weight": 8 },
-    { "stdManhourId": 101, "progressRatio": 10, "weight": 12 }
+  "data": [
+    {
+      "standardEffortId": 5,
+      "businessUnitCode": "BU001",
+      "projectTypeCode": "PT001",
+      "name": "EPC標準",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
   ],
-  "createdAt": "...",
-  "updatedAt": "...",
-  "isDeleted": false
+  "meta": {
+    "pagination": {
+      "currentPage": 1,
+      "pageSize": 20,
+      "totalItems": 5,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+---
+
+#### GET `/standard-effort-masters/:id`
+
+**説明**: 標準工数マスタ詳細（重み付け含む）を取得
+
+**レスポンス** (200):
+```json
+{
+  "data": {
+    "standardEffortId": 5,
+    "businessUnitCode": "BU001",
+    "projectTypeCode": "PT001",
+    "name": "EPC標準",
+    "weights": [
+      { "standardEffortWeightId": 1, "progressRate": 0, "weight": 5 },
+      { "standardEffortWeightId": 2, "progressRate": 5, "weight": 8 },
+      { "standardEffortWeightId": 3, "progressRate": 10, "weight": 12 }
+    ],
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### 8.3 レスポンス形式
+
+全 API は以下の共通レスポンス構造に従う。
+
+**一覧取得（ページネーション付き）:**
+```json
+{
+  "data": [],
+  "meta": {
+    "pagination": {
+      "currentPage": 1,
+      "pageSize": 20,
+      "totalItems": 50,
+      "totalPages": 3
+    }
+  }
+}
+```
+
+**一覧取得（ページネーションなし、project-loads 等）:**
+```json
+{
+  "data": []
+}
+```
+
+**単一取得 / 作成 / 更新:**
+```json
+{
+  "data": {}
+}
+```
+
+**削除:**
+```
+HTTP 204 No Content（レスポンスボディなし）
+```
+
+### 8.4 エラーレスポンス形式
+
+RFC 9457 Problem Details 準拠。
+
+```json
+{
+  "type": "https://example.com/problems/resource-not-found",
+  "status": 404,
+  "title": "Resource Not Found",
+  "detail": "Project case with ID '99' not found",
+  "instance": "/projects/10/project-cases/99",
+  "timestamp": "2026-02-01T10:00:00.000Z"
 }
 ```
 
@@ -1169,25 +1329,23 @@
 
 ## 9. 状態管理要件
 
+> **注**: フロントエンド画面は未実装のため、以下は実装時の設計方針を記載。
+
 ### 9.1 グローバル状態（Zustandストア）
 
 ケーススタディ画面全体で共有される状態。
 
 | 状態 | 型 | 初期値 | 説明 |
 |------|-----|--------|------|
-| activeProjectCode | string \| null | null | 選択中の案件コード |
+| selectedProjectId | number \| null | null | 選択中の案件ID |
 | selectedBizUnitCode | string \| null | null | 選択中のBUコード |
-| selectedCaseNo | number \| null | null | 選択中のケース番号 |
-| selectedCases | string[] | [] | 選択中のケースキー配列（将来の複数ケース比較用） |
+| selectedProjectCaseId | number \| null | null | 選択中のケースID |
 
 | アクション | 説明 |
 |------------|------|
-| setActiveProject | 案件コードを設定/クリア |
+| setSelectedProject | 案件IDを設定/クリア |
 | setSelectedBizUnit | BUコードを設定/クリア |
-| setSelectedCaseNo | ケース番号を設定/クリア |
-| toggleCase | ケースの選択/解除をトグル |
-| clearSelection | ケース選択を全クリア |
-| setSelectedCases | ケース選択を一括設定 |
+| setSelectedProjectCase | ケースIDを設定/クリア |
 
 ### 9.2 ローカル状態（コンポーネント内）
 
@@ -1197,9 +1355,9 @@
 |------|-----|------|
 | isFormOpen | boolean | ケース作成/編集ダイアログの開閉 |
 | formMode | "create" \| "edit" | ダイアログモード |
-| selectedCase | ProjectCaseListItem \| undefined | 編集対象のケース |
+| selectedCase | ProjectCase \| undefined | 編集対象のケース |
 | isDeleteDialogOpen | boolean | 削除確認ダイアログの開閉 |
-| caseToDelete | ProjectCaseListItem \| null | 削除対象のケース |
+| caseToDelete | ProjectCase \| null | 削除対象のケース |
 | workloadYear | number | 工数テーブル/チャートの表示年 |
 
 #### 工数編集カード
@@ -1208,26 +1366,28 @@
 |------|-----|------|
 | isEditing | boolean | 編集モードの状態 |
 | isSaving | boolean | 保存中フラグ |
-| editedWorkloads | Map\<number, number\> | 未保存の変更（key: YYYYMM、value: 工数） |
+| editedWorkloads | Map\<string, number\> | 未保存の変更（key: YYYYMM、value: 工数） |
 | unsavedDialogState | { isOpen, targetYear } | 未保存確認ダイアログの状態 |
 
 ### 9.3 サーバー状態（TanStack Query）
 
 | クエリキー | データ | 依存パラメータ |
 |------------|--------|----------------|
-| ["project-cases", projectCode] | ケース一覧 | projectCode |
-| ["project-case", projectCode, caseNo] | ケース詳細 | projectCode, caseNo |
-| ["standard-workloads"] | 標準工数一覧 | - |
-| ["standard-workload-detail", id] | 標準工数詳細 | stdManhourId |
-| ["biz-units"] | BU一覧 | - |
+| ["project-cases", projectId] | ケース一覧 | projectId |
+| ["project-case", projectId, projectCaseId] | ケース詳細 | projectId, projectCaseId |
+| ["project-loads", projectCaseId] | 月別工数一覧 | projectCaseId |
+| ["standard-effort-masters"] | 標準工数マスタ一覧 | - |
+| ["standard-effort-master", id] | 標準工数マスタ詳細（weights含む） | standardEffortId |
+| ["business-units"] | BU一覧 | - |
 | ["projects"] | 案件一覧 | - |
 
 | ミューテーション | 説明 | 成功時の副作用 |
 |-----------------|------|----------------|
-| createCase | ケース作成 | ケース一覧のキャッシュ無効化 |
-| updateCase | ケース更新 | ケース一覧・詳細のキャッシュ無効化 |
-| deleteCase | ケース削除 | ケース一覧のキャッシュ無効化 |
-| updateCaseWorkloads | 月別工数更新 | ケース詳細のキャッシュ無効化 |
+| createProjectCase | ケース作成 | ケース一覧のキャッシュ無効化 |
+| updateProjectCase | ケース更新 | ケース一覧・詳細のキャッシュ無効化 |
+| deleteProjectCase | ケース削除 | ケース一覧のキャッシュ無効化 |
+| restoreProjectCase | ケース復元 | ケース一覧のキャッシュ無効化 |
+| bulkUpsertProjectLoads | 月別工数一括更新 | 月別工数一覧のキャッシュ無効化 |
 
 ---
 
@@ -1239,7 +1399,8 @@
 |------|--------|
 | ケース一覧表示 | 200ms以内 |
 | ケース詳細取得 | 500ms以内 |
-| 月別工数保存 | 1秒以内 |
+| 月別工数一覧取得 | 200ms以内 |
+| 月別工数 bulk upsert | 1秒以内 |
 | 標準工数プレビュー表示 | 500ms以内 |
 | チャート描画 | 300ms以内 |
 
@@ -1262,6 +1423,7 @@
 | ケース作成 | トースト通知+ダイアログ閉じ | エラートースト通知 |
 | ケース更新 | トースト通知+ダイアログ閉じ | エラートースト通知 |
 | ケース削除 | トースト通知+選択クリア | エラートースト通知 |
+| ケース復元 | トースト通知 | エラートースト通知 |
 | 工数保存 | トースト通知+編集モード終了 | エラートースト通知 |
 
 #### フォーム送信中の制御
@@ -1278,7 +1440,6 @@
 | 必須フィールドの明示 | 赤色のアスタリスク（*）マークで表示 |
 | ラジオボタンのラベル | 各選択肢にLabel要素を紐付け |
 | ボタンのtitle属性 | 編集・削除ボタンにtitle属性でアクション名を付与 |
-| コンボボックスのaria属性 | role="combobox"、aria-expanded属性の設定 |
 
 ---
 
@@ -1286,77 +1447,70 @@
 
 | 用語 | 定義 |
 |------|------|
-| **ケース** | 案件の工数見積パターン。1案件に対して複数のケースを作成可能 |
+| **ケース（ProjectCase）** | 案件の工数見積パターン。1案件に対して複数のケースを作成可能 |
 | **ケーススタディ** | 案件の工数を複数パターンで見積り、比較・検討すること |
-| **計算モード** | ケースの工数算出方法。「自動」と「手動」の2種類 |
-| **自動計算モード（auto）** | 標準工数マスタの重み付けパターンを使用して月別工数を自動算出するモード |
-| **手動入力モード（manual）** | 月別工数をユーザーが直接入力するモード |
-| **標準工数** | 工事種別・BUごとに定義された工数分配パターン。進捗率×重み付けの配列で構成 |
-| **標準工数タイプ** | 標準工数パターンの名称（例:「EPC標準」「サービス標準」） |
-| **進捗率** | 案件の進行度合いを示す割合（0%〜100%、5%刻み） |
-| **重み付け** | 各進捗率における工数の比重。高い重みの進捗段階により多くの工数が配分される |
-| **月別工数** | 年月ごとの工数値（人時単位）。YYYYMM形式の年月キーと工数値のペア |
-| **リビジョン** | 案件の版番号。同一案件コードで複数リビジョンが存在しうる |
-| **論理削除** | データベースからの物理的な削除ではなく、isDeletedフラグをtrueにして「削除済み」とする方式 |
-| **案件コード（PJCode）** | 案件を一意に識別するコード。英数字8文字以内 |
-| **ケース番号（caseNo）** | 案件×リビジョン内でケースを一意に識別する連番 |
-| **resourceType** | 月別工数更新時のリソース種別指定（現行は「TOTAL」固定） |
+| **計算モード（calculationType）** | ケースの工数算出方法。「STANDARD」と「MANUAL」の2種類 |
+| **STANDARDモード** | 標準工数マスタの重み付けパターンを使用して月別工数を自動算出するモード |
+| **MANUALモード** | 月別工数をユーザーが直接入力するモード |
+| **標準工数マスタ（StandardEffortMaster）** | 工事種別・BUごとに定義された工数分配パターン。進捗率×重み付けの配列で構成 |
+| **進捗率（progressRate）** | 案件の進行度合いを示す割合（0〜100の整数） |
+| **重み（weight）** | 各進捗率における工数の比重。高い重みの進捗段階により多くの工数が配分される |
+| **月別工数（ProjectLoad）** | 年月ごとの工数値（整数）。YYYYMM形式の年月キーと工数値のペア |
+| **プライマリ（isPrimary）** | ケースのプライマリフラグ。主となるケースを示すためのマーカー |
+| **論理削除（soft delete）** | データベースからの物理的な削除ではなく、deleted_at に日時を設定して「削除済み」とする方式。復元可能 |
+| **案件ID（projectId）** | 案件を一意に識別するID（自動採番の整数） |
+| **ケースID（projectCaseId）** | ケースを一意に識別するID（自動採番の整数） |
+| **bulk upsert** | 複数レコードの一括作成・更新。存在する年月は更新、存在しない年月は新規作成 |
 
 ---
 
 ## 12. 未実装・今後の検討事項
 
-### 12.1 認証・認可
+### 12.1 フロントエンド画面の実装
 
-| 項目 | 現状 | 将来方針 |
-|------|------|----------|
-| 操作者の特定 | "system"固定 | 認証システム統合後、実際のユーザーIDを使用 |
+| 項目 | 現状 | 方針 |
+|------|------|------|
+| ルーティング | 未実装 | `/master/projects/$projectId/case-study` を追加 |
+| UI コンポーネント | 未実装 | `features/case-study/` として feature モジュールを作成 |
+| TanStack Query hooks | 未実装 | `features/case-study/api/` に API クライアントと queryOptions を配置 |
+| Zustand ストア | 未実装 | `features/case-study/stores/` にストアを配置 |
+
+### 12.2 自動計算ロジック
+
+| 項目 | 現状 | 方針 |
+|------|------|------|
+| 工数自動分配 | 未実装 | STANDARD モード選択時に startYearMonth・durationMonths・totalManhour・weights を使って月別工数を自動生成する機能 |
+| 分配プレビュー | 未実装 | 実際の月別工数分配結果のシミュレーション表示 |
+| 再計算 | 未実装 | パラメータ変更時の月別工数の自動再計算 |
+
+### 12.3 認証・認可
+
+| 項目 | 現状 | 方針 |
+|------|------|------|
+| 操作者の特定 | 未実装 | 認証システム統合後、実際のユーザーIDを使用 |
 | 操作権限チェック | 未実装 | ロールベースの権限制御（閲覧/編集/削除） |
 
-### 12.2 ケース比較機能
+### 12.4 ケース比較機能
 
-| 項目 | 現状 | 将来方針 |
-|------|------|----------|
-| 複数ケース同時表示 | 1ケースずつの切替表示 | 複数ケースの工数チャートを重畳表示 |
+| 項目 | 現状 | 方針 |
+|------|------|------|
+| 複数ケース同時表示 | 未実装 | 複数ケースの工数チャートを重畳表示 |
 | 差分表示 | 未実装 | ケース間の工数差分をハイライト表示 |
 | ケース複製 | 未実装 | 既存ケースをベースとした新ケースの複製作成 |
 
-### 12.3 自動計算の高度化
-
-| 項目 | 現状 | 将来方針 |
-|------|------|----------|
-| 工数自動分配 | 標準工数タイプの選択のみ | 案件の開始年月・総工数・総期間を使って月別工数を自動生成 |
-| 再計算 | 未実装 | パラメータ変更時の月別工数の自動再計算 |
-| 分配プレビュー | 重み付けのみ表示 | 実際の月別工数分配結果のシミュレーション表示 |
-
-### 12.4 標準工数マスタ管理
-
-| 項目 | 現状 | 将来方針 |
-|------|------|----------|
-| 標準工数の管理 | 参照のみ（読み取り専用） | ケーススタディ画面または管理画面からの登録・編集 |
-| BU・工事種別フィルタ | API上は対応、UI未使用 | 案件のBU・工事種別に応じた自動フィルタリング |
-
 ### 12.5 データ連携
 
-| 項目 | 現状 | 将来方針 |
-|------|------|----------|
-| ダッシュボード連携 | データベース経由 | ケースの「確定」操作でダッシュボードへの即時反映 |
+| 項目 | 現状 | 方針 |
+|------|------|------|
+| ダッシュボード連携 | chart_view_project_items 経由 | ケースの「確定」操作でダッシュボードへの即時反映 |
 | エクスポート | 未実装 | 月別工数データのCSV/Excelエクスポート |
 | インポート | 未実装 | Excel等からの月別工数データの一括インポート |
 
 ### 12.6 年範囲の動的化
 
-| 項目 | 現状 | 将来方針 |
-|------|------|----------|
-| 表示年の範囲 | 2025〜2027の固定範囲 | 案件の開始年月〜終了年月に基づく動的な範囲設定 |
-
-### 12.7 ケース間の操作
-
-| 項目 | 現状 | 将来方針 |
-|------|------|----------|
-| 並び順変更 | 未実装 | ケースカードのドラッグ&ドロップによる表示順変更 |
-| ケースのアーカイブ | 未実装 | 削除ではなくアーカイブとして非表示化 |
-| 削除済みケースの復元 | 不可（論理削除後の復元UIなし） | 管理画面からの復元操作 |
+| 項目 | 現状 | 方針 |
+|------|------|------|
+| 表示年の範囲 | 未実装（フロントエンド未実装のため） | 案件の startYearMonth + durationMonths に基づく動的な範囲設定 |
 
 ---
 
@@ -1365,3 +1519,4 @@
 | 日付 | バージョン | 内容 |
 |------|-----------|------|
 | 2026-02-01 | 1.0.0 | ソースコード解析に基づく初版作成 |
+| 2026-02-01 | 2.0.0 | 実装準拠の全面改訂。主な変更: (1) エンティティ名を実装に合わせて変更（ProjectCase→project_cases、StandardWorkload→standard_effort_masters 等）。(2) 識別子体系を projectCode+revision+caseNo 方式から projectId+projectCaseId の自動採番方式に変更。(3) 計算モードを auto/manual から STANDARD/MANUAL に変更。(4) 月別工数を独立リソース（project_load）として記述。(5) API パスを実装に合わせて修正（`/projects/:projectId/project-cases/...`、`/project-cases/:projectCaseId/project-loads/...`）。(6) レスポンス形式を RFC 9457 準拠の共通形式に統一。(7) 論理削除を isDeleted フラグから deleted_at タイムスタンプ方式に変更。(8) 復元（restore）APIの追加。(9) 削除時の参照チェック（409 Conflict）の追加。(10) bulk upsert API の追加。(11) フロントエンド関連の記述を「未実装」として明確化 |

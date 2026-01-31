@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { Menu, Building2, FolderKanban, Palette, Briefcase, BarChart3, ChevronRight } from 'lucide-react'
+import { Menu, Building2, FolderKanban, Palette, Briefcase, BarChart3, Calculator, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
@@ -39,6 +39,11 @@ const menuItems = [
         label: '作業種類',
         href: '/master/work-types',
         icon: Palette,
+      },
+      {
+        label: '間接作業・キャパシティ設定',
+        href: '/master/indirect-capacity-settings',
+        icon: Calculator,
       },
     ],
   },
@@ -122,7 +127,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 overflow-y-auto">
           <div className={cn(
             'animate-in fade-in duration-300',
-            currentPath.startsWith('/workload') ? 'h-full' : 'mx-auto max-w-4xl px-6 py-8',
+            currentPath.startsWith('/workload') || currentPath.startsWith('/master/indirect-capacity-settings') ? 'h-full' : 'mx-auto max-w-4xl px-6 py-8',
           )}>
             {children}
           </div>
