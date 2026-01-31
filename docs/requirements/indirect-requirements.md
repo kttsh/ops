@@ -1,6 +1,6 @@
 # 間接作業・キャパシティ設定画面 要件定義書
 
-> **Version**: 0.3.0
+> **Version**: 0.4.0
 > **Last Updated**: 2026-02-01
 > **Status**: ドラフト
 
@@ -158,7 +158,8 @@
 | headcount_plan_case_id | INT | ID（自動採番） |
 | case_name | NVARCHAR(100) | ケース名（必須） |
 | description | NVARCHAR(500) | 説明（任意） |
-| business_unit_code | VARCHAR(20) | ビジネスユニット（**任意、NULL許容**） |
+| business_unit_code | VARCHAR(20) | ビジネスユニット（**任意、NULL許容**、`/^[a-zA-Z0-9_-]+$/`） |
+| business_unit_name | NVARCHAR(100) | BU名称（`business_units` からJOIN取得、APIレスポンスのみ） |
 | is_primary | BIT | プライマリフラグ |
 | created_at | DATETIME | 作成日時 |
 | updated_at | DATETIME | 更新日時 |
@@ -213,7 +214,8 @@
 | case_name | NVARCHAR(100) | ケース名（必須） |
 | is_primary | BIT | プライマリフラグ |
 | description | NVARCHAR(500) | 説明（任意） |
-| business_unit_code | VARCHAR(20) | ビジネスユニット（**必須**） |
+| business_unit_code | VARCHAR(20) | ビジネスユニット（**必須**、`/^[a-zA-Z0-9_-]+$/`） |
+| business_unit_name | NVARCHAR(100) | BU名称（`business_units` からJOIN取得、APIレスポンスのみ） |
 | created_at | DATETIME | 作成日時 |
 | updated_at | DATETIME | 更新日時 |
 | deleted_at | DATETIME | 論理削除日時（NULL = 有効） |
@@ -345,35 +347,40 @@
 ### 4.3 計算結果エリア（右側）詳細
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│ ■ 計算結果                                                  │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│ 選択中の条件                                                │
-│ ┌─────────────────────────────────────────────────────────┐ │
-│ │ 人員計画: 増員ケース                                    │ │
-│ │ シナリオ: 残業20H（180H/月）                            │ │
-│ │ 間接作業: 実態ケース                                    │ │
-│ └─────────────────────────────────────────────────────────┘ │
-│                                                             │
-│ 年度: [2025年度 ▼]                                         │
-│                                                             │
-│ ┌─────────────────────────────────────────────────────────┐ │
-│ │           │  4月 │  5月 │  6月 │ ... │  2月 │  3月 │   │ │
-│ ├───────────┼──────┼──────┼──────┼─────┼──────┼──────┤   │ │
-│ │ キャパシティ│1,800│1,800│1,980│ ... │2,160│2,160│   │ │
-│ ├───────────┼──────┼──────┼──────┼─────┼──────┼──────┤   │ │
-│ │ 間接合計  │  216 │  216 │  238 │ ... │  259 │  259 │   │ │
-│ │ 直接可能  │1,584│1,584│1,742│ ... │1,901│1,901│   │ │
-│ └─────────────────────────────────────────────────────────┘ │
-│                                                             │
-│ ※ 人員数は月次人員計画から別途参照                          │
-│ ※ 間接工数の作業種類別内訳は比率から按分表示               │
-│                                                             │
-│                              [計算結果を保存]              │
-│                              [Excelエクスポート]           │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│ ■ 計算結果                              年度: [2025年度 ▼]     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ 選択中の条件                                                    │
+│ ┌─────────────────────────────────────────────────────────────┐ │
+│ │ 人員計画: 増員ケース │ シナリオ: 残業20H │ 間接: 実態ケース │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ ┌─────────────────────────────────────────────────────────────┐ │
+│ │             │  4月 │  5月 │  6月 │ ... │  2月 │  3月 │ 合計│ │
+│ ├─────────────┼──────┼──────┼──────┼─────┼──────┼──────┼─────┤ │
+│ │ 人員数 (人) │   10 │   10 │   11 │ ... │   12 │   12 │   - │ │
+│ │ キャパシティ │1,800│1,800│1,980│ ... │2,160│2,160│     │ │
+│ ├─────────────┼──────┼──────┼──────┼─────┼──────┼──────┼─────┤ │
+│ │▼間接内訳    │      │      │      │     │      │      │     │ │
+│ │  教育       │   90 │   90 │   89 │ ... │  108 │  108 │     │ │
+│ │  会議       │   54 │   54 │   59 │ ... │   65 │   65 │     │ │
+│ │  見積       │   36 │   36 │   50 │ ... │   65 │   65 │     │ │
+│ │  管理       │   18 │   18 │   20 │ ... │   22 │   22 │     │ │
+│ │  その他     │   18 │   18 │   20 │ ... │   22 │   22 │     │ │
+│ ├─────────────┼──────┼──────┼──────┼─────┼──────┼──────┼─────┤ │
+│ │ 間接合計    │  216 │  216 │  238 │ ... │  281 │  281 │     │ │
+│ │ 直接可能    │1,584│1,584│1,742│ ... │1,879│1,879│     │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ ※ 人員数は月次人員計画（monthly_headcount_plans）から参照       │
+│ ※ 間接内訳は比率（indirect_work_type_ratios）×キャパシティで    │
+│   按分計算（フロントエンド算出、DBには保存しない）               │
+│ ※ ▼間接内訳 は折りたたみ可能（デフォルト: 展開）               │
+│                                                                 │
+│                     [計算結果を保存]  [Excelエクスポート]       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ### 4.4 ケース編集フォーム（オーバーレイ）
@@ -435,7 +442,7 @@
 
 | ID | 機能名 | 優先度 | 説明 |
 |----|--------|:------:|------|
-| F-ICS-001 | ビジネスユニット選択 | 高 | ヘッダーでBUを選択、全データをフィルタリング |
+| F-ICS-001 | ビジネスユニット選択 | 高 | ヘッダーでBUを選択、サーバーサイドで全データをフィルタリング |
 | F-ICS-002 | 人員計画ケースCRUD | 高 | ケースの作成・参照・更新・削除・復元 |
 | F-ICS-003 | 月次人員数入力 | 高 | 年度別ページングで人員数を入力 |
 | F-ICS-004 | 月次人員数一括入力 | 中 | 年度指定で一括設定 |
@@ -459,7 +466,7 @@
 |------|------|
 | 配置 | ヘッダー右側 |
 | UI | ドロップダウン |
-| 動作 | BU変更時に全データをリロード |
+| 動作 | BU変更時にサーバーサイドでフィルタリング。各一覧APIに `filter[businessUnitCode]` を送信し、該当BUのデータのみ取得。キャパシティシナリオはグローバルのためフィルタ対象外 |
 | 初期値 | ユーザーの所属BU or 最初のBU |
 
 #### F-ICS-002: 人員計画ケースCRUD
@@ -554,9 +561,9 @@ interface MonthlyCapacity {
 ### 6.2 間接作業工数計算（フロントエンド）
 
 ```typescript
-// 入力
+// 入力: キャパシティ計算結果（BU×月ごと）と間接作業ケースID
 interface IndirectWorkInput {
-  capacityByMonth: Map<string, number>;  // yearMonth → capacity
+  capacities: MonthlyCapacity[];    // キャパシティ計算結果（各レコードがBU・月を保持）
   indirectWorkCaseId: number;
 }
 
@@ -564,8 +571,8 @@ interface IndirectWorkInput {
 function calculateIndirectWork(input: IndirectWorkInput): MonthlyIndirectWorkLoadInput[] {
   const ratios = getIndirectWorkTypeRatios(input.indirectWorkCaseId);
 
-  return Array.from(input.capacityByMonth.entries()).map(([yearMonth, capacity]) => {
-    const fiscalYear = getFiscalYear(yearMonth);
+  return input.capacities.map((cap) => {
+    const fiscalYear = getFiscalYear(cap.yearMonth);
 
     // 該当年度の全比率を合計
     const totalRatio = ratios
@@ -573,9 +580,9 @@ function calculateIndirectWork(input: IndirectWorkInput): MonthlyIndirectWorkLoa
       .reduce((sum, r) => sum + r.ratio, 0);
 
     return {
-      businessUnitCode: getBuCode(yearMonth),
-      yearMonth,
-      manhour: Math.round(capacity * totalRatio),
+      businessUnitCode: cap.businessUnitCode,  // キャパシティデータから取得
+      yearMonth: cap.yearMonth,
+      manhour: Math.round(cap.capacity * totalRatio),
       source: 'calculated' as const,
     };
   });
@@ -586,6 +593,20 @@ function getFiscalYear(yearMonth: string): number {
   const year = parseInt(yearMonth.substring(0, 4));
   const month = parseInt(yearMonth.substring(4, 6));
   return month >= 4 ? year : year - 1;
+}
+
+// 間接内訳の按分計算（表示用、DBに保存しない）
+function calculateBreakdown(
+  capacity: number,
+  ratios: IndirectWorkTypeRatio[],
+  fiscalYear: number
+): { workTypeCode: string; manhour: number }[] {
+  return ratios
+    .filter(r => r.fiscalYear === fiscalYear)
+    .map(r => ({
+      workTypeCode: r.workTypeCode,
+      manhour: Math.round(capacity * r.ratio),
+    }));
 }
 ```
 
@@ -675,7 +696,7 @@ function calculateDirectWorkCapacity(
 
 | メソッド | エンドポイント | 用途 |
 |----------|---------------|------|
-| GET | `/headcount-plan-cases?filter[includeDisabled]=false` | 人員計画ケース一覧（ページネーション付き） |
+| GET | `/headcount-plan-cases?filter[includeDisabled]=false&filter[businessUnitCode]=XXX` | 人員計画ケース一覧（ページネーション付き、BUフィルタ対応） |
 | GET | `/headcount-plan-cases/:id` | 人員計画ケース詳細 |
 | POST | `/headcount-plan-cases` | 人員計画ケース作成 |
 | PUT | `/headcount-plan-cases/:id` | 人員計画ケース更新 |
@@ -686,8 +707,12 @@ function calculateDirectWorkCapacity(
 
 | メソッド | エンドポイント | 用途 |
 |----------|---------------|------|
-| GET | `/headcount-plan-cases/:id/monthly-headcount-plans` | 月次人員計画一覧 |
+| GET | `/headcount-plan-cases/:id/monthly-headcount-plans?businessUnitCode=XXX` | 月次人員計画一覧（任意でBUフィルタ） |
+| GET | `/headcount-plan-cases/:id/monthly-headcount-plans/:planId` | 月次人員計画詳細 |
+| POST | `/headcount-plan-cases/:id/monthly-headcount-plans` | 月次人員計画作成 |
+| PUT | `/headcount-plan-cases/:id/monthly-headcount-plans/:planId` | 月次人員計画更新 |
 | PUT | `/headcount-plan-cases/:id/monthly-headcount-plans/bulk` | 月次人員計画一括更新 |
+| DELETE | `/headcount-plan-cases/:id/monthly-headcount-plans/:planId` | 月次人員計画物理削除 |
 
 #### キャパシティシナリオ
 
@@ -706,13 +731,17 @@ function calculateDirectWorkCapacity(
 | メソッド | エンドポイント | 用途 |
 |----------|---------------|------|
 | GET | `/capacity-scenarios/:id/monthly-capacities` | 月次キャパシティ一覧 |
+| GET | `/capacity-scenarios/:id/monthly-capacities/:capacityId` | 月次キャパシティ詳細 |
+| POST | `/capacity-scenarios/:id/monthly-capacities` | 月次キャパシティ作成 |
+| PUT | `/capacity-scenarios/:id/monthly-capacities/:capacityId` | 月次キャパシティ更新 |
 | PUT | `/capacity-scenarios/:id/monthly-capacities/bulk` | 月次キャパシティ一括保存 |
+| DELETE | `/capacity-scenarios/:id/monthly-capacities/:capacityId` | 月次キャパシティ物理削除 |
 
 #### 間接作業ケース
 
 | メソッド | エンドポイント | 用途 |
 |----------|---------------|------|
-| GET | `/indirect-work-cases?filter[includeDisabled]=false` | 間接作業ケース一覧（ページネーション付き） |
+| GET | `/indirect-work-cases?filter[includeDisabled]=false&filter[businessUnitCode]=XXX` | 間接作業ケース一覧（ページネーション付き、BUフィルタ対応） |
 | GET | `/indirect-work-cases/:id` | 間接作業ケース詳細 |
 | POST | `/indirect-work-cases` | 間接作業ケース作成 |
 | PUT | `/indirect-work-cases/:id` | 間接作業ケース更新 |
@@ -724,14 +753,22 @@ function calculateDirectWorkCapacity(
 | メソッド | エンドポイント | 用途 |
 |----------|---------------|------|
 | GET | `/indirect-work-cases/:id/indirect-work-type-ratios` | 間接作業比率一覧 |
+| GET | `/indirect-work-cases/:id/indirect-work-type-ratios/:ratioId` | 間接作業比率詳細 |
+| POST | `/indirect-work-cases/:id/indirect-work-type-ratios` | 間接作業比率作成 |
+| PUT | `/indirect-work-cases/:id/indirect-work-type-ratios/:ratioId` | 間接作業比率更新 |
 | PUT | `/indirect-work-cases/:id/indirect-work-type-ratios/bulk` | 間接作業比率一括更新 |
+| DELETE | `/indirect-work-cases/:id/indirect-work-type-ratios/:ratioId` | 間接作業比率物理削除 |
 
 #### 月次間接作業工数
 
 | メソッド | エンドポイント | 用途 |
 |----------|---------------|------|
 | GET | `/indirect-work-cases/:id/monthly-indirect-work-loads` | 月次間接工数一覧 |
+| GET | `/indirect-work-cases/:id/monthly-indirect-work-loads/:loadId` | 月次間接工数詳細 |
+| POST | `/indirect-work-cases/:id/monthly-indirect-work-loads` | 月次間接工数作成 |
+| PUT | `/indirect-work-cases/:id/monthly-indirect-work-loads/:loadId` | 月次間接工数更新 |
 | PUT | `/indirect-work-cases/:id/monthly-indirect-work-loads/bulk` | 月次間接工数一括保存 |
+| DELETE | `/indirect-work-cases/:id/monthly-indirect-work-loads/:loadId` | 月次間接工数物理削除 |
 
 #### マスタ
 
@@ -744,10 +781,11 @@ function calculateDirectWorkCapacity(
 
 全APIは以下の共通レスポンス構造に従う。
 
+**一覧取得:**
+
 ```json
-// 一覧取得
 {
-  "data": [...],
+  "data": [],
   "meta": {
     "pagination": {
       "currentPage": 1,
@@ -757,14 +795,20 @@ function calculateDirectWorkCapacity(
     }
   }
 }
+```
 
-// 単一取得 / 作成 / 更新
+**単一取得 / 作成 / 更新:**
+
+```json
 {
-  "data": { ... }
+  "data": {}
 }
+```
 
-// 削除
-HTTP 204 No Content
+**削除:**
+
+```
+HTTP 204 No Content（レスポンスボディなし）
 ```
 
 ### 8.3 エラーレスポンス形式
@@ -791,3 +835,4 @@ RFC 9457 Problem Details 準拠。
 | 2026-02-01 | 0.1.0 | 初版作成 |
 | 2026-02-01 | 0.2.0 | Q&Aを反映、画面レイアウト詳細化 |
 | 2026-02-01 | 0.3.0 | 実装済みAPI・データモデルとの整合性を確保。主な変更: テーブル名を複数形に統一、capacity_scenariosのBU非依存設計を反映、monthly_indirect_work_loadsのsourceフィールド追加・work_type_code非保持を反映、restoreエンドポイント追記、calculateアクションAPI追記、バリデーションルールを実装に合わせて修正（hoursPerPerson: 0超〜744以下、ratio: 0〜1）、headcount_plan_casesのbusiness_unit_codeをNULL許容に修正、APIフィルタパラメータをfilter[includeDisabled]に修正 |
+| 2026-02-01 | 0.4.0 | 点検結果に基づく修正。§3.3: businessUnitName（JOIN取得）追記、businessUnitCodeのregex制約追記。§4.3: 計算結果ワイヤーフレームに人員数行・間接内訳折りたたみ・年間合計列を追加。§5.2: F-ICS-001のBUフィルタリングをサーバーサイド実施と明記。§6.2: getBuCode(yearMonth)を廃止しキャパシティデータからBUコード取得に修正、按分計算関数追加。§8.1: 子リソースの個別CRUD（GET単一/POST/PUT/DELETE）追記、filter[businessUnitCode]追記、monthlyHeadcountPlansのbusinessUnitCodeクエリパラメータ追記。§8.2: JSON内コメントを除去し見出し分離 |
