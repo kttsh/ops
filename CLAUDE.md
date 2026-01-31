@@ -12,7 +12,10 @@ Turborepo + pnpm を使用したモノレポ構成のフルスタックアプリ
 
 ## Git
 
-Git運用時は docs/rules/git-workflow.md を参照
+- Git運用時は docs/rules/git/git-workflow.md を参照
+- Git Issueの起票は docs/rules/git/github-issue.md を参照
+
+
 
 ## 開発コマンド
 
