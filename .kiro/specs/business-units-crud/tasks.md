@@ -1,21 +1,21 @@
 # Implementation Plan
 
-- [ ] 1. バックエンドプロジェクトの初期セットアップ
-- [ ] 1.1 Node.js プロジェクトの初期化と依存関係の設定
+- [x] 1. バックエンドプロジェクトの初期セットアップ
+- [x] 1.1 Node.js プロジェクトの初期化と依存関係の設定
   - Hono、mssql、Zod、@hono/zod-validator、dotenv などの必須パッケージをインストールする
   - TypeScript の設定（tsconfig.json）を作成し、パスエイリアスやビルド設定を整える
   - Vitest の設定ファイルを作成する
   - 開発用スクリプト（dev, build, test）を package.json に追加する
   - _Requirements: 7.1, 7.2_
 
-- [ ] 1.2 DB 接続基盤の構築
+- [x] 1.2 DB 接続基盤の構築
   - 環境変数（DB_SERVER, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD）を読み込み、mssql のコネクションプールを初期化する
   - Azure SQL Database への接続に必要な暗号化設定（encrypt: true）を適用する
   - コネクションプールをシングルトンとしてエクスポートし、データ層から利用可能にする
   - 接続失敗時にプロセスを停止するエラーハンドリングを実装する
   - _Requirements: 7.1_
 
-- [ ] 1.3 Hono アプリケーションのエントリーポイントと共通ミドルウェアの構築
+- [x] 1.3 Hono アプリケーションのエントリーポイントと共通ミドルウェアの構築
   - Hono アプリケーションを初期化し、logger / cors / prettyJSON ミドルウェアを設定する
   - @hono/node-server でサーバーを起動する構成を作成する
   - _Requirements: 7.1_
