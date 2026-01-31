@@ -24,13 +24,13 @@ const CAPACITY_COLORS = [
 
 interface SidePanelSettingsProps {
   from: string | undefined
-  to: string | undefined
-  onPeriodChange: (from: string | undefined, to: string | undefined) => void
+  months: number
+  onPeriodChange: (from: string | undefined, months: number) => void
 }
 
 export function SidePanelSettings({
   from,
-  to,
+  months,
   onPeriodChange,
 }: SidePanelSettingsProps) {
   const { data: ptData } = useQuery(projectTypesQueryOptions())
@@ -111,7 +111,7 @@ export function SidePanelSettings({
       {/* 期間設定 */}
       <div>
         <h3 className="mb-3 text-sm font-semibold">期間設定</h3>
-        <PeriodSelector from={from} to={to} onChange={onPeriodChange} />
+        <PeriodSelector from={from} months={months} onChange={onPeriodChange} />
       </div>
 
       <Separator />

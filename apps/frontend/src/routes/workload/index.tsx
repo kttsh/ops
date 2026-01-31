@@ -74,13 +74,15 @@ function WorkloadPage() {
       {/* ヘッダーバー */}
       <div className="flex items-center justify-between border-b border-border px-4 py-2">
         <h1 className="text-lg font-semibold">山積ダッシュボード</h1>
-        <div className="flex items-center gap-3">
-          <ViewToggle value={filters.view} onChange={setViewMode} />
-          <BusinessUnitSelector
-            selectedCodes={filters.bu}
-            onChange={setBusinessUnits}
-          />
-        </div>
+        <ViewToggle value={filters.view} onChange={setViewMode} />
+      </div>
+
+      {/* BU選択 */}
+      <div className="border-b border-border px-4 py-3">
+        <BusinessUnitSelector
+          selectedCodes={filters.bu}
+          onChange={setBusinessUnits}
+        />
       </div>
 
       {/* メインコンテンツ */}
@@ -99,7 +101,7 @@ function WorkloadPage() {
           settingsContent={
             <SidePanelSettings
               from={filters.from}
-              to={filters.to}
+              months={filters.months}
               onPeriodChange={setPeriod}
             />
           }

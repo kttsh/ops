@@ -1,12 +1,12 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 interface PeriodSelectorProps {
   from: string | undefined
-  to: string | undefined
-  onChange: (from: string | undefined, to: string | undefined) => void
+  months: number
+  onChange: (from: string | undefined, months: number) => void
 }
 
 function formatForDisplay(ym: string | undefined): string {
@@ -20,66 +20,61 @@ function parseFromDisplay(value: string): string | undefined {
   return undefined
 }
 
-function validatePeriod(from: string | undefined, to: string | undefined): string | null {
-  if (from && !/^\d{6}$/.test(from)) return 'YYYY/MM形式で入力してください'
-  if (to && !/^\d{6}$/.test(to)) return 'YYYY/MM形式で入力してください'
-  if (from && to && from > to) return '開始年月は終了年月以前である必要があります'
-  if (from && to) {
-    const startYear = parseInt(from.slice(0, 4), 10)
-    const startMonth = parseInt(from.slice(4, 6), 10)
-    const endYear = parseInt(to.slice(0, 4), 10)
-    const endMonth = parseInt(to.slice(4, 6), 10)
-    const months = (endYear - startYear) * 12 + (endMonth - startMonth) + 1
-    if (months > 60) return '表示期間は60ヶ月以内で指定してください'
-  }
-  return null
+function getFiscalYearStart(): string {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth() + 1
+  const fiscalYear = month >= 4 ? year : year - 1
+  return `${fiscalYear}04`
 }
 
-export function PeriodSelector({ from, to, onChange }: PeriodSelectorProps) {
-  const [fromInput, setFromInput] = useState(formatForDisplay(from))
-  const [toInput, setToInput] = useState(formatForDisplay(to))
+function computeEndYearMonth(from: string, months: number): string {
+  const startY = parseInt(from.slice(0, 4), 10)
+  const startM = parseInt(from.slice(4, 6), 10)
+  let endM = startM + months - 1
+  let endY = startY
+  while (endM > 12) {
+    endM -= 12
+    endY++
+  }
+  return `${endY}${String(endM).padStart(2, '0')}`
+}
+
+export function PeriodSelector({ from, months, onChange }: PeriodSelectorProps) {
+  const defaultFrom = getFiscalYearStart()
+  const effectiveFrom = from ?? defaultFrom
+
+  const [fromInput, setFromInput] = useState(formatForDisplay(effectiveFrom))
+  const [monthsInput, setMonthsInput] = useState(String(months))
   const [error, setError] = useState<string | null>(null)
+
+  const endYearMonth = useMemo(
+    () => computeEndYearMonth(effectiveFrom, months),
+    [effectiveFrom, months],
+  )
 
   const apply = useCallback(() => {
     const parsedFrom = parseFromDisplay(fromInput)
-    const parsedTo = parseFromDisplay(toInput)
-    const validationError = validatePeriod(parsedFrom, parsedTo)
-    if (validationError) {
-      setError(validationError)
+    const parsedMonths = parseInt(monthsInput, 10)
+
+    if (!parsedFrom) {
+      setError('開始年月をYYYY/MM形式で入力してください')
+      return
+    }
+    if (isNaN(parsedMonths) || parsedMonths < 1 || parsedMonths > 60) {
+      setError('期間は1〜60ヶ月で指定してください')
       return
     }
     setError(null)
-    onChange(parsedFrom, parsedTo)
-  }, [fromInput, toInput, onChange])
-
-  const handlePreset = useCallback(
-    (months: number) => {
-      const now = new Date()
-      const startYear = now.getFullYear()
-      const startMonth = now.getMonth() + 1
-      const start = `${startYear}${String(startMonth).padStart(2, '0')}`
-
-      let endYear = startYear
-      let endMonth = startMonth + months - 1
-      while (endMonth > 12) {
-        endMonth -= 12
-        endYear++
-      }
-      const end = `${endYear}${String(endMonth).padStart(2, '0')}`
-
-      setFromInput(formatForDisplay(start))
-      setToInput(formatForDisplay(end))
-      setError(null)
-      onChange(start, end)
-    },
-    [onChange],
-  )
+    onChange(parsedFrom, parsedMonths)
+  }, [fromInput, monthsInput, onChange])
 
   const handleReset = useCallback(() => {
-    setFromInput('')
-    setToInput('')
+    const defFrom = getFiscalYearStart()
+    setFromInput(formatForDisplay(defFrom))
+    setMonthsInput('36')
     setError(null)
-    onChange(undefined, undefined)
+    onChange(defFrom, 36)
   }, [onChange])
 
   return (
@@ -96,29 +91,27 @@ export function PeriodSelector({ from, to, onChange }: PeriodSelectorProps) {
           />
         </div>
         <div>
-          <Label className="text-xs">終了年月</Label>
+          <Label className="text-xs">期間（ヶ月）</Label>
           <Input
-            placeholder="YYYY/MM"
-            value={toInput}
-            onChange={(e) => setToInput(e.target.value)}
+            type="number"
+            min={1}
+            max={60}
+            placeholder="36"
+            value={monthsInput}
+            onChange={(e) => setMonthsInput(e.target.value)}
             onBlur={apply}
             className="mt-1 h-8 text-sm"
           />
         </div>
       </div>
 
+      <div className="text-xs text-muted-foreground">
+        終了年月: {formatForDisplay(endYearMonth)}
+      </div>
+
       {error && <p className="text-xs text-destructive">{error}</p>}
 
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => handlePreset(12)}>
-          12ヶ月
-        </Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => handlePreset(24)}>
-          24ヶ月
-        </Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => handlePreset(36)}>
-          36ヶ月
-        </Button>
         <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleReset}>
           リセット
         </Button>

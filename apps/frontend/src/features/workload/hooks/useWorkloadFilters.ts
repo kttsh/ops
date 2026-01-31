@@ -24,8 +24,8 @@ export function useWorkloadFilters(): UseWorkloadFiltersReturn {
   )
 
   const setPeriod = useCallback(
-    (from: string | undefined, to: string | undefined) => {
-      navigate({ search: (prev) => ({ ...prev, from, to }) })
+    (from: string | undefined, months: number) => {
+      navigate({ search: (prev) => ({ ...prev, from, months }) })
     },
     [navigate],
   )
@@ -51,15 +51,31 @@ export function useWorkloadFilters(): UseWorkloadFiltersReturn {
 
     const now = new Date()
     const currentYear = now.getFullYear()
-    const defaultFrom = `${currentYear}01`
-    const defaultTo = `${currentYear + 3}12`
+    const currentMonth = now.getMonth() + 1
+    // 今年度開始月: 4月始まり。1-3月なら前年度4月
+    const fiscalStartYear = currentMonth >= 4 ? currentYear : currentYear - 1
+    const defaultFrom = `${fiscalStartYear}04`
+
+    const startYearMonth = filters.from ?? defaultFrom
+    const months = filters.months
+
+    // 終了年月を開始年月＋期間から計算
+    const startY = parseInt(startYearMonth.slice(0, 4), 10)
+    const startM = parseInt(startYearMonth.slice(4, 6), 10)
+    let endM = startM + months - 1
+    let endY = startY
+    while (endM > 12) {
+      endM -= 12
+      endY++
+    }
+    const endYearMonth = `${endY}${String(endM).padStart(2, '0')}`
 
     return {
       businessUnitCodes: filters.bu,
-      startYearMonth: filters.from ?? defaultFrom,
-      endYearMonth: filters.to ?? defaultTo,
+      startYearMonth,
+      endYearMonth,
     }
-  }, [filters.bu, filters.from, filters.to, hasBusinessUnits])
+  }, [filters.bu, filters.from, filters.months, hasBusinessUnits])
 
   return {
     filters,
