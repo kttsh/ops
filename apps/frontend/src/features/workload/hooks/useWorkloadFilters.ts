@@ -5,7 +5,7 @@ import type { ChartDataParams, WorkloadSearchParams } from '@/features/workload/
 export interface UseWorkloadFiltersReturn {
   filters: WorkloadSearchParams
   setBusinessUnits: (codes: string[]) => void
-  setPeriod: (from: string | undefined, to: string | undefined) => void
+  setPeriod: (from: string | undefined, months: number) => void
   setViewMode: (mode: 'chart' | 'table' | 'both') => void
   setSidePanelTab: (tab: 'projects' | 'indirect' | 'settings') => void
   hasBusinessUnits: boolean

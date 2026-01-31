@@ -112,7 +112,6 @@ function BusinessUnitDetailPage() {
         <DetailRow label="ビジネスユニットコード" value={bu.businessUnitCode} />
         <DetailRow label="名称" value={bu.name} />
         <DetailRow label="表示順" value={String(bu.displayOrder)} />
-        <DetailRow label="作成日時" value={new Date(bu.createdAt).toLocaleString('ja-JP')} />
         <DetailRow label="更新日時" value={new Date(bu.updatedAt).toLocaleString('ja-JP')} />
       </div>
 

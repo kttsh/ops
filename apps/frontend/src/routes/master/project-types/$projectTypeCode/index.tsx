@@ -109,7 +109,6 @@ function ProjectTypeDetailPage() {
         <DetailRow label="案件タイプコード" value={pt.projectTypeCode} />
         <DetailRow label="名称" value={pt.name} />
         <DetailRow label="表示順" value={String(pt.displayOrder)} />
-        <DetailRow label="作成日時" value={new Date(pt.createdAt).toLocaleString('ja-JP')} />
         <DetailRow label="更新日時" value={new Date(pt.updatedAt).toLocaleString('ja-JP')} />
       </div>
 

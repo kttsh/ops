@@ -137,7 +137,6 @@ function ProjectDetailPage() {
           </dd>
         </div>
         <DetailRow label="期間月数" value={project.durationMonths != null ? `${project.durationMonths} ヶ月` : '—'} />
-        <DetailRow label="作成日時" value={new Date(project.createdAt).toLocaleString('ja-JP')} />
         <DetailRow label="更新日時" value={new Date(project.updatedAt).toLocaleString('ja-JP')} />
       </div>
 

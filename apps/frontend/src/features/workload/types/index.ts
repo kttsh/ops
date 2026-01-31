@@ -284,11 +284,7 @@ export const workloadSearchSchema = z.object({
     .regex(/^\d{6}$/)
     .optional()
     .catch(undefined),
-  to: z
-    .string()
-    .regex(/^\d{6}$/)
-    .optional()
-    .catch(undefined),
+  months: z.number().int().min(1).max(60).catch(36).default(36),
   view: z.enum(['chart', 'table', 'both']).catch('both').default('both'),
   tab: z
     .enum(['projects', 'indirect', 'settings'])

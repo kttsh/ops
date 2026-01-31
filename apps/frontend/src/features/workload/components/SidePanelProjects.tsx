@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Search, Check, ArrowUpDown } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { Search, Check, ArrowUpDown, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { projectsQueryOptions } from '@/features/workload/api/queries'
 
@@ -117,38 +119,60 @@ export function SidePanelProjects({
         {filtered.map((project) => {
           const selected = selectedProjectIds.has(project.projectId)
           return (
-            <button
+            <div
               key={project.projectId}
-              type="button"
-              className="flex w-full items-start gap-3 rounded-lg border border-border p-3 text-left text-sm transition-colors hover:bg-accent"
-              onClick={() => toggleProject(project.projectId)}
+              className="flex w-full items-start gap-3 rounded-lg border border-border p-3 text-sm transition-colors hover:bg-accent"
             >
-              <div
-                className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
-                  selected
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-input'
-                }`}
+              <button
+                type="button"
+                className="flex flex-1 items-start gap-3 text-left"
+                onClick={() => toggleProject(project.projectId)}
               >
-                {selected && <Check className="h-3 w-3" />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="truncate font-medium">{project.projectName}</p>
-                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-                  {project.businessUnitName && <span>{project.businessUnitName}</span>}
-                  {project.projectTypeName && <span>{project.projectTypeName}</span>}
-                  {project.totalManhour != null && (
-                    <span>{project.totalManhour.toLocaleString('ja-JP')}H</span>
-                  )}
-                  {project.startYearMonth && (
-                    <span>
-                      {project.startYearMonth.slice(0, 4)}/{project.startYearMonth.slice(4, 6)}
-                      {project.durationMonths != null && ` (${project.durationMonths}ヶ月)`}
-                    </span>
-                  )}
+                <div
+                  className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
+                    selected
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-input'
+                  }`}
+                >
+                  {selected && <Check className="h-3 w-3" />}
                 </div>
-              </div>
-            </button>
+                <div className="flex-1 min-w-0">
+                  <p className="truncate font-medium">{project.projectName}</p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {project.businessUnitName && (
+                      <Badge variant="secondary" className="text-xs">
+                        {project.businessUnitName}
+                      </Badge>
+                    )}
+                    {project.projectTypeName && (
+                      <Badge variant="outline" className="text-xs">
+                        {project.projectTypeName}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                    {project.startYearMonth && (
+                      <span>
+                        {project.startYearMonth.slice(0, 4)}/{project.startYearMonth.slice(4, 6)}
+                        {project.durationMonths != null && ` (${project.durationMonths}ヶ月)`}
+                      </span>
+                    )}
+                    {project.totalManhour != null && (
+                      <span>{project.totalManhour.toLocaleString('ja-JP')}H</span>
+                    )}
+                  </div>
+                </div>
+              </button>
+              <Link
+                to="/master/projects/$projectId/edit"
+                params={{ projectId: String(project.projectId) }}
+                className="mt-0.5 shrink-0 rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
           )
         })}
         {filtered.length === 0 && (

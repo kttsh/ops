@@ -128,7 +128,6 @@ function WorkTypeDetailPage() {
           </dd>
         </div>
         <DetailRow label="表示順" value={String(wt.displayOrder)} />
-        <DetailRow label="作成日時" value={new Date(wt.createdAt).toLocaleString('ja-JP')} />
         <DetailRow label="更新日時" value={new Date(wt.updatedAt).toLocaleString('ja-JP')} />
       </div>
 

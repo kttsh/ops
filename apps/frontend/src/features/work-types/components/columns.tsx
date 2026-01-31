@@ -100,21 +100,6 @@ export function createColumns(options: {
       },
     },
     {
-      accessorKey: 'createdAt',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="-ml-3 h-8"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          作成日時
-          <ArrowUpDown className="ml-1 h-3 w-3" />
-        </Button>
-      ),
-      cell: ({ row }) => formatDateTime(row.original.createdAt),
-    },
-    {
       accessorKey: 'updatedAt',
       header: ({ column }) => (
         <Button
