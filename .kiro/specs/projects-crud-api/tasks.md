@@ -111,7 +111,7 @@
   - サービス層をモックし、404 / 409 エラーが正しくレスポンスされることを検証する
   - _Requirements: 9.1, 9.2, 9.3, 9.4_
 
-- [ ] 7. Pull Request の作成
+- [x] 7. Pull Request の作成
   - 全タスクの実装とテストが完了していることを確認する
   - コミットメッセージは Conventional Commits 形式（`feat(projects-crud-api): ...`）で、scope に specId を使用する
   - PR タイトル: `[projects-crud-api] 案件 CRUD API の実装`
