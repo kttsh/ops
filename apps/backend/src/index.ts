@@ -6,6 +6,7 @@ import { prettyJSON } from 'hono/pretty-json'
 import { HTTPException } from 'hono/http-exception'
 import { problemResponse, getProblemType, getStatusTitle } from '@/utils/errorHelper'
 import type { StatusCode } from 'hono/utils/http-status'
+import businessUnits from '@/routes/businessUnits'
 
 const app = new Hono()
 
@@ -40,6 +41,9 @@ app.onError((err, c) => {
     timestamp: new Date().toISOString(),
   }, 500)
 })
+
+// ルートのマウント
+app.route('/business-units', businessUnits)
 
 // Not Found ハンドラ
 app.notFound((c) => {
