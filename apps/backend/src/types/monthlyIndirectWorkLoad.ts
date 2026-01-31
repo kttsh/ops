@@ -17,8 +17,8 @@ const yearMonthSchema = z
 /** データソース区分バリデーション */
 const sourceSchema = z.enum(['calculated', 'manual'])
 
-/** 工数バリデーション: 0以上99999999.99以下 */
-const manhourSchema = z.number().min(0).max(99999999.99)
+/** 工数バリデーション: 0以上の整数 */
+const manhourSchema = z.number().int().min(0).max(99999999)
 
 /** 事業部コードバリデーション: 1文字以上20文字以下 */
 const businessUnitCodeSchema = z.string().min(1).max(20)

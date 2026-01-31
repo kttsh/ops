@@ -59,7 +59,7 @@ const sampleLoad1 = {
   indirectWorkCaseId: 10,
   businessUnitCode: 'BU001',
   yearMonth: '202601',
-  manhour: 100.5,
+  manhour: 100,
   source: 'calculated',
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
@@ -70,7 +70,7 @@ const sampleLoad2 = {
   indirectWorkCaseId: 10,
   businessUnitCode: 'BU002',
   yearMonth: '202602',
-  manhour: 200.0,
+  manhour: 200,
   source: 'manual',
   createdAt: '2026-01-02T00:00:00.000Z',
   updatedAt: '2026-01-02T00:00:00.000Z',
@@ -230,7 +230,7 @@ describe('POST /indirect-work-cases/:indirectWorkCaseId/monthly-indirect-work-lo
       body: JSON.stringify({
         businessUnitCode: 'BU001',
         yearMonth: '202601',
-        manhour: 100.5,
+        manhour: 100,
         source: 'calculated',
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -250,7 +250,7 @@ describe('POST /indirect-work-cases/:indirectWorkCaseId/monthly-indirect-work-lo
       body: JSON.stringify({
         businessUnitCode: 'BU001',
         yearMonth: '202601',
-        manhour: 100.5,
+        manhour: 100,
         source: 'calculated',
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -442,29 +442,29 @@ describe('PUT /indirect-work-cases/:indirectWorkCaseId/monthly-indirect-work-loa
   })
 
   test('正常更新で 200 を返す', async () => {
-    const updatedLoad = { ...sampleLoad1, manhour: 150.0 }
+    const updatedLoad = { ...sampleLoad1, manhour: 150 }
     mockedService.update.mockResolvedValue(updatedLoad)
 
     const res = await app.request(`${BASE_URL}/1`, {
       method: 'PUT',
-      body: JSON.stringify({ manhour: 150.0 }),
+      body: JSON.stringify({ manhour: 150 }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
     expect(res.status).toBe(200)
 
     const body = await res.json()
-    expect(body.data.manhour).toBe(150.0)
+    expect(body.data.manhour).toBe(150)
   })
 
   test('更新されたフィールド（source 含む）の反映を検証する', async () => {
-    const updatedLoad = { ...sampleLoad1, source: 'manual', manhour: 300.0 }
+    const updatedLoad = { ...sampleLoad1, source: 'manual', manhour: 300 }
     mockedService.update.mockResolvedValue(updatedLoad)
 
     const res = await app.request(`${BASE_URL}/1`, {
       method: 'PUT',
       body: JSON.stringify({
         source: 'manual',
-        manhour: 300.0,
+        manhour: 300,
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
@@ -472,7 +472,7 @@ describe('PUT /indirect-work-cases/:indirectWorkCaseId/monthly-indirect-work-loa
 
     const body = await res.json()
     expect(body.data.source).toBe('manual')
-    expect(body.data.manhour).toBe(300.0)
+    expect(body.data.manhour).toBe(300)
   })
 
   test('存在しないIDで 404 を返す', async () => {
@@ -605,8 +605,8 @@ describe('PUT /indirect-work-cases/:indirectWorkCaseId/monthly-indirect-work-loa
       method: 'PUT',
       body: JSON.stringify({
         items: [
-          { businessUnitCode: 'BU001', yearMonth: '202601', manhour: 100.5, source: 'calculated' },
-          { businessUnitCode: 'BU002', yearMonth: '202602', manhour: 200.0, source: 'manual' },
+          { businessUnitCode: 'BU001', yearMonth: '202601', manhour: 100, source: 'calculated' },
+          { businessUnitCode: 'BU002', yearMonth: '202602', manhour: 200, source: 'manual' },
         ],
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -620,16 +620,16 @@ describe('PUT /indirect-work-cases/:indirectWorkCaseId/monthly-indirect-work-loa
   })
 
   test('新規作成と既存更新の混在を検証する', async () => {
-    const load3 = { ...sampleLoad1, monthlyIndirectWorkLoadId: 3, businessUnitCode: 'BU003', yearMonth: '202603', manhour: 300.0 }
+    const load3 = { ...sampleLoad1, monthlyIndirectWorkLoadId: 3, businessUnitCode: 'BU003', yearMonth: '202603', manhour: 300 }
     mockedService.bulkUpsert.mockResolvedValue([sampleLoad1, sampleLoad2, load3])
 
     const res = await app.request(`${BASE_URL}/bulk`, {
       method: 'PUT',
       body: JSON.stringify({
         items: [
-          { businessUnitCode: 'BU001', yearMonth: '202601', manhour: 100.5, source: 'calculated' },
-          { businessUnitCode: 'BU002', yearMonth: '202602', manhour: 200.0, source: 'manual' },
-          { businessUnitCode: 'BU003', yearMonth: '202603', manhour: 300.0, source: 'calculated' },
+          { businessUnitCode: 'BU001', yearMonth: '202601', manhour: 100, source: 'calculated' },
+          { businessUnitCode: 'BU002', yearMonth: '202602', manhour: 200, source: 'manual' },
+          { businessUnitCode: 'BU003', yearMonth: '202603', manhour: 300, source: 'calculated' },
         ],
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),

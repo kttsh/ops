@@ -51,7 +51,7 @@ export const monthlyIndirectWorkLoadData = {
       .input('indirectWorkCaseId', sql.Int, data.indirectWorkCaseId)
       .input('businessUnitCode', sql.VarChar(20), data.businessUnitCode)
       .input('yearMonth', sql.Char(6), data.yearMonth)
-      .input('manhour', sql.Decimal(10, 2), data.manhour)
+      .input('manhour', sql.Int, data.manhour)
       .input('source', sql.VarChar(20), data.source)
       .query<{ monthly_indirect_work_load_id: number }>(
         `INSERT INTO monthly_indirect_work_load (
@@ -93,7 +93,7 @@ export const monthlyIndirectWorkLoadData = {
     }
     if (data.manhour !== undefined) {
       setClauses.push('manhour = @manhour')
-      request.input('manhour', sql.Decimal(10, 2), data.manhour)
+      request.input('manhour', sql.Int, data.manhour)
     }
     if (data.source !== undefined) {
       setClauses.push('source = @source')
@@ -138,7 +138,7 @@ export const monthlyIndirectWorkLoadData = {
           .input('indirectWorkCaseId', sql.Int, indirectWorkCaseId)
           .input('businessUnitCode', sql.VarChar(20), item.businessUnitCode)
           .input('yearMonth', sql.Char(6), item.yearMonth)
-          .input('manhour', sql.Decimal(10, 2), item.manhour)
+          .input('manhour', sql.Int, item.manhour)
           .input('source', sql.VarChar(20), item.source)
           .query(
             `MERGE monthly_indirect_work_load AS target

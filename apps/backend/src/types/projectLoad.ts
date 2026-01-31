@@ -14,8 +14,8 @@ const yearMonthSchema = z
     { message: 'Month part must be between 01 and 12' },
   )
 
-/** 工数バリデーション: 0以上99999999.99以下 */
-const manhourSchema = z.number().min(0).max(99999999.99)
+/** 工数バリデーション: 0以上の整数 */
+const manhourSchema = z.number().int().min(0).max(99999999)
 
 // --- Zod スキーマ ---
 

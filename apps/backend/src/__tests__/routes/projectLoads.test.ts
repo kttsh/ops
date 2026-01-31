@@ -58,7 +58,7 @@ const sampleLoad1 = {
   projectLoadId: 1,
   projectCaseId: 10,
   yearMonth: '202601',
-  manhour: 100.5,
+  manhour: 100,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
 }
@@ -67,7 +67,7 @@ const sampleLoad2 = {
   projectLoadId: 2,
   projectCaseId: 10,
   yearMonth: '202602',
-  manhour: 200.0,
+  manhour: 200,
   createdAt: '2026-01-02T00:00:00.000Z',
   updatedAt: '2026-01-02T00:00:00.000Z',
 }
@@ -203,7 +203,7 @@ describe('POST /project-cases/:projectCaseId/project-loads', () => {
       method: 'POST',
       body: JSON.stringify({
         yearMonth: '202601',
-        manhour: 100.5,
+        manhour: 100,
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
@@ -328,29 +328,29 @@ describe('PUT /project-cases/:projectCaseId/project-loads/:projectLoadId', () =>
   })
 
   test('正常更新で 200 を返す', async () => {
-    const updatedLoad = { ...sampleLoad1, manhour: 150.0 }
+    const updatedLoad = { ...sampleLoad1, manhour: 150 }
     mockedService.update.mockResolvedValue(updatedLoad)
 
     const res = await app.request(`${BASE_URL}/1`, {
       method: 'PUT',
-      body: JSON.stringify({ manhour: 150.0 }),
+      body: JSON.stringify({ manhour: 150 }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
     expect(res.status).toBe(200)
 
     const body = await res.json()
-    expect(body.data.manhour).toBe(150.0)
+    expect(body.data.manhour).toBe(150)
   })
 
   test('更新されたフィールドの反映を検証する', async () => {
-    const updatedLoad = { ...sampleLoad1, yearMonth: '202603', manhour: 300.0 }
+    const updatedLoad = { ...sampleLoad1, yearMonth: '202603', manhour: 300 }
     mockedService.update.mockResolvedValue(updatedLoad)
 
     const res = await app.request(`${BASE_URL}/1`, {
       method: 'PUT',
       body: JSON.stringify({
         yearMonth: '202603',
-        manhour: 300.0,
+        manhour: 300,
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
@@ -358,7 +358,7 @@ describe('PUT /project-cases/:projectCaseId/project-loads/:projectLoadId', () =>
 
     const body = await res.json()
     expect(body.data.yearMonth).toBe('202603')
-    expect(body.data.manhour).toBe(300.0)
+    expect(body.data.manhour).toBe(300)
   })
 
   test('存在しないIDで 404 を返す', async () => {
@@ -475,8 +475,8 @@ describe('PUT /project-cases/:projectCaseId/project-loads/bulk', () => {
       method: 'PUT',
       body: JSON.stringify({
         items: [
-          { yearMonth: '202601', manhour: 100.5 },
-          { yearMonth: '202602', manhour: 200.0 },
+          { yearMonth: '202601', manhour: 100 },
+          { yearMonth: '202602', manhour: 200 },
         ],
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -490,16 +490,16 @@ describe('PUT /project-cases/:projectCaseId/project-loads/bulk', () => {
   })
 
   test('新規作成と既存更新の混在を検証する', async () => {
-    const load3 = { ...sampleLoad1, projectLoadId: 3, yearMonth: '202603', manhour: 300.0 }
+    const load3 = { ...sampleLoad1, projectLoadId: 3, yearMonth: '202603', manhour: 300 }
     mockedService.bulkUpsert.mockResolvedValue([sampleLoad1, sampleLoad2, load3])
 
     const res = await app.request(`${BASE_URL}/bulk`, {
       method: 'PUT',
       body: JSON.stringify({
         items: [
-          { yearMonth: '202601', manhour: 100.5 },
-          { yearMonth: '202602', manhour: 200.0 },
-          { yearMonth: '202603', manhour: 300.0 },
+          { yearMonth: '202601', manhour: 100 },
+          { yearMonth: '202602', manhour: 200 },
+          { yearMonth: '202603', manhour: 300 },
         ],
       }),
       headers: new Headers({ 'Content-Type': 'application/json' }),

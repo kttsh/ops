@@ -47,7 +47,7 @@ export const projectLoadData = {
       .request()
       .input('projectCaseId', sql.Int, data.projectCaseId)
       .input('yearMonth', sql.Char(6), data.yearMonth)
-      .input('manhour', sql.Decimal(10, 2), data.manhour)
+      .input('manhour', sql.Int, data.manhour)
       .query<{ project_load_id: number }>(
         `INSERT INTO project_load (
            project_case_id, year_month, manhour
@@ -82,7 +82,7 @@ export const projectLoadData = {
     }
     if (data.manhour !== undefined) {
       setClauses.push('manhour = @manhour')
-      request.input('manhour', sql.Decimal(10, 2), data.manhour)
+      request.input('manhour', sql.Int, data.manhour)
     }
 
     await request.query(
@@ -122,7 +122,7 @@ export const projectLoadData = {
         await request
           .input('projectCaseId', sql.Int, projectCaseId)
           .input('yearMonth', sql.Char(6), item.yearMonth)
-          .input('manhour', sql.Decimal(10, 2), item.manhour)
+          .input('manhour', sql.Int, item.manhour)
           .query(
             `MERGE project_load AS target
              USING (SELECT @projectCaseId AS project_case_id, @yearMonth AS year_month) AS source

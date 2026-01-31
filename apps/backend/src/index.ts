@@ -9,6 +9,7 @@ import type { StatusCode } from 'hono/utils/http-status'
 import businessUnits from '@/routes/businessUnits'
 import projectTypes from '@/routes/projectTypes'
 import workTypes from '@/routes/workTypes'
+import projects from '@/routes/projects'
 import projectCases from '@/routes/projectCases'
 import headcountPlanCases from '@/routes/headcountPlanCases'
 import indirectWorkCases from '@/routes/indirectWorkCases'
@@ -26,6 +27,7 @@ import chartColorPalettes from '@/routes/chartColorPalettes'
 import chartColorSettings from '@/routes/chartColorSettings'
 import chartStackOrderSettings from '@/routes/chartStackOrderSettings'
 import projectChangeHistory from '@/routes/projectChangeHistory'
+import health from '@/routes/health'
 
 const app = new Hono()
 
@@ -65,6 +67,7 @@ app.onError((err, c) => {
 app.route('/business-units', businessUnits)
 app.route('/project-types', projectTypes)
 app.route('/work-types', workTypes)
+app.route('/projects', projects)
 app.route('/projects/:projectId/project-cases', projectCases)
 app.route('/headcount-plan-cases', headcountPlanCases)
 app.route('/indirect-work-cases', indirectWorkCases)
@@ -82,6 +85,8 @@ app.route('/chart-color-palettes', chartColorPalettes)
 app.route('/chart-color-settings', chartColorSettings)
 app.route('/chart-stack-order-settings', chartStackOrderSettings)
 app.route('/projects/:projectId/change-history', projectChangeHistory)
+
+app.route('/health', health)
 
 // Not Found ハンドラ
 app.notFound((c) => {
