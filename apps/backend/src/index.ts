@@ -9,6 +9,7 @@ import type { StatusCode } from 'hono/utils/http-status'
 import businessUnits from '@/routes/businessUnits'
 import projectTypes from '@/routes/projectTypes'
 import workTypes from '@/routes/workTypes'
+import projectCases from '@/routes/projectCases'
 
 const app = new Hono()
 
@@ -48,6 +49,7 @@ app.onError((err, c) => {
 app.route('/business-units', businessUnits)
 app.route('/project-types', projectTypes)
 app.route('/work-types', workTypes)
+app.route('/projects/:projectId/project-cases', projectCases)
 
 // Not Found ハンドラ
 app.notFound((c) => {
