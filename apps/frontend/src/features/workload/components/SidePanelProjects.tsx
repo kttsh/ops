@@ -34,14 +34,14 @@ export function SidePanelProjects({
     if (searchText.trim()) {
       const lower = searchText.toLowerCase()
       result = result.filter((p) =>
-        (p.projectName ?? '').toLowerCase().includes(lower),
+        (p.name ?? '').toLowerCase().includes(lower),
       )
     }
 
     result = [...result].sort((a, b) => {
       switch (sortKey) {
         case 'name':
-          return collator.compare(a.projectName ?? '', b.projectName ?? '')
+          return collator.compare(a.name ?? '', b.name ?? '')
         case 'manhour':
           return (b.totalManhour ?? 0) - (a.totalManhour ?? 0)
         case 'duration':
@@ -138,7 +138,7 @@ export function SidePanelProjects({
                   {selected && <Check className="h-3 w-3" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="truncate font-medium">{project.projectName}</p>
+                  <p className="truncate font-medium">{project.name}</p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {project.businessUnitName && (
                       <Badge variant="secondary" className="text-xs">

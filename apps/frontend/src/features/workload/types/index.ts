@@ -103,18 +103,19 @@ export type IndirectWorkCase = {
 
 export type Project = {
   projectId: number
-  projectName: string
+  projectCode: string
+  name: string
   businessUnitCode: string
+  businessUnitName: string
   projectTypeCode: string | null
-  projectTypeName?: string | null
-  businessUnitName?: string
-  startYearMonth: string | null
-  endYearMonth: string | null
+  projectTypeName: string | null
+  startYearMonth: string
+  totalManhour: number
+  status: string
   durationMonths: number | null
-  totalManhour?: number
   createdAt: string
   updatedAt: string
-  deletedAt?: string | null
+  deletedAt: string | null
 }
 
 // ============================================================
