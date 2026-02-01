@@ -347,7 +347,20 @@ INSERT INTO monthly_capacity (capacity_scenario_id, business_unit_code, year_mon
 (1, 'PLANT', '202701', 22400.00),
 (1, 'PLANT', '202702', 22400.00),
 (1, 'PLANT', '202703', 22400.00),
--- TRANS 2025年度 (50人想定)
+-- PLANT 2027年度 (180人 × 160h × 80% = 23,040h)
+(1, 'PLANT', '202704', 23040.00),
+(1, 'PLANT', '202705', 23040.00),
+(1, 'PLANT', '202706', 23040.00),
+(1, 'PLANT', '202707', 23040.00),
+(1, 'PLANT', '202708', 23040.00),
+(1, 'PLANT', '202709', 23040.00),
+(1, 'PLANT', '202710', 23040.00),
+(1, 'PLANT', '202711', 23040.00),
+(1, 'PLANT', '202712', 23040.00),
+(1, 'PLANT', '202801', 23040.00),
+(1, 'PLANT', '202802', 23040.00),
+(1, 'PLANT', '202803', 23040.00),
+-- TRANS 2025年度 (50人 × 160h × 80% = 6,400h)
 (1, 'TRANS', '202504', 6400.00),
 (1, 'TRANS', '202505', 6400.00),
 (1, 'TRANS', '202506', 6400.00),
@@ -360,7 +373,42 @@ INSERT INTO monthly_capacity (capacity_scenario_id, business_unit_code, year_mon
 (1, 'TRANS', '202601', 6400.00),
 (1, 'TRANS', '202602', 6400.00),
 (1, 'TRANS', '202603', 6400.00),
--- CO2 2025年度 (30人想定)
+-- TRANS 2026年度 (50人)
+(1, 'TRANS', '202604', 6400.00),
+(1, 'TRANS', '202605', 6400.00),
+(1, 'TRANS', '202606', 6400.00),
+(1, 'TRANS', '202607', 6400.00),
+(1, 'TRANS', '202608', 6400.00),
+(1, 'TRANS', '202609', 6400.00),
+(1, 'TRANS', '202610', 6400.00),
+(1, 'TRANS', '202611', 6400.00),
+(1, 'TRANS', '202612', 6400.00),
+(1, 'TRANS', '202701', 6400.00),
+(1, 'TRANS', '202702', 6400.00),
+(1, 'TRANS', '202703', 6400.00),
+-- TRANS 2027年度 (50人)
+(1, 'TRANS', '202704', 6400.00),
+(1, 'TRANS', '202705', 6400.00),
+(1, 'TRANS', '202706', 6400.00),
+(1, 'TRANS', '202707', 6400.00),
+(1, 'TRANS', '202708', 6400.00),
+(1, 'TRANS', '202709', 6400.00),
+(1, 'TRANS', '202710', 6400.00),
+(1, 'TRANS', '202711', 6400.00),
+(1, 'TRANS', '202712', 6400.00),
+(1, 'TRANS', '202801', 6400.00),
+(1, 'TRANS', '202802', 6400.00),
+(1, 'TRANS', '202803', 6400.00),
+(1, 'TRANS', '202804', 6400.00),
+(1, 'TRANS', '202805', 6400.00),
+(1, 'TRANS', '202806', 6400.00),
+(1, 'TRANS', '202807', 6400.00),
+(1, 'TRANS', '202808', 6400.00),
+(1, 'TRANS', '202809', 6400.00),
+(1, 'TRANS', '202810', 6400.00),
+(1, 'TRANS', '202811', 6400.00),
+(1, 'TRANS', '202812', 6400.00),
+-- CO2 2025年度 (30人 × 160h × 80% = 3,840h)
 (1, 'CO2', '202504', 3840.00),
 (1, 'CO2', '202505', 3840.00),
 (1, 'CO2', '202506', 3840.00),
@@ -376,8 +424,10 @@ INSERT INTO monthly_capacity (capacity_scenario_id, business_unit_code, year_mon
 
 -- -----------------------------------------------------------------------------
 -- monthly_indirect_work_load: 月次間接作業負荷
--- indirect_work_case_id = 1 (PLANT標準配分)
 -- -----------------------------------------------------------------------------
+
+-- indirect_work_case_id = 1 (PLANT標準配分)
+-- 2025年度 (165人 × 20% 間接率 ≒ 4,200h/月)
 INSERT INTO monthly_indirect_work_load (indirect_work_case_id, business_unit_code, year_month, manhour, source) VALUES
 (1, 'PLANT', '202504', 4200.00, 'calculated'),
 (1, 'PLANT', '202505', 4200.00, 'calculated'),
@@ -390,12 +440,104 @@ INSERT INTO monthly_indirect_work_load (indirect_work_case_id, business_unit_cod
 (1, 'PLANT', '202512', 4200.00, 'calculated'),
 (1, 'PLANT', '202601', 4200.00, 'calculated'),
 (1, 'PLANT', '202602', 4200.00, 'calculated'),
-(1, 'PLANT', '202603', 4200.00, 'calculated');
+(1, 'PLANT', '202603', 4200.00, 'calculated'),
+-- 2026年度 (175人 × 20% 間接率 ≒ 4,480h/月)
+(1, 'PLANT', '202604', 4480.00, 'calculated'),
+(1, 'PLANT', '202605', 4480.00, 'calculated'),
+(1, 'PLANT', '202606', 4480.00, 'calculated'),
+(1, 'PLANT', '202607', 4480.00, 'calculated'),
+(1, 'PLANT', '202608', 4480.00, 'calculated'),
+(1, 'PLANT', '202609', 4480.00, 'calculated'),
+(1, 'PLANT', '202610', 4480.00, 'calculated'),
+(1, 'PLANT', '202611', 4480.00, 'calculated'),
+(1, 'PLANT', '202612', 4480.00, 'calculated'),
+(1, 'PLANT', '202701', 4480.00, 'calculated'),
+(1, 'PLANT', '202702', 4480.00, 'calculated'),
+(1, 'PLANT', '202703', 4480.00, 'calculated'),
+-- 2027年度 (180人 × 20% 間接率 ≒ 4,608h/月)
+(1, 'PLANT', '202704', 4608.00, 'calculated'),
+(1, 'PLANT', '202705', 4608.00, 'calculated'),
+(1, 'PLANT', '202706', 4608.00, 'calculated'),
+(1, 'PLANT', '202707', 4608.00, 'calculated'),
+(1, 'PLANT', '202708', 4608.00, 'calculated'),
+(1, 'PLANT', '202709', 4608.00, 'calculated'),
+(1, 'PLANT', '202710', 4608.00, 'calculated'),
+(1, 'PLANT', '202711', 4608.00, 'calculated'),
+(1, 'PLANT', '202712', 4608.00, 'calculated'),
+(1, 'PLANT', '202801', 4608.00, 'calculated'),
+(1, 'PLANT', '202802', 4608.00, 'calculated'),
+(1, 'PLANT', '202803', 4608.00, 'calculated');
+
+-- indirect_work_case_id = 2 (TRANS標準配分)
+-- 50人 × 20% 間接率 ≒ 1,280h/月
+INSERT INTO monthly_indirect_work_load (indirect_work_case_id, business_unit_code, year_month, manhour, source) VALUES
+(2, 'TRANS', '202504', 1280.00, 'calculated'),
+(2, 'TRANS', '202505', 1280.00, 'calculated'),
+(2, 'TRANS', '202506', 1280.00, 'calculated'),
+(2, 'TRANS', '202507', 1280.00, 'calculated'),
+(2, 'TRANS', '202508', 1280.00, 'calculated'),
+(2, 'TRANS', '202509', 1280.00, 'calculated'),
+(2, 'TRANS', '202510', 1280.00, 'calculated'),
+(2, 'TRANS', '202511', 1280.00, 'calculated'),
+(2, 'TRANS', '202512', 1280.00, 'calculated'),
+(2, 'TRANS', '202601', 1280.00, 'calculated'),
+(2, 'TRANS', '202602', 1280.00, 'calculated'),
+(2, 'TRANS', '202603', 1280.00, 'calculated'),
+(2, 'TRANS', '202604', 1280.00, 'calculated'),
+(2, 'TRANS', '202605', 1280.00, 'calculated'),
+(2, 'TRANS', '202606', 1280.00, 'calculated'),
+(2, 'TRANS', '202607', 1280.00, 'calculated'),
+(2, 'TRANS', '202608', 1280.00, 'calculated'),
+(2, 'TRANS', '202609', 1280.00, 'calculated'),
+(2, 'TRANS', '202610', 1280.00, 'calculated'),
+(2, 'TRANS', '202611', 1280.00, 'calculated'),
+(2, 'TRANS', '202612', 1280.00, 'calculated'),
+(2, 'TRANS', '202701', 1280.00, 'calculated'),
+(2, 'TRANS', '202702', 1280.00, 'calculated'),
+(2, 'TRANS', '202703', 1280.00, 'calculated'),
+(2, 'TRANS', '202704', 1280.00, 'calculated'),
+(2, 'TRANS', '202705', 1280.00, 'calculated'),
+(2, 'TRANS', '202706', 1280.00, 'calculated'),
+(2, 'TRANS', '202707', 1280.00, 'calculated'),
+(2, 'TRANS', '202708', 1280.00, 'calculated'),
+(2, 'TRANS', '202709', 1280.00, 'calculated'),
+(2, 'TRANS', '202710', 1280.00, 'calculated'),
+(2, 'TRANS', '202711', 1280.00, 'calculated'),
+(2, 'TRANS', '202712', 1280.00, 'calculated'),
+(2, 'TRANS', '202801', 1280.00, 'calculated'),
+(2, 'TRANS', '202802', 1280.00, 'calculated'),
+(2, 'TRANS', '202803', 1280.00, 'calculated'),
+(2, 'TRANS', '202804', 1280.00, 'calculated'),
+(2, 'TRANS', '202805', 1280.00, 'calculated'),
+(2, 'TRANS', '202806', 1280.00, 'calculated'),
+(2, 'TRANS', '202807', 1280.00, 'calculated'),
+(2, 'TRANS', '202808', 1280.00, 'calculated'),
+(2, 'TRANS', '202809', 1280.00, 'calculated'),
+(2, 'TRANS', '202810', 1280.00, 'calculated'),
+(2, 'TRANS', '202811', 1280.00, 'calculated'),
+(2, 'TRANS', '202812', 1280.00, 'calculated');
+
+-- indirect_work_case_id = 3 (CO2標準配分)
+-- 30人 × 20% 間接率 ≒ 768h/月
+INSERT INTO monthly_indirect_work_load (indirect_work_case_id, business_unit_code, year_month, manhour, source) VALUES
+(3, 'CO2', '202504', 768.00, 'calculated'),
+(3, 'CO2', '202505', 768.00, 'calculated'),
+(3, 'CO2', '202506', 768.00, 'calculated'),
+(3, 'CO2', '202507', 768.00, 'calculated'),
+(3, 'CO2', '202508', 768.00, 'calculated'),
+(3, 'CO2', '202509', 768.00, 'calculated'),
+(3, 'CO2', '202510', 768.00, 'calculated'),
+(3, 'CO2', '202511', 768.00, 'calculated'),
+(3, 'CO2', '202512', 768.00, 'calculated'),
+(3, 'CO2', '202601', 768.00, 'calculated'),
+(3, 'CO2', '202602', 768.00, 'calculated'),
+(3, 'CO2', '202603', 768.00, 'calculated');
 
 -- -----------------------------------------------------------------------------
 -- indirect_work_type_ratios: 間接作業種別比率
--- indirect_work_case_id = 1 (PLANT標準配分)
 -- -----------------------------------------------------------------------------
+
+-- indirect_work_case_id = 1 (PLANT標準配分)
 INSERT INTO indirect_work_type_ratios (indirect_work_case_id, work_type_code, fiscal_year, ratio) VALUES
 (1, 'BUMON', 2025, 0.4000),
 (1, 'LABO', 2025, 0.2500),
@@ -404,7 +546,37 @@ INSERT INTO indirect_work_type_ratios (indirect_work_case_id, work_type_code, fi
 (1, 'BUMON', 2026, 0.4000),
 (1, 'LABO', 2026, 0.2500),
 (1, 'ESTIMATE', 2026, 0.2500),
-(1, 'OTHER', 2026, 0.1000);
+(1, 'OTHER', 2026, 0.1000),
+(1, 'BUMON', 2027, 0.4000),
+(1, 'LABO', 2027, 0.2500),
+(1, 'ESTIMATE', 2027, 0.2500),
+(1, 'OTHER', 2027, 0.1000);
+
+-- indirect_work_case_id = 2 (TRANS標準配分)
+INSERT INTO indirect_work_type_ratios (indirect_work_case_id, work_type_code, fiscal_year, ratio) VALUES
+(2, 'BUMON', 2025, 0.3500),
+(2, 'LABO', 2025, 0.2000),
+(2, 'ESTIMATE', 2025, 0.3000),
+(2, 'OTHER', 2025, 0.1500),
+(2, 'BUMON', 2026, 0.3500),
+(2, 'LABO', 2026, 0.2000),
+(2, 'ESTIMATE', 2026, 0.3000),
+(2, 'OTHER', 2026, 0.1500),
+(2, 'BUMON', 2027, 0.3500),
+(2, 'LABO', 2027, 0.2000),
+(2, 'ESTIMATE', 2027, 0.3000),
+(2, 'OTHER', 2027, 0.1500);
+
+-- indirect_work_case_id = 3 (CO2標準配分)
+INSERT INTO indirect_work_type_ratios (indirect_work_case_id, work_type_code, fiscal_year, ratio) VALUES
+(3, 'BUMON', 2025, 0.3000),
+(3, 'LABO', 2025, 0.3500),
+(3, 'ESTIMATE', 2025, 0.2000),
+(3, 'OTHER', 2025, 0.1500),
+(3, 'BUMON', 2026, 0.3000),
+(3, 'LABO', 2026, 0.3500),
+(3, 'ESTIMATE', 2026, 0.2000),
+(3, 'OTHER', 2026, 0.1500);
 
 -- =============================================================================
 -- 5. 標準工数マスタ

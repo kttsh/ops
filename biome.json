@@ -22,6 +22,12 @@
 			},
 			"suspicious": {
 				"noArrayIndexKey": "off"
+			},
+			"a11y": {
+				"useSemanticElements": "warn",
+				"useFocusableInteractive": "warn",
+				"useAriaPropsForRole": "warn",
+				"noStaticElementInteractions": "warn"
 			}
 		}
 	},

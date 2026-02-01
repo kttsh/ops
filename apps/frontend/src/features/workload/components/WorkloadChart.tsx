@@ -16,6 +16,11 @@ import type {
 	MonthlyDataPoint,
 } from "@/features/workload/types";
 
+/** Recharts ComposedChart のマウスイベントハンドラに渡される状態 */
+interface ChartMouseState {
+	activeLabel?: string;
+}
+
 interface WorkloadChartProps {
 	data: MonthlyDataPoint[];
 	seriesConfig: ChartSeriesConfig;
@@ -34,8 +39,7 @@ function WorkloadChartInner({
 	const rafRef = useRef<number | null>(null);
 
 	const handleMouseMove = useCallback(
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(state: any) => {
+		(state: ChartMouseState) => {
 			if (!state?.activeLabel) return;
 			// yearMonth を抽出（YYYY/MM → YYYYMM）
 			const label = String(state.activeLabel);
@@ -58,8 +62,7 @@ function WorkloadChartInner({
 	}, [dispatch]);
 
 	const handleClick = useCallback(
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(state: any) => {
+		(state: ChartMouseState) => {
 			if (!state?.activeLabel) return;
 			const yearMonth = String(state.activeLabel).replace("/", "");
 			dispatch({ type: "CLICK", yearMonth });
