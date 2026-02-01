@@ -185,6 +185,7 @@ function WorkloadPage() {
 							from={filters.from}
 							months={filters.months}
 							businessUnitCodes={filters.bu}
+							selectedProjectIds={selectedProjectIds}
 							onPeriodChange={setPeriod}
 							onProjectColorsChange={handleProjectColorsChange}
 							onProfileApply={handleProfileApply}

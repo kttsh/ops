@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -33,6 +33,7 @@ interface SidePanelSettingsProps {
 	from: string | undefined;
 	months: number;
 	businessUnitCodes: string[];
+	selectedProjectIds: Set<number>;
 	onPeriodChange: (from: string | undefined, months: number) => void;
 	onProjectColorsChange?: (colors: Record<number, string>) => void;
 	onProfileApply?: (profile: {
@@ -48,6 +49,7 @@ export function SidePanelSettings({
 	from,
 	months,
 	businessUnitCodes,
+	selectedProjectIds,
 	onPeriodChange,
 	onProjectColorsChange,
 	onProfileApply,
@@ -86,17 +88,56 @@ export function SidePanelSettings({
 	const [projColors, setProjColors] = useState<Record<number, string>>({});
 	const [projOrder, setProjOrder] = useState<number[]>([]);
 
-	// 初期化
-	if (projects.length > 0 && projOrder.length === 0) {
-		const ids = projects.map((p) => p.projectId);
-		setProjOrder(ids);
-		const colors: Record<number, string> = {};
-		ids.forEach((id, i) => {
-			colors[id] = PROJECT_TYPE_COLORS[i % PROJECT_TYPE_COLORS.length];
+	// selectedProjectIds のシリアライズ値を依存配列に使用（Set参照変更による不要な再実行を回避）
+	const selectedIdsKey = useMemo(
+		() => [...selectedProjectIds].sort((a, b) => a - b).join(","),
+		[selectedProjectIds],
+	);
+
+	// onProjectColorsChange の最新参照を保持（useEffect の依存配列を安定化）
+	const onProjectColorsChangeRef = useRef(onProjectColorsChange);
+	onProjectColorsChangeRef.current = onProjectColorsChange;
+
+	// 選択案件の変更を監視し、projOrder / projColors を差分更新する
+	useEffect(() => {
+		const selectedIds = new Set(
+			selectedIdsKey.split(",").filter(Boolean).map(Number),
+		);
+		if (selectedIds.size === 0) {
+			setProjOrder([]);
+			return;
+		}
+
+		setProjOrder((prev) => {
+			// 既存の並び順を維持しつつ、選択外の案件を除外
+			const kept = prev.filter((id) => selectedIds.has(id));
+			// 新たに選択された案件を末尾に追加
+			const existing = new Set(kept);
+			const added = [...selectedIds].filter((id) => !existing.has(id));
+			return [...kept, ...added];
 		});
-		setProjColors(colors);
-		onProjectColorsChange?.(colors);
-	}
+
+		setProjColors((prev) => {
+			const updated = { ...prev };
+			// 新たに選択された案件にデフォルト色を割り当て
+			let index = Object.keys(updated).length;
+			for (const id of selectedIds) {
+				if (!(id in updated)) {
+					updated[id] = PROJECT_TYPE_COLORS[index % PROJECT_TYPE_COLORS.length];
+					index++;
+				}
+			}
+			// 色設定変更を親コンポーネントに通知
+			const filtered: Record<number, string> = {};
+			for (const id of selectedIds) {
+				if (id in updated) {
+					filtered[id] = updated[id];
+				}
+			}
+			onProjectColorsChangeRef.current?.(filtered);
+			return updated;
+		});
+	}, [selectedIdsKey]);
 
 	// キャパシティ表示設定
 	const [capVisible, setCapVisible] = useState<Record<number, boolean>>({});
@@ -171,39 +212,46 @@ export function SidePanelSettings({
 			businessUnitCodes: string[] | null;
 		}) => {
 			if (profile.projectItems.length > 0) {
-				// 色・並び順・表示状態を復元
-				const newColors: Record<number, string> = {};
-				const newOrder: number[] = [];
-
-				const sortedItems = [...profile.projectItems].sort(
-					(a, b) => a.displayOrder - b.displayOrder,
+				// 選択中の案件に限定してプロファイルを適用
+				const selectedItems = profile.projectItems.filter((item) =>
+					selectedProjectIds.has(item.projectId),
 				);
 
-				for (const item of sortedItems) {
-					newOrder.push(item.projectId);
-					if (item.color) {
-						newColors[item.projectId] = item.color;
-					} else {
-						// color が null の場合、現在のグローバル色設定からフォールバック
-						const currentColor = projColors[item.projectId];
-						if (currentColor) {
-							newColors[item.projectId] = currentColor;
+				if (selectedItems.length > 0) {
+					// 色・並び順・表示状態を復元
+					const newColors: Record<number, string> = {};
+					const newOrder: number[] = [];
+
+					const sortedItems = [...selectedItems].sort(
+						(a, b) => a.displayOrder - b.displayOrder,
+					);
+
+					for (const item of sortedItems) {
+						newOrder.push(item.projectId);
+						if (item.color) {
+							newColors[item.projectId] = item.color;
 						} else {
-							const idx = newOrder.length - 1;
-							newColors[item.projectId] =
-								PROJECT_TYPE_COLORS[idx % PROJECT_TYPE_COLORS.length];
+							// color が null の場合、現在のグローバル色設定からフォールバック
+							const currentColor = projColors[item.projectId];
+							if (currentColor) {
+								newColors[item.projectId] = currentColor;
+							} else {
+								const idx = newOrder.length - 1;
+								newColors[item.projectId] =
+									PROJECT_TYPE_COLORS[idx % PROJECT_TYPE_COLORS.length];
+							}
 						}
 					}
-				}
 
-				setProjColors(newColors);
-				setProjOrder(newOrder);
-				onProjectColorsChange?.(newColors);
+					setProjColors(newColors);
+					setProjOrder(newOrder);
+					onProjectColorsChange?.(newColors);
+				}
 			}
 
 			onProfileApply?.(profile);
 		},
-		[projColors, onProjectColorsChange, onProfileApply],
+		[selectedProjectIds, projColors, onProjectColorsChange, onProfileApply],
 	);
 
 	return (
