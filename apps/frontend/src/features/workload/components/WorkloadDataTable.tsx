@@ -1,4 +1,4 @@
-import { useMemo, useRef, useCallback } from 'react'
+import { useMemo, useRef, useCallback, useState } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -6,7 +6,7 @@ import {
   type ColumnDef,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { ChevronLeft, ChevronRight, Search, Filter } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronRightIcon, Search, Filter } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -54,6 +54,33 @@ export function WorkloadDataTable({
   onRowTypeFilterChange,
 }: WorkloadDataTableProps) {
   const parentRef = useRef<HTMLDivElement>(null)
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+
+  const toggleExpand = useCallback((id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }, [])
+
+  // 展開状態に基づいてフラット化された行リストを生成
+  const flatRows = useMemo(() => {
+    const result: TableRow[] = []
+    for (const row of filteredRows) {
+      result.push(row)
+      if (row.rowType === 'project' && row.subRows?.length && expandedIds.has(row.id)) {
+        for (const sub of row.subRows) {
+          result.push(sub)
+        }
+      }
+    }
+    return result
+  }, [filteredRows, expandedIds])
 
   const columns = useMemo<ColumnDef<TableRow>[]>(() => {
     const fixed: ColumnDef<TableRow>[] = [
@@ -65,6 +92,38 @@ export function WorkloadDataTable({
         minSize: 60,
         maxSize: 400,
         enablePinning: true,
+        cell: ({ row }) => {
+          const original = row.original
+          const hasSubRows = original.rowType === 'project' && (original.subRows?.length ?? 0) > 0
+          const isExpanded = expandedIds.has(original.id)
+          const isDetail = original.rowType === 'projectDetail'
+
+          return (
+            <div className="flex items-center gap-1">
+              {hasSubRows ? (
+                <button
+                  type="button"
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded hover:bg-accent"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleExpand(original.id)
+                  }}
+                >
+                  {isExpanded ? (
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  ) : (
+                    <ChevronRightIcon className="h-3.5 w-3.5" />
+                  )}
+                </button>
+              ) : isDetail ? (
+                <span className="w-5 shrink-0" />
+              ) : null}
+              <span className={cn('truncate', isDetail && 'pl-2 text-muted-foreground')}>
+                {original.name}
+              </span>
+            </div>
+          )
+        },
       },
       {
         id: 'businessUnit',
@@ -109,10 +168,10 @@ export function WorkloadDataTable({
     })
 
     return [...fixed, ...monthCols]
-  }, [selectedYear])
+  }, [selectedYear, expandedIds, toggleExpand])
 
   const table = useReactTable({
-    data: filteredRows,
+    data: flatRows,
     columns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: 'onEnd',
@@ -268,6 +327,7 @@ export function WorkloadDataTable({
                     rowType === 'capacity' && 'bg-blue-50 font-semibold',
                     rowType === 'indirect' && 'bg-gray-50',
                     rowType === 'project' && 'bg-white',
+                    rowType === 'projectDetail' && 'bg-muted/30',
                   )}
                   style={{
                     height: ROW_HEIGHT,
@@ -285,6 +345,7 @@ export function WorkloadDataTable({
                           rowType === 'capacity' && isPinned && 'bg-blue-50',
                           rowType === 'indirect' && isPinned && 'bg-gray-50',
                           rowType === 'project' && isPinned && 'bg-white',
+                          rowType === 'projectDetail' && isPinned && 'bg-muted/30',
                         )}
                         style={{
                           width: cell.column.getSize(),
@@ -306,7 +367,7 @@ export function WorkloadDataTable({
 
       {/* フッター情報 */}
       <div className="text-xs text-muted-foreground">
-        {filteredRows.length} 行
+        {flatRows.length} 行
       </div>
     </div>
   )

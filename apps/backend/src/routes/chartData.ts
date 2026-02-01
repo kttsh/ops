@@ -14,6 +14,7 @@ const app = new Hono()
         businessUnitCodes: query.businessUnitCodes,
         startYearMonth: query.startYearMonth,
         endYearMonth: query.endYearMonth,
+        projectIds: query.projectIds,
         chartViewId: query.chartViewId,
         capacityScenarioIds: query.capacityScenarioIds,
         indirectWorkCaseIds: query.indirectWorkCaseIds,

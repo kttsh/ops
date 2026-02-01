@@ -3,6 +3,8 @@ import type {
   ChartDataServiceParams,
   ChartDataResponse,
   ProjectLoadRow,
+  ProjectDetailRow,
+  ProjectDetail,
   IndirectWorkLoadRow,
   CapacityRow,
   ProjectLoadAggregation,
@@ -12,7 +14,10 @@ import type {
   IndirectWorkLoadMonthly,
 } from '@/types/chartData'
 
-function transformProjectLoads(rows: ProjectLoadRow[]): ProjectLoadAggregation[] {
+function transformProjectLoads(
+  rows: ProjectLoadRow[],
+  detailRows: ProjectDetailRow[],
+): ProjectLoadAggregation[] {
   const groups = new Map<string, ProjectLoadAggregation>()
 
   for (const row of rows) {
@@ -23,6 +28,7 @@ function transformProjectLoads(rows: ProjectLoadRow[]): ProjectLoadAggregation[]
         projectTypeCode: row.projectTypeCode,
         projectTypeName: row.projectTypeName,
         monthly: [],
+        projects: [],
       })
     }
 
@@ -30,6 +36,40 @@ function transformProjectLoads(rows: ProjectLoadRow[]): ProjectLoadAggregation[]
       yearMonth: row.yearMonth,
       manhour: row.manhour,
     })
+  }
+
+  // 個別案件データをグルーピング
+  const projectMap = new Map<string, Map<number, ProjectDetail>>()
+
+  for (const row of detailRows) {
+    const typeKey = row.projectTypeCode ?? '__null__'
+
+    if (!projectMap.has(typeKey)) {
+      projectMap.set(typeKey, new Map())
+    }
+
+    const typeGroup = projectMap.get(typeKey)!
+
+    if (!typeGroup.has(row.projectId)) {
+      typeGroup.set(row.projectId, {
+        projectId: row.projectId,
+        projectName: row.projectName,
+        monthly: [],
+      })
+    }
+
+    typeGroup.get(row.projectId)!.monthly.push({
+      yearMonth: row.yearMonth,
+      manhour: row.manhour,
+    })
+  }
+
+  // 個別案件を案件タイプ別集約に紐付け
+  for (const [key, group] of groups) {
+    const details = projectMap.get(key)
+    if (details) {
+      group.projects = Array.from(details.values())
+    }
   }
 
   return Array.from(groups.values())
@@ -108,18 +148,36 @@ function transformCapacities(rows: CapacityRow[]): CapacityAggregation[] {
 
 export const chartDataService = {
   async getChartData(params: ChartDataServiceParams): Promise<ChartDataResponse> {
-    // 案件工数
+    // 案件工数（集約）
     const projectLoadRows = params.chartViewId
       ? await chartDataData.getProjectLoadsByChartView({
           chartViewId: params.chartViewId,
           businessUnitCodes: params.businessUnitCodes,
           startYearMonth: params.startYearMonth,
           endYearMonth: params.endYearMonth,
+          projectIds: params.projectIds,
         })
       : await chartDataData.getProjectLoadsByDefault({
           businessUnitCodes: params.businessUnitCodes,
           startYearMonth: params.startYearMonth,
           endYearMonth: params.endYearMonth,
+          projectIds: params.projectIds,
+        })
+
+    // 案件工数（個別案件）
+    const projectDetailRows = params.chartViewId
+      ? await chartDataData.getProjectDetailsByChartView({
+          chartViewId: params.chartViewId,
+          businessUnitCodes: params.businessUnitCodes,
+          startYearMonth: params.startYearMonth,
+          endYearMonth: params.endYearMonth,
+          projectIds: params.projectIds,
+        })
+      : await chartDataData.getProjectDetailsByDefault({
+          businessUnitCodes: params.businessUnitCodes,
+          startYearMonth: params.startYearMonth,
+          endYearMonth: params.endYearMonth,
+          projectIds: params.projectIds,
         })
 
     // 間接工数
@@ -151,7 +209,7 @@ export const chartDataService = {
         : []
 
     return {
-      projectLoads: transformProjectLoads(projectLoadRows),
+      projectLoads: transformProjectLoads(projectLoadRows, projectDetailRows),
       indirectWorkLoads: transformIndirectWorkLoads(indirectWorkLoadRows),
       capacities,
       period: {

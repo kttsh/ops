@@ -32,10 +32,6 @@ function LegendPanelInner({
     )
   }
 
-  const utilizationRate =
-    data.totalCapacity > 0
-      ? ((data.totalManhour / data.totalCapacity) * 100).toFixed(1)
-      : '-'
 
   // シリーズの色を取得
   const getAreaColor = (type: 'project' | 'indirect', code: string | number) => {
@@ -166,10 +162,7 @@ function LegendPanelInner({
             <span>合計工数</span>
             <span className="tabular-nums">{formatManhour(data.totalManhour)}</span>
           </div>
-          <div className="flex items-center justify-between text-sm">
-            <span>稼働率</span>
-            <span className="tabular-nums">{utilizationRate}%</span>
-          </div>
+
         </div>
       </div>
     </div>

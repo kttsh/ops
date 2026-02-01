@@ -48,7 +48,7 @@ export type ExcelExportParams = {
 
 export type CalculationTableRow = {
   label: string
-  type: 'headcount' | 'capacity' | 'indirect-breakdown' | 'indirect-total' | 'direct'
+  type: 'headcount' | 'capacity' | 'indirect-breakdown' | 'indirect-total'
   workTypeCode?: string
   monthly: Record<string, number>
   annualTotal: number

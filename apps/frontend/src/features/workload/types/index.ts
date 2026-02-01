@@ -12,10 +12,17 @@ export type {
 // API レスポンス型（バックエンド ChartDataResponse と対応）
 // ============================================================
 
+export type ProjectDetail = {
+  projectId: number
+  projectName: string
+  monthly: Array<{ yearMonth: string; manhour: number }>
+}
+
 export type ProjectLoadAggregation = {
   projectTypeCode: string | null
   projectTypeName: string | null
   monthly: Array<{ yearMonth: string; manhour: number }>
+  projects: ProjectDetail[]
 }
 
 export type IndirectWorkTypeBreakdown = {
@@ -230,7 +237,7 @@ export type LegendMonthData = {
 // テーブル用型
 // ============================================================
 
-export type TableRowType = 'capacity' | 'indirect' | 'project'
+export type TableRowType = 'capacity' | 'indirect' | 'project' | 'projectDetail'
 
 export type TableRow = {
   id: string
@@ -240,7 +247,9 @@ export type TableRow = {
   projectTypeCode?: string | null
   projectTypeName?: string | null
   total: number
-  monthly: Record<string, number> // key: "01"~"12", value: manhour
+  monthly: Record<string, number> // key: "YYYY_MM", value: manhour
+  subRows?: TableRow[]
+  parentId?: string
 }
 
 // ============================================================
@@ -251,6 +260,7 @@ export type ChartDataParams = {
   businessUnitCodes: string[]
   startYearMonth: string
   endYearMonth: string
+  projectIds?: number[]
   capacityScenarioIds?: number[]
   indirectWorkCaseIds?: number[]
   chartViewId?: number

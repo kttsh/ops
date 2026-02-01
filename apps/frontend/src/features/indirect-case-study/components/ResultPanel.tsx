@@ -123,17 +123,7 @@ export function ResultPanel({
       annualTotal: Object.values(indirectMonthly).reduce((a, b) => a + b, 0),
     })
 
-    // 直接作業可能時間
-    const directMonthly: Record<string, number> = {}
-    yearMonths.forEach((ym) => {
-      directMonthly[ym] = (capacityMap.get(ym) ?? 0) - (indirectTotalMap.get(ym) ?? 0)
-    })
-    rows.push({
-      label: '直接作業可能時間（時間）',
-      type: 'direct',
-      monthly: directMonthly,
-      annualTotal: Object.values(directMonthly).reduce((a, b) => a + b, 0),
-    })
+
 
     await exportToExcel({
       headcountPlanCaseName,

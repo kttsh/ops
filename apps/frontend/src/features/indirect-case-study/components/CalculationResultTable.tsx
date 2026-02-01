@@ -132,17 +132,7 @@ export function CalculationResultTable({
       values: yearMonths.map((ym) => indirectTotalMap.get(ym) ?? 0),
     }
 
-    // 直接作業可能時間行
-    const directRow = {
-      label: '直接作業可能時間（時間）',
-      values: yearMonths.map((ym) => {
-        const cap = capacityMap.get(ym) ?? 0
-        const indirect = indirectTotalMap.get(ym) ?? 0
-        return cap - indirect
-      }),
-    }
-
-    return { headcountRow, capacityRow, breakdownRows, indirectTotalRow, directRow }
+    return { headcountRow, capacityRow, breakdownRows, indirectTotalRow }
   }, [yearMonths, monthlyHeadcountPlans, capacityResult, indirectWorkResult, workTypes, ratios])
 
   const getAnnualTotal = (values: number[]) =>
@@ -268,7 +258,7 @@ export function CalculationResultTable({
               ))}
 
             {/* 間接合計 */}
-            <tr className="border-b hover:bg-muted/30 font-semibold">
+            <tr className="border-b-2 hover:bg-muted/30 font-semibold">
               <td className="py-1.5 pr-3 whitespace-nowrap sticky left-0 bg-background">
                 {rowData.indirectTotalRow.label}
               </td>
@@ -279,21 +269,6 @@ export function CalculationResultTable({
               ))}
               <td className="py-1.5 pl-3 text-right tabular-nums border-l">
                 {getAnnualTotal(rowData.indirectTotalRow.values).toLocaleString()}
-              </td>
-            </tr>
-
-            {/* 直接作業可能時間 */}
-            <tr className="border-b-2 hover:bg-muted/30 font-semibold text-primary">
-              <td className="py-1.5 pr-3 whitespace-nowrap sticky left-0 bg-background">
-                {rowData.directRow.label}
-              </td>
-              {rowData.directRow.values.map((v, i) => (
-                <td key={i} className="py-1.5 px-2 text-right tabular-nums">
-                  {v.toLocaleString()}
-                </td>
-              ))}
-              <td className="py-1.5 pl-3 text-right tabular-nums border-l">
-                {getAnnualTotal(rowData.directRow.values).toLocaleString()}
               </td>
             </tr>
           </tbody>

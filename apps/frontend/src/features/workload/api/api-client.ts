@@ -38,6 +38,9 @@ export async function fetchChartData(
   if (params.indirectWorkCaseIds?.length) {
     searchParams.set('indirectWorkCaseIds', params.indirectWorkCaseIds.join(','))
   }
+  if (params.projectIds?.length) {
+    searchParams.set('projectIds', params.projectIds.join(','))
+  }
   if (params.chartViewId) {
     searchParams.set('chartViewId', String(params.chartViewId))
   }

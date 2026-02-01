@@ -69,7 +69,7 @@ export function useTableData(rawResponse: ChartDataResponse | undefined): UseTab
       })
     }
 
-    // 案件行（案件タイプ別集約）
+    // 案件行（案件タイプ別集約 + 個別案件サブ行）
     for (const pl of rawResponse.projectLoads) {
       const monthly: Record<string, number> = {}
       let total = 0
@@ -80,14 +80,40 @@ export function useTableData(rawResponse: ChartDataResponse | undefined): UseTab
         monthly[`${year}_${month}`] = m.manhour
         total += m.manhour
       }
+
+      const parentId = `project_${pl.projectTypeCode ?? 'none'}`
+
+      // 個別案件のサブ行を生成
+      const subRows: TableRow[] = (pl.projects ?? []).map((proj) => {
+        const projMonthly: Record<string, number> = {}
+        let projTotal = 0
+        for (const m of proj.monthly) {
+          const month = m.yearMonth.slice(4, 6)
+          const year = parseInt(m.yearMonth.slice(0, 4), 10)
+          projMonthly[`${year}_${month}`] = m.manhour
+          projTotal += m.manhour
+        }
+        return {
+          id: `projectDetail_${proj.projectId}`,
+          rowType: 'projectDetail' as const,
+          name: proj.projectName,
+          projectTypeCode: pl.projectTypeCode,
+          projectTypeName: pl.projectTypeName,
+          total: projTotal,
+          monthly: projMonthly,
+          parentId,
+        }
+      })
+
       allRows.push({
-        id: `project_${pl.projectTypeCode ?? 'none'}`,
+        id: parentId,
         rowType: 'project',
         name: pl.projectTypeName ?? '未分類',
         projectTypeCode: pl.projectTypeCode,
         projectTypeName: pl.projectTypeName,
         total,
         monthly,
+        subRows,
       })
     }
 
@@ -100,12 +126,20 @@ export function useTableData(rawResponse: ChartDataResponse | undefined): UseTab
     let result = rows
 
     if (rowTypeFilter !== 'all') {
-      result = result.filter((r) => r.rowType === rowTypeFilter)
+      result = result.filter(
+        (r) => r.rowType === rowTypeFilter || r.rowType === 'projectDetail',
+      )
     }
 
     if (searchText.trim()) {
       const lower = searchText.toLowerCase()
-      result = result.filter((r) => r.name.toLowerCase().includes(lower))
+      result = result.filter((r) => {
+        // 親行自身がマッチするか
+        if (r.name.toLowerCase().includes(lower)) return true
+        // サブ行にマッチするものがあるか
+        if (r.subRows?.some((sub) => sub.name.toLowerCase().includes(lower))) return true
+        return false
+      })
     }
 
     return result

@@ -1,10 +1,12 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { workloadSearchSchema } from '@/features/workload'
 import { useWorkloadFilters } from '@/features/workload/hooks/useWorkloadFilters'
 import { useChartData } from '@/features/workload/hooks/useChartData'
 import { useLegendState } from '@/features/workload/hooks/useLegendState'
 import { useTableData } from '@/features/workload/hooks/useTableData'
+import { useQuery } from '@tanstack/react-query'
+import { projectsQueryOptions } from '@/features/workload/api/queries'
 import { WorkloadChart } from '@/features/workload/components/WorkloadChart'
 import { LegendPanel } from '@/features/workload/components/LegendPanel'
 import { SidePanel } from '@/features/workload/components/SidePanel'
@@ -37,6 +39,42 @@ function WorkloadPage() {
     chartDataParams,
   } = useWorkloadFilters()
 
+  // 案件一覧を取得（selectedProjectIds の初期化に使用）
+  const { data: projectsData } = useQuery(projectsQueryOptions(filters.bu))
+  const allProjectIds = useMemo(
+    () => projectsData?.data?.map((p) => p.projectId) ?? [],
+    [projectsData?.data],
+  )
+
+  const [selectedProjectIds, setSelectedProjectIds] = useState<Set<number>>(
+    () => new Set(),
+  )
+
+  // BU変更時・案件一覧取得時に全案件を選択状態にする
+  useEffect(() => {
+    if (allProjectIds.length > 0) {
+      setSelectedProjectIds(new Set(allProjectIds))
+    } else {
+      setSelectedProjectIds(new Set())
+    }
+  }, [allProjectIds])
+
+  const handleProjectSelectionChange = useCallback((ids: Set<number>) => {
+    setSelectedProjectIds(ids)
+  }, [])
+
+  // chartDataParams に selectedProjectIds を含める
+  const chartDataParamsWithProjects = useMemo(() => {
+    if (!chartDataParams) return null
+    if (selectedProjectIds.size === 0) return null
+    // 全選択時は projectIds を送信しない（全件取得と同じ）
+    if (selectedProjectIds.size === allProjectIds.length) return chartDataParams
+    return {
+      ...chartDataParams,
+      projectIds: Array.from(selectedProjectIds),
+    }
+  }, [chartDataParams, selectedProjectIds, allProjectIds.length])
+
   const {
     chartData,
     seriesConfig,
@@ -47,20 +85,12 @@ function WorkloadPage() {
     isFetching,
     isError,
     refetch,
-  } = useChartData(chartDataParams)
+  } = useChartData(chartDataParamsWithProjects)
 
   const { state: legendState, dispatch: legendDispatch, activeMonth, isPinned } =
     useLegendState(latestMonth)
 
   const tableData = useTableData(rawResponse)
-
-  const [selectedProjectIds, setSelectedProjectIds] = useState<Set<number>>(
-    () => new Set(),
-  )
-
-  const handleProjectSelectionChange = useCallback((ids: Set<number>) => {
-    setSelectedProjectIds(ids)
-  }, [])
 
   const showChart = filters.view === 'chart' || filters.view === 'both'
   const showTable = filters.view === 'table' || filters.view === 'both'

@@ -38,6 +38,7 @@ export const chartDataQuerySchema = z
     chartViewId: z.coerce.number().int().positive().optional(),
     capacityScenarioIds: csvToNumberArray.optional(),
     indirectWorkCaseIds: csvToNumberArray.optional(),
+    projectIds: csvToNumberArray.optional(),
   })
   .refine(
     (data) => data.startYearMonth <= data.endYearMonth,
@@ -62,6 +63,7 @@ export type ChartDataServiceParams = {
   businessUnitCodes: string[]
   startYearMonth: string
   endYearMonth: string
+  projectIds?: number[]
   chartViewId?: number
   capacityScenarioIds?: number[]
   indirectWorkCaseIds?: number[]
@@ -83,6 +85,16 @@ export type IndirectWorkLoadMonthly = {
   breakdownCoverage: number
 }
 
+/** 個別案件工数 */
+export type ProjectDetail = {
+  projectId: number
+  projectName: string
+  monthly: Array<{
+    yearMonth: string
+    manhour: number
+  }>
+}
+
 /** 案件工数集約 */
 export type ProjectLoadAggregation = {
   projectTypeCode: string | null
@@ -91,6 +103,7 @@ export type ProjectLoadAggregation = {
     yearMonth: string
     manhour: number
   }>
+  projects: ProjectDetail[]
 }
 
 /** 間接工数集約 */
@@ -130,6 +143,15 @@ export type ProjectLoadRow = {
   projectTypeCode: string | null
   projectTypeName: string | null
   displayOrder: number | null
+  yearMonth: string
+  manhour: number
+}
+
+/** 個別案件工数行 */
+export type ProjectDetailRow = {
+  projectId: number
+  projectName: string
+  projectTypeCode: string | null
   yearMonth: string
   manhour: number
 }
