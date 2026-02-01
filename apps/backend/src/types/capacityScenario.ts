@@ -86,6 +86,7 @@ export type CapacityScenario = {
   hoursPerPerson: number
   createdAt: string
   updatedAt: string
+  deletedAt: string | null
 }
 
 /** 計算結果レスポンス型 */

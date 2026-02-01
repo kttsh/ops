@@ -104,4 +104,5 @@ export type Project = {
   durationMonths: number | null
   createdAt: string
   updatedAt: string
+  deletedAt: string | null
 }

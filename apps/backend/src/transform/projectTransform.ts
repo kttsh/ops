@@ -11,9 +11,10 @@ export function toProjectResponse(row: ProjectRow): Project {
     projectTypeName: row.project_type_name,
     startYearMonth: row.start_year_month,
     totalManhour: row.total_manhour,
-    status: row.status,
+    status: row.status.toLowerCase(),
     durationMonths: row.duration_months,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
+    deletedAt: row.deleted_at?.toISOString() ?? null,
   }
 }

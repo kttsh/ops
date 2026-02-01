@@ -10,5 +10,6 @@ export function toIndirectWorkCaseResponse(row: IndirectWorkCaseRow): IndirectWo
     businessUnitName: row.business_unit_name,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
+    deletedAt: row.deleted_at?.toISOString() ?? null,
   }
 }

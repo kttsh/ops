@@ -9,5 +9,6 @@ export function toCapacityScenarioResponse(row: CapacityScenarioRow): CapacitySc
     hoursPerPerson: row.hours_per_person,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
+    deletedAt: row.deleted_at?.toISOString() ?? null,
   }
 }

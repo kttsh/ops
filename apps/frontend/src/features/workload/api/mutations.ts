@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   bulkUpsertChartColorSettings,
   bulkUpsertChartStackOrderSettings,
@@ -42,6 +43,10 @@ export function useCreateChartView() {
     mutationFn: (input: CreateChartViewInput) => createChartView(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: workloadKeys.chartViews() })
+      toast.success('保存しました')
+    },
+    onError: () => {
+      toast.error('保存に失敗しました')
     },
   })
 }
@@ -63,6 +68,10 @@ export function useDeleteChartView() {
     mutationFn: (id: number) => deleteChartView(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: workloadKeys.chartViews() })
+      toast.success('削除しました')
+    },
+    onError: () => {
+      toast.error('削除に失敗しました')
     },
   })
 }

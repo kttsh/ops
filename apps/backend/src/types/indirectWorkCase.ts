@@ -68,4 +68,5 @@ export type IndirectWorkCase = {
   businessUnitName: string | null
   createdAt: string
   updatedAt: string
+  deletedAt: string | null
 }

@@ -156,6 +156,9 @@ export type ChartView = {
 
 export type CreateChartViewInput = {
   viewName: string
+  chartType: string
+  startYearMonth: string
+  endYearMonth: string
   description?: string | null
 }
 

@@ -22,7 +22,8 @@ function formatYearMonth(ym: string) {
 }
 
 function getStatusLabel(value: string) {
-  const status = PROJECT_STATUSES.find((s) => s.value === value)
+  const v = value.toLowerCase()
+  const status = PROJECT_STATUSES.find((s) => s.value === v)
   return status?.label ?? value
 }
 
@@ -125,8 +126,9 @@ export function createColumns(options: {
       cell: ({ row }) => {
         const value = row.original.status
         const label = getStatusLabel(value)
+        const v = value.toLowerCase()
         const variant =
-          value === 'confirmed' ? 'success' : value === 'planning' ? 'default' : 'secondary'
+          v === 'confirmed' ? 'success' : v === 'planning' ? 'default' : 'secondary'
         return <Badge variant={variant}>{label}</Badge>
       },
     },

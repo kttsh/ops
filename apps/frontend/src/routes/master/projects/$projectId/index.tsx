@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Pencil, Trash2, ChevronRight } from 'lucide-react'
+import { Pencil, Trash2, ChevronRight, FlaskConical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -31,7 +31,8 @@ function formatYearMonth(ym: string) {
 }
 
 function getStatusLabel(value: string) {
-  const status = PROJECT_STATUSES.find((s) => s.value === value)
+  const v = value.toLowerCase()
+  const status = PROJECT_STATUSES.find((s) => s.value === v)
   return status?.label ?? value
 }
 
@@ -103,6 +104,15 @@ function ProjectDetailPage() {
         <h2 className="text-2xl font-bold tracking-tight">{project.name}</h2>
         <div className="flex items-center gap-2">
           <Link
+            to="/master/projects/$projectId/case-study"
+            params={{ projectId }}
+          >
+            <Button variant="outline">
+              <FlaskConical className="h-4 w-4" />
+              ケーススタディ
+            </Button>
+          </Link>
+          <Link
             to="/master/projects/$projectId/edit"
             params={{ projectId }}
           >
@@ -129,8 +139,10 @@ function ProjectDetailPage() {
         <div className="grid grid-cols-3 gap-4">
           <dt className="text-sm font-medium text-muted-foreground">ステータス</dt>
           <dd className="col-span-2 text-sm">
-            {project.status === 'confirmed' ? (
+            {project.status.toLowerCase() === 'confirmed' ? (
               <Badge variant="success">{statusLabel}</Badge>
+            ) : project.status.toLowerCase() === 'planning' ? (
+              <Badge variant="default">{statusLabel}</Badge>
             ) : (
               <Badge variant="secondary">{statusLabel}</Badge>
             )}

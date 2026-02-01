@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowUp, ArrowDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -39,6 +39,29 @@ export function SidePanelSettings({
   const capacityScenarios = csData?.data ?? []
 
   const colorMutation = useBulkUpsertColorSettings()
+
+  // 期間設定からYYYYMM形式を算出
+  const { startYearMonth, endYearMonth } = useMemo(() => {
+    const now = new Date()
+    const currentYear = now.getFullYear()
+    const currentMonth = now.getMonth() + 1
+    const fiscalStartYear = currentMonth >= 4 ? currentYear : currentYear - 1
+    const defaultFrom = `${fiscalStartYear}04`
+
+    const start = from ?? defaultFrom
+    const startY = parseInt(start.slice(0, 4), 10)
+    const startM = parseInt(start.slice(4, 6), 10)
+    let endM = startM + months - 1
+    let endY = startY
+    while (endM > 12) {
+      endM -= 12
+      endY++
+    }
+    return {
+      startYearMonth: start,
+      endYearMonth: `${endY}${String(endM).padStart(2, '0')}`,
+    }
+  }, [from, months])
 
   // 案件タイプ色設定
   const [ptColors, setPtColors] = useState<Record<string, string>>({})
@@ -217,7 +240,11 @@ export function SidePanelSettings({
       <Separator />
 
       {/* プロファイル管理 */}
-      <ProfileManager />
+      <ProfileManager
+        chartType="stacked-area"
+        startYearMonth={startYearMonth}
+        endYearMonth={endYearMonth}
+      />
     </div>
   )
 }

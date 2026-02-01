@@ -67,4 +67,5 @@ export type HeadcountPlanCase = {
   businessUnitName: string | null
   createdAt: string
   updatedAt: string
+  deletedAt: string | null
 }

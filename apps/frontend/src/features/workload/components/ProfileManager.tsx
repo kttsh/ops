@@ -9,7 +9,17 @@ import {
   useDeleteChartView,
 } from '@/features/workload/api/mutations'
 
-export function ProfileManager() {
+interface ProfileManagerProps {
+  chartType: string
+  startYearMonth: string
+  endYearMonth: string
+}
+
+export function ProfileManager({
+  chartType,
+  startYearMonth,
+  endYearMonth,
+}: ProfileManagerProps) {
   const { data: viewsData } = useQuery(chartViewsQueryOptions())
   const views = viewsData?.data ?? []
 
@@ -21,10 +31,15 @@ export function ProfileManager() {
   const handleSave = useCallback(() => {
     if (!newName.trim()) return
     createMutation.mutate(
-      { viewName: newName.trim() },
+      {
+        viewName: newName.trim(),
+        chartType,
+        startYearMonth,
+        endYearMonth,
+      },
       { onSuccess: () => setNewName('') },
     )
-  }, [newName, createMutation])
+  }, [newName, createMutation, chartType, startYearMonth, endYearMonth])
 
   const handleDelete = useCallback(
     (id: number) => {
