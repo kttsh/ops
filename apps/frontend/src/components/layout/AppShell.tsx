@@ -56,7 +56,7 @@ const menuItems = [
 				icon: Palette,
 			},
 			{
-				label: "間接作業・キャパシティ設定",
+				label: "間接作業・キャパシティ",
 				href: "/master/indirect-capacity-settings",
 				icon: Calculator,
 			},
@@ -110,7 +110,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 	return (
 		<div className="flex h-screen">
 			{/* Desktop sidebar */}
-			<aside className="hidden lg:flex lg:w-64 lg:flex-col border-r border-border bg-sidebar">
+			<aside className="hidden lg:flex lg:w-72 lg:flex-col border-r border-border bg-sidebar">
 				<div className="flex h-14 items-center px-6">
 					<h1 className="text-lg font-bold text-sidebar-foreground">
 						操業管理システム
@@ -130,7 +130,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 								<Menu className="h-5 w-5" />
 							</Button>
 						</SheetTrigger>
-						<SheetContent side="left" className="w-64 p-0">
+						<SheetContent side="left" className="w-72 p-0">
 							<SheetHeader className="p-6 pb-0">
 								<SheetTitle>操業管理システム</SheetTitle>
 							</SheetHeader>
@@ -148,7 +148,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 							currentPath.startsWith("/workload") ||
 								currentPath.startsWith("/master/indirect-capacity-settings")
 								? "h-full"
-								: "mx-auto max-w-4xl px-6 py-8",
+								: currentPath.startsWith("/master")
+									? "h-full px-6 py-8"
+									: "mx-auto max-w-4xl px-6 py-8",
 						)}
 					>
 						{children}
