@@ -233,6 +233,7 @@ CREATE TABLE chart_views (
     end_year_month CHAR(6) NOT NULL,
     is_default BIT NOT NULL CONSTRAINT DF_chart_views_is_default DEFAULT 0,
     description NVARCHAR(500) NULL,
+    business_unit_codes NVARCHAR(MAX) NULL,
     created_at DATETIME2 NOT NULL CONSTRAINT DF_chart_views_created_at DEFAULT GETDATE(),
     updated_at DATETIME2 NOT NULL CONSTRAINT DF_chart_views_updated_at DEFAULT GETDATE(),
     deleted_at DATETIME2 NULL,

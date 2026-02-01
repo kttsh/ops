@@ -5,7 +5,7 @@ import type { ChartViewRow } from "@/types/chartView";
 const BASE_SELECT = `
   chart_view_id, view_name, chart_type,
   start_year_month, end_year_month, is_default,
-  description, created_at, updated_at, deleted_at`;
+  description, business_unit_codes, created_at, updated_at, deleted_at`;
 
 export const chartViewData = {
 	async findAll(params: {
@@ -80,6 +80,7 @@ export const chartViewData = {
 		endYearMonth: string;
 		isDefault: boolean;
 		description: string | null;
+		businessUnitCodes?: string[];
 	}): Promise<ChartViewRow> {
 		const pool = await getPool();
 		const result = await pool
@@ -90,12 +91,19 @@ export const chartViewData = {
 			.input("endYearMonth", sql.Char, data.endYearMonth)
 			.input("isDefault", sql.Bit, data.isDefault)
 			.input("description", sql.NVarChar, data.description)
+			.input(
+				"businessUnitCodes",
+				sql.NVarChar,
+				data.businessUnitCodes
+					? JSON.stringify(data.businessUnitCodes)
+					: null,
+			)
 			.query<ChartViewRow>(
-				`INSERT INTO chart_views (view_name, chart_type, start_year_month, end_year_month, is_default, description)
+				`INSERT INTO chart_views (view_name, chart_type, start_year_month, end_year_month, is_default, description, business_unit_codes)
          OUTPUT INSERTED.chart_view_id, INSERTED.view_name, INSERTED.chart_type,
                 INSERTED.start_year_month, INSERTED.end_year_month, INSERTED.is_default,
-                INSERTED.description, INSERTED.created_at, INSERTED.updated_at, INSERTED.deleted_at
-         VALUES (@viewName, @chartType, @startYearMonth, @endYearMonth, @isDefault, @description)`,
+                INSERTED.description, INSERTED.business_unit_codes, INSERTED.created_at, INSERTED.updated_at, INSERTED.deleted_at
+         VALUES (@viewName, @chartType, @startYearMonth, @endYearMonth, @isDefault, @description, @businessUnitCodes)`,
 			);
 
 		return result.recordset[0];
@@ -110,6 +118,7 @@ export const chartViewData = {
 			endYearMonth?: string;
 			isDefault?: boolean;
 			description?: string | null;
+			businessUnitCodes?: string[];
 		},
 	): Promise<ChartViewRow | undefined> {
 		const pool = await getPool();
@@ -140,6 +149,14 @@ export const chartViewData = {
 			setClauses.push("description = @description");
 			request.input("description", sql.NVarChar, data.description);
 		}
+		if (data.businessUnitCodes !== undefined) {
+			setClauses.push("business_unit_codes = @businessUnitCodes");
+			request.input(
+				"businessUnitCodes",
+				sql.NVarChar,
+				JSON.stringify(data.businessUnitCodes),
+			);
+		}
 
 		const result = await request.query<{ chart_view_id: number }>(
 			`UPDATE chart_views
@@ -162,7 +179,7 @@ export const chartViewData = {
          SET deleted_at = GETDATE(), updated_at = GETDATE()
          OUTPUT INSERTED.chart_view_id, INSERTED.view_name, INSERTED.chart_type,
                 INSERTED.start_year_month, INSERTED.end_year_month, INSERTED.is_default,
-                INSERTED.description, INSERTED.created_at, INSERTED.updated_at, INSERTED.deleted_at
+                INSERTED.description, INSERTED.business_unit_codes, INSERTED.created_at, INSERTED.updated_at, INSERTED.deleted_at
          WHERE chart_view_id = @id AND deleted_at IS NULL`,
 			);
 
@@ -179,7 +196,7 @@ export const chartViewData = {
          SET deleted_at = NULL, updated_at = GETDATE()
          OUTPUT INSERTED.chart_view_id, INSERTED.view_name, INSERTED.chart_type,
                 INSERTED.start_year_month, INSERTED.end_year_month, INSERTED.is_default,
-                INSERTED.description, INSERTED.created_at, INSERTED.updated_at, INSERTED.deleted_at
+                INSERTED.description, INSERTED.business_unit_codes, INSERTED.created_at, INSERTED.updated_at, INSERTED.deleted_at
          WHERE chart_view_id = @id AND deleted_at IS NOT NULL`,
 			);
 

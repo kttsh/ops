@@ -38,6 +38,7 @@ export const chartViewService = {
 			endYearMonth: data.endYearMonth,
 			isDefault: data.isDefault ?? false,
 			description: data.description ?? null,
+			businessUnitCodes: data.businessUnitCodes,
 		});
 		return toChartViewResponse(created);
 	},

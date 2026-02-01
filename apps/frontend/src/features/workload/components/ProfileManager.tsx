@@ -32,11 +32,13 @@ interface ProfileManagerProps {
 	startYearMonth: string;
 	endYearMonth: string;
 	projectItems: BulkUpsertProjectItemInput[];
+	businessUnitCodes: string[];
 	onApply?: (profile: {
 		chartViewId: number;
 		startYearMonth: string;
 		endYearMonth: string;
 		projectItems: BulkUpsertProjectItemInput[];
+		businessUnitCodes: string[] | null;
 	}) => void;
 }
 
@@ -45,6 +47,7 @@ export function ProfileManager({
 	startYearMonth,
 	endYearMonth,
 	projectItems,
+	businessUnitCodes,
 	onApply,
 }: ProfileManagerProps) {
 	const { data: viewsData } = useQuery(chartViewsQueryOptions());
@@ -69,6 +72,7 @@ export function ProfileManager({
 				chartType,
 				startYearMonth,
 				endYearMonth,
+				businessUnitCodes,
 			},
 			{
 				onSuccess: (result) => {
@@ -95,6 +99,7 @@ export function ProfileManager({
 		startYearMonth,
 		endYearMonth,
 		projectItems,
+		businessUnitCodes,
 	]);
 
 	const handleDelete = useCallback(
@@ -125,6 +130,7 @@ export function ProfileManager({
 							isVisible: item.isVisible,
 							color: item.color,
 						})),
+						businessUnitCodes: view.businessUnitCodes,
 					});
 				} else {
 					// 旧プロファイル：期間設定のみ復元
@@ -133,6 +139,7 @@ export function ProfileManager({
 						startYearMonth: view.startYearMonth,
 						endYearMonth: view.endYearMonth,
 						projectItems: [],
+						businessUnitCodes: view.businessUnitCodes,
 					});
 				}
 			} catch (error) {
@@ -150,7 +157,7 @@ export function ProfileManager({
 		updateMutation.mutate(
 			{
 				id: targetId,
-				input: { chartType, startYearMonth, endYearMonth },
+				input: { chartType, startYearMonth, endYearMonth, businessUnitCodes },
 			},
 			{
 				onSuccess: () => {
@@ -182,6 +189,7 @@ export function ProfileManager({
 		startYearMonth,
 		endYearMonth,
 		projectItems,
+		businessUnitCodes,
 	]);
 
 	return (

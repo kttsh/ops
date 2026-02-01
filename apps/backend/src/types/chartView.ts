@@ -21,6 +21,7 @@ export const createChartViewSchema = z
 		endYearMonth: yearMonthSchema,
 		isDefault: z.boolean().default(false),
 		description: z.string().max(500).optional().nullable(),
+		businessUnitCodes: z.array(z.string()).optional(),
 	})
 	.refine((data) => data.startYearMonth <= data.endYearMonth, {
 		path: ["endYearMonth"],
@@ -35,6 +36,7 @@ export const updateChartViewSchema = z.object({
 	endYearMonth: yearMonthSchema.optional(),
 	isDefault: z.boolean().optional(),
 	description: z.string().max(500).optional().nullable(),
+	businessUnitCodes: z.array(z.string()).optional(),
 });
 
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
@@ -62,6 +64,7 @@ export type ChartViewRow = {
 	end_year_month: string;
 	is_default: boolean;
 	description: string | null;
+	business_unit_codes: string | null;
 	created_at: Date;
 	updated_at: Date;
 	deleted_at: Date | null;
@@ -76,6 +79,7 @@ export type ChartView = {
 	endYearMonth: string;
 	isDefault: boolean;
 	description: string | null;
+	businessUnitCodes: string[] | null;
 	createdAt: string;
 	updatedAt: string;
 };

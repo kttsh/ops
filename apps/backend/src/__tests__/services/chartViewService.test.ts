@@ -26,6 +26,7 @@ const sampleRow: ChartViewRow = {
 	end_year_month: "202703",
 	is_default: true,
 	description: "2026年度のプロジェクト工数積み上げ表示",
+	business_unit_codes: '["PLANT"]',
 	created_at: new Date("2026-01-01T00:00:00Z"),
 	updated_at: new Date("2026-01-15T00:00:00Z"),
 	deleted_at: null,
@@ -69,6 +70,7 @@ describe("chartViewService", () => {
 					endYearMonth: "202703",
 					isDefault: true,
 					description: "2026年度のプロジェクト工数積み上げ表示",
+					businessUnitCodes: ["PLANT"],
 					createdAt: "2026-01-01T00:00:00.000Z",
 					updatedAt: "2026-01-15T00:00:00.000Z",
 				},
@@ -126,6 +128,7 @@ describe("chartViewService", () => {
 				endYearMonth: "202703",
 				isDefault: true,
 				description: "2026年度のプロジェクト工数積み上げ表示",
+				businessUnitCodes: ["PLANT"],
 				createdAt: "2026-01-01T00:00:00.000Z",
 				updatedAt: "2026-01-15T00:00:00.000Z",
 			});
@@ -168,6 +171,7 @@ describe("chartViewService", () => {
 				endYearMonth: "202703",
 				isDefault: true,
 				description: "2026年度のプロジェクト工数積み上げ表示",
+				businessUnitCodes: ["PLANT"],
 				createdAt: "2026-01-01T00:00:00.000Z",
 				updatedAt: "2026-01-15T00:00:00.000Z",
 			});
@@ -314,6 +318,7 @@ describe("chartViewService", () => {
 				endYearMonth: "202703",
 				isDefault: true,
 				description: "2026年度のプロジェクト工数積み上げ表示",
+				businessUnitCodes: ["PLANT"],
 				createdAt: "2026-01-01T00:00:00.000Z",
 				updatedAt: "2026-01-15T00:00:00.000Z",
 			});

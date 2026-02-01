@@ -40,6 +40,7 @@ interface SidePanelSettingsProps {
 		startYearMonth: string;
 		endYearMonth: string;
 		projectItems: BulkUpsertProjectItemInput[];
+		businessUnitCodes: string[] | null;
 	}) => void;
 }
 
@@ -167,6 +168,7 @@ export function SidePanelSettings({
 			startYearMonth: string;
 			endYearMonth: string;
 			projectItems: BulkUpsertProjectItemInput[];
+			businessUnitCodes: string[] | null;
 		}) => {
 			if (profile.projectItems.length > 0) {
 				// 色・並び順・表示状態を復元
@@ -324,6 +326,7 @@ export function SidePanelSettings({
 				startYearMonth={startYearMonth}
 				endYearMonth={endYearMonth}
 				projectItems={profileProjectItems}
+				businessUnitCodes={businessUnitCodes}
 				onApply={handleProfileApply}
 			/>
 		</div>

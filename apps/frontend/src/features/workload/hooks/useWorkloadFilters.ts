@@ -9,6 +9,11 @@ export interface UseWorkloadFiltersReturn {
 	filters: WorkloadSearchParams;
 	setBusinessUnits: (codes: string[]) => void;
 	setPeriod: (from: string | undefined, months: number) => void;
+	setPeriodAndBusinessUnits: (
+		from: string | undefined,
+		months: number,
+		businessUnitCodes: string[],
+	) => void;
 	setViewMode: (mode: "chart" | "table" | "both") => void;
 	setSidePanelTab: (tab: "projects" | "indirect" | "settings") => void;
 	hasBusinessUnits: boolean;
@@ -29,6 +34,15 @@ export function useWorkloadFilters(): UseWorkloadFiltersReturn {
 	const setPeriod = useCallback(
 		(from: string | undefined, months: number) => {
 			navigate({ search: (prev) => ({ ...prev, from, months }) });
+		},
+		[navigate],
+	);
+
+	const setPeriodAndBusinessUnits = useCallback(
+		(from: string | undefined, months: number, businessUnitCodes: string[]) => {
+			navigate({
+				search: (prev) => ({ ...prev, from, months, bu: businessUnitCodes }),
+			});
 		},
 		[navigate],
 	);
@@ -84,6 +98,7 @@ export function useWorkloadFilters(): UseWorkloadFiltersReturn {
 		filters,
 		setBusinessUnits,
 		setPeriod,
+		setPeriodAndBusinessUnits,
 		setViewMode,
 		setSidePanelTab,
 		hasBusinessUnits,

@@ -24,6 +24,7 @@ const sampleRow: ChartViewRow = {
 	end_year_month: "202703",
 	is_default: true,
 	description: "2026年度のプロジェクト工数積み上げ表示",
+	business_unit_codes: '["PLANT"]',
 	created_at: new Date("2026-01-01T00:00:00Z"),
 	updated_at: new Date("2026-01-01T00:00:00Z"),
 	deleted_at: null,
@@ -144,6 +145,7 @@ describe("chartViewData", () => {
 				endYearMonth: "202703",
 				isDefault: true,
 				description: "2026年度のプロジェクト工数積み上げ表示",
+				businessUnitCodes: ["PLANT"],
 			});
 
 			expect(result).toEqual(sampleRow);
@@ -153,29 +155,29 @@ describe("chartViewData", () => {
 				"2026年度全体ビュー",
 			);
 			expect(mockInput).toHaveBeenCalledWith(
-				"chartType",
+				"businessUnitCodes",
 				expect.anything(),
-				"stacked-area",
+				'["PLANT"]',
 			);
+		});
+
+		test("businessUnitCodes 未指定時に null を格納する", async () => {
+			const rowWithoutBu = { ...sampleRow, business_unit_codes: null };
+			mockQuery.mockResolvedValueOnce({ recordset: [rowWithoutBu] });
+
+			await chartViewData.create({
+				viewName: "テストビュー",
+				chartType: "stacked-bar",
+				startYearMonth: "202601",
+				endYearMonth: "202612",
+				isDefault: false,
+				description: null,
+			});
+
 			expect(mockInput).toHaveBeenCalledWith(
-				"startYearMonth",
+				"businessUnitCodes",
 				expect.anything(),
-				"202604",
-			);
-			expect(mockInput).toHaveBeenCalledWith(
-				"endYearMonth",
-				expect.anything(),
-				"202703",
-			);
-			expect(mockInput).toHaveBeenCalledWith(
-				"isDefault",
-				expect.anything(),
-				true,
-			);
-			expect(mockInput).toHaveBeenCalledWith(
-				"description",
-				expect.anything(),
-				"2026年度のプロジェクト工数積み上げ表示",
+				null,
 			);
 		});
 	});
@@ -245,6 +247,21 @@ describe("chartViewData", () => {
 				"description",
 				expect.anything(),
 				"更新説明",
+			);
+		});
+
+		test("businessUnitCodes を更新する", async () => {
+			mockQuery.mockResolvedValueOnce({ recordset: [{ chart_view_id: 1 }] });
+			mockQuery.mockResolvedValueOnce({ recordset: [sampleRow] });
+
+			await chartViewData.update(1, {
+				businessUnitCodes: ["PLANT", "TRANS"],
+			});
+
+			expect(mockInput).toHaveBeenCalledWith(
+				"businessUnitCodes",
+				expect.anything(),
+				'["PLANT","TRANS"]',
 			);
 		});
 

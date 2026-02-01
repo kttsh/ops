@@ -628,11 +628,11 @@ INSERT INTO standard_effort_weights (standard_effort_id, progress_rate, weight) 
 -- -----------------------------------------------------------------------------
 -- chart_views: チャートビュー
 -- -----------------------------------------------------------------------------
-INSERT INTO chart_views (view_name, chart_type, start_year_month, end_year_month, is_default, description) VALUES
-(N'PLANT全体負荷', 'STACKED_BAR', '202504', '202803', 1, N'PLANTビジネスユニットの全案件負荷を表示'),
-(N'TRANS全体負荷', 'STACKED_BAR', '202504', '202703', 0, N'TRANSビジネスユニットの全案件負荷を表示'),
-(N'CO2全体負荷', 'STACKED_BAR', '202504', '202703', 0, N'CO2ビジネスユニットの全案件負荷を表示'),
-(N'2025年度サマリー', 'STACKED_BAR', '202504', '202603', 0, N'2025年度の全BU負荷サマリー');
+INSERT INTO chart_views (view_name, chart_type, start_year_month, end_year_month, is_default, description, business_unit_codes) VALUES
+(N'PLANT全体負荷', 'STACKED_BAR', '202504', '202803', 1, N'PLANTビジネスユニットの全案件負荷を表示', '["PLANT"]'),
+(N'TRANS全体負荷', 'STACKED_BAR', '202504', '202703', 0, N'TRANSビジネスユニットの全案件負荷を表示', '["TRANS"]'),
+(N'CO2全体負荷', 'STACKED_BAR', '202504', '202703', 0, N'CO2ビジネスユニットの全案件負荷を表示', '["CO2"]'),
+(N'2025年度サマリー', 'STACKED_BAR', '202504', '202603', 0, N'2025年度の全BU負荷サマリー', NULL);
 
 -- -----------------------------------------------------------------------------
 -- chart_view_project_items: チャートビュー案件項目

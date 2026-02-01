@@ -156,6 +156,7 @@ export type ChartView = {
 	endYearMonth: string;
 	isDefault: boolean;
 	description: string | null;
+	businessUnitCodes: string[] | null;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -185,6 +186,7 @@ export type CreateChartViewInput = {
 	startYearMonth: string;
 	endYearMonth: string;
 	description?: string | null;
+	businessUnitCodes?: string[];
 };
 
 export type UpdateChartViewInput = {
@@ -193,6 +195,7 @@ export type UpdateChartViewInput = {
 	startYearMonth?: string;
 	endYearMonth?: string;
 	description?: string | null;
+	businessUnitCodes?: string[];
 };
 
 export type BulkUpsertProjectItemInput = {

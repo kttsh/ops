@@ -33,6 +33,7 @@ function WorkloadPage() {
 		filters,
 		setBusinessUnits,
 		setPeriod,
+		setPeriodAndBusinessUnits,
 		setViewMode,
 		setSidePanelTab,
 		hasBusinessUnits,
@@ -88,6 +89,7 @@ function WorkloadPage() {
 				isVisible: boolean;
 				color: string | null;
 			}>;
+			businessUnitCodes: string[] | null;
 		}) => {
 			// startYearMonth と endYearMonth から months を計算
 			const startY = parseInt(profile.startYearMonth.slice(0, 4), 10);
@@ -95,9 +97,18 @@ function WorkloadPage() {
 			const endY = parseInt(profile.endYearMonth.slice(0, 4), 10);
 			const endM = parseInt(profile.endYearMonth.slice(4, 6), 10);
 			const months = (endY - startY) * 12 + (endM - startM) + 1;
-			setPeriod(profile.startYearMonth, months);
+			// BU 復元と期間復元を1回の URL 更新で一括実行
+			if (profile.businessUnitCodes !== null) {
+				setPeriodAndBusinessUnits(
+					profile.startYearMonth,
+					months,
+					profile.businessUnitCodes,
+				);
+			} else {
+				setPeriod(profile.startYearMonth, months);
+			}
 		},
-		[setPeriod],
+		[setPeriod, setPeriodAndBusinessUnits],
 	);
 
 	// chartDataParams に selectedProjectIds を含める

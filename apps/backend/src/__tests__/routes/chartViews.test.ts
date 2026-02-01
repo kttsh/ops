@@ -74,6 +74,7 @@ const sampleView = {
 	endYearMonth: "202703",
 	isDefault: true,
 	description: "2026年度のプロジェクト工数積み上げ表示",
+	businessUnitCodes: ["PLANT"],
 	createdAt: "2026-01-01T00:00:00.000Z",
 	updatedAt: "2026-01-01T00:00:00.000Z",
 };
@@ -86,6 +87,7 @@ const sampleView2 = {
 	endYearMonth: "202512",
 	isDefault: false,
 	description: null,
+	businessUnitCodes: null,
 	createdAt: "2026-01-01T00:00:00.000Z",
 	updatedAt: "2026-01-01T00:00:00.000Z",
 };
@@ -236,6 +238,7 @@ describe("POST /chart-views", () => {
 				endYearMonth: "202703",
 				isDefault: true,
 				description: "2026年度のプロジェクト工数積み上げ表示",
+				businessUnitCodes: ["PLANT"],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
@@ -244,6 +247,25 @@ describe("POST /chart-views", () => {
 
 		const body = await res.json();
 		expect(body.data).toMatchObject(sampleView);
+	});
+
+	test("businessUnitCodes なしのリクエストで後方互換で作成できる", async () => {
+		mockedService.create.mockResolvedValue(sampleView2);
+
+		const res = await app.request("/chart-views", {
+			method: "POST",
+			body: JSON.stringify({
+				viewName: "テストビュー",
+				chartType: "stacked-bar",
+				startYearMonth: "202501",
+				endYearMonth: "202512",
+			}),
+			headers: new Headers({ "Content-Type": "application/json" }),
+		});
+		expect(res.status).toBe(201);
+
+		const body = await res.json();
+		expect(body.data.businessUnitCodes).toBeNull();
 	});
 
 	test("isDefault 省略時にデフォルト値 false が使われる", async () => {
