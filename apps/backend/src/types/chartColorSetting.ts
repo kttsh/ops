@@ -9,19 +9,19 @@ const colorCodeSchema = z.string().regex(/^#[0-9A-Fa-f]{6}$/, {
 });
 
 /** 対象タイプバリデーション */
-const targetTypeSchema = z.enum(["project", "indirect_work"]);
+const targetTypeSchema = z.enum(["project", "indirect_work", "indirect_work_type"]);
 
 /** 作成用スキーマ */
 export const createChartColorSettingSchema = z.object({
 	targetType: targetTypeSchema,
-	targetId: z.number().int().positive(),
+	targetCode: z.string().min(1),
 	colorCode: colorCodeSchema,
 });
 
 /** 更新用スキーマ（全フィールドオプショナル） */
 export const updateChartColorSettingSchema = z.object({
 	targetType: targetTypeSchema.optional(),
-	targetId: z.number().int().positive().optional(),
+	targetCode: z.string().min(1).optional(),
 	colorCode: colorCodeSchema.optional(),
 });
 
@@ -61,7 +61,7 @@ export type ChartColorSettingListQuery = z.infer<
 export type ChartColorSettingRow = {
 	chart_color_setting_id: number;
 	target_type: string;
-	target_id: number;
+	target_code: string;
 	color_code: string;
 	created_at: Date;
 	updated_at: Date;
@@ -71,7 +71,7 @@ export type ChartColorSettingRow = {
 export type ChartColorSetting = {
 	chartColorSettingId: number;
 	targetType: string;
-	targetId: number;
+	targetCode: string;
 	colorCode: string;
 	createdAt: string;
 	updatedAt: string;

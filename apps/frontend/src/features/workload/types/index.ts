@@ -120,7 +120,7 @@ export type ChartColorSetting = {
 	chartColorSettingId: number;
 	targetType: string;
 	targetCode: string;
-	color: string;
+	colorCode: string;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -128,15 +128,14 @@ export type ChartColorSetting = {
 export type ChartColorSettingInput = {
 	targetType: string;
 	targetCode: string;
-	color: string;
+	colorCode: string;
 };
 
 export type ChartStackOrderSetting = {
 	chartStackOrderSettingId: number;
 	targetType: string;
 	targetCode: string;
-	displayOrder: number;
-	isVisible: boolean;
+	stackOrder: number;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -144,8 +143,7 @@ export type ChartStackOrderSetting = {
 export type ChartStackOrderSettingInput = {
 	targetType: string;
 	targetCode: string;
-	displayOrder: number;
-	isVisible: boolean;
+	stackOrder: number;
 };
 
 export type ChartView = {

@@ -6,14 +6,14 @@ import { paginationQuerySchema } from "@/types/pagination";
 /** 作成用スキーマ */
 export const createChartStackOrderSettingSchema = z.object({
 	targetType: z.string().min(1).max(20),
-	targetId: z.number().int().positive(),
+	targetCode: z.string().min(1),
 	stackOrder: z.number().int(),
 });
 
 /** 更新用スキーマ（全フィールドオプショナル） */
 export const updateChartStackOrderSettingSchema = z.object({
 	targetType: z.string().min(1).max(20).optional(),
-	targetId: z.number().int().positive().optional(),
+	targetCode: z.string().min(1).optional(),
 	stackOrder: z.number().int().optional(),
 });
 
@@ -54,7 +54,7 @@ export type ChartStackOrderSettingListQuery = z.infer<
 export type ChartStackOrderSettingRow = {
 	chart_stack_order_setting_id: number;
 	target_type: string;
-	target_id: number;
+	target_code: string;
 	stack_order: number;
 	created_at: Date;
 	updated_at: Date;
@@ -64,7 +64,7 @@ export type ChartStackOrderSettingRow = {
 export type ChartStackOrderSetting = {
 	chartStackOrderSettingId: number;
 	targetType: string;
-	targetId: number;
+	targetCode: string;
 	stackOrder: number;
 	createdAt: string;
 	updatedAt: string;

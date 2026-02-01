@@ -10,14 +10,14 @@ describe("createChartColorSettingSchema", () => {
 	it("有効な入力を受け付ける", () => {
 		const result = createChartColorSettingSchema.safeParse({
 			targetType: "project",
-			targetId: 1,
+			targetCode: "1",
 			colorCode: "#FF5733",
 		});
 		expect(result.success).toBe(true);
 		if (result.success) {
 			expect(result.data).toEqual({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#FF5733",
 			});
 		}
@@ -26,7 +26,7 @@ describe("createChartColorSettingSchema", () => {
 	it("indirect_work タイプを受け付ける", () => {
 		const result = createChartColorSettingSchema.safeParse({
 			targetType: "indirect_work",
-			targetId: 10,
+			targetCode: "10",
 			colorCode: "#00FF00",
 		});
 		expect(result.success).toBe(true);
@@ -36,7 +36,7 @@ describe("createChartColorSettingSchema", () => {
 		it("project を受け付ける", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#FF5733",
 			});
 			expect(result.success).toBe(true);
@@ -45,7 +45,7 @@ describe("createChartColorSettingSchema", () => {
 		it("indirect_work を受け付ける", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "indirect_work",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#FF5733",
 			});
 			expect(result.success).toBe(true);
@@ -54,7 +54,7 @@ describe("createChartColorSettingSchema", () => {
 		it("不正な値を拒否する", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "unknown",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#FF5733",
 			});
 			expect(result.success).toBe(false);
@@ -62,45 +62,36 @@ describe("createChartColorSettingSchema", () => {
 
 		it("未指定を拒否する", () => {
 			const result = createChartColorSettingSchema.safeParse({
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#FF5733",
 			});
 			expect(result.success).toBe(false);
 		});
 	});
 
-	describe("targetId のバリデーション", () => {
-		it("正の整数を受け付ける", () => {
+	describe("targetCode のバリデーション", () => {
+		it("文字列を受け付ける", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: 100,
+				targetCode: "100",
 				colorCode: "#FF5733",
 			});
 			expect(result.success).toBe(true);
 		});
 
-		it("0 を拒否する", () => {
+		it("work type code 文字列を受け付ける", () => {
 			const result = createChartColorSettingSchema.safeParse({
-				targetType: "project",
-				targetId: 0,
+				targetType: "indirect_work_type",
+				targetCode: "DESIGN",
 				colorCode: "#FF5733",
 			});
-			expect(result.success).toBe(false);
+			expect(result.success).toBe(true);
 		});
 
-		it("負の数を拒否する", () => {
+		it("空文字を拒否する", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: -1,
-				colorCode: "#FF5733",
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it("小数を拒否する", () => {
-			const result = createChartColorSettingSchema.safeParse({
-				targetType: "project",
-				targetId: 1.5,
+				targetCode: "",
 				colorCode: "#FF5733",
 			});
 			expect(result.success).toBe(false);
@@ -119,7 +110,7 @@ describe("createChartColorSettingSchema", () => {
 		it("#FF5733 を受け付ける", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#FF5733",
 			});
 			expect(result.success).toBe(true);
@@ -128,7 +119,7 @@ describe("createChartColorSettingSchema", () => {
 		it("#000000 を受け付ける", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#000000",
 			});
 			expect(result.success).toBe(true);
@@ -137,7 +128,7 @@ describe("createChartColorSettingSchema", () => {
 		it("小文字の16進数を受け付ける", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#ff5733",
 			});
 			expect(result.success).toBe(true);
@@ -146,7 +137,7 @@ describe("createChartColorSettingSchema", () => {
 		it("# なしを拒否する", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "FF5733",
 			});
 			expect(result.success).toBe(false);
@@ -155,7 +146,7 @@ describe("createChartColorSettingSchema", () => {
 		it("不正な16進数文字を拒否する", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#GG0000",
 			});
 			expect(result.success).toBe(false);
@@ -164,7 +155,7 @@ describe("createChartColorSettingSchema", () => {
 		it("3桁の短縮形式を拒否する", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#fff",
 			});
 			expect(result.success).toBe(false);
@@ -173,7 +164,7 @@ describe("createChartColorSettingSchema", () => {
 		it("未指定を拒否する", () => {
 			const result = createChartColorSettingSchema.safeParse({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 			});
 			expect(result.success).toBe(false);
 		});
@@ -184,14 +175,14 @@ describe("updateChartColorSettingSchema", () => {
 	it("全フィールド指定を受け付ける", () => {
 		const result = updateChartColorSettingSchema.safeParse({
 			targetType: "indirect_work",
-			targetId: 5,
+			targetCode: "5",
 			colorCode: "#00FF00",
 		});
 		expect(result.success).toBe(true);
 		if (result.success) {
 			expect(result.data).toEqual({
 				targetType: "indirect_work",
-				targetId: 5,
+				targetCode: "5",
 				colorCode: "#00FF00",
 			});
 		}
@@ -202,7 +193,7 @@ describe("updateChartColorSettingSchema", () => {
 		expect(result.success).toBe(true);
 		if (result.success) {
 			expect(result.data.targetType).toBeUndefined();
-			expect(result.data.targetId).toBeUndefined();
+			expect(result.data.targetCode).toBeUndefined();
 			expect(result.data.colorCode).toBeUndefined();
 		}
 	});
@@ -240,8 +231,8 @@ describe("bulkUpsertChartColorSettingSchema", () => {
 	it("有効な配列を受け付ける", () => {
 		const result = bulkUpsertChartColorSettingSchema.safeParse({
 			items: [
-				{ targetType: "project", targetId: 1, colorCode: "#FF5733" },
-				{ targetType: "indirect_work", targetId: 2, colorCode: "#33FF57" },
+				{ targetType: "project", targetCode: "1", colorCode: "#FF5733" },
+				{ targetType: "indirect_work", targetCode: "2", colorCode: "#33FF57" },
 			],
 		});
 		expect(result.success).toBe(true);
@@ -259,14 +250,14 @@ describe("bulkUpsertChartColorSettingSchema", () => {
 
 	it("不正な要素を拒否する", () => {
 		const result = bulkUpsertChartColorSettingSchema.safeParse({
-			items: [{ targetType: "project", targetId: 1, colorCode: "INVALID" }],
+			items: [{ targetType: "project", targetCode: "1", colorCode: "INVALID" }],
 		});
 		expect(result.success).toBe(false);
 	});
 
 	it("必須フィールド欠落を拒否する", () => {
 		const result = bulkUpsertChartColorSettingSchema.safeParse({
-			items: [{ targetType: "project", targetId: 1 }],
+			items: [{ targetType: "project", targetCode: "1" }],
 		});
 		expect(result.success).toBe(false);
 	});

@@ -3,7 +3,7 @@ import { getPool } from "@/database/client";
 import type { ChartStackOrderSettingRow } from "@/types/chartStackOrderSetting";
 
 const BASE_SELECT = `
-  chart_stack_order_setting_id, target_type, target_id,
+  chart_stack_order_setting_id, target_type, target_code,
   stack_order, created_at, updated_at
 `;
 
@@ -66,17 +66,17 @@ export const chartStackOrderSettingData = {
 
 	async findByTarget(
 		targetType: string,
-		targetId: number,
+		targetCode: string,
 	): Promise<ChartStackOrderSettingRow | undefined> {
 		const pool = await getPool();
 		const result = await pool
 			.request()
 			.input("targetType", sql.VarChar, targetType)
-			.input("targetId", sql.Int, targetId)
+			.input("targetCode", sql.VarChar, targetCode)
 			.query<ChartStackOrderSettingRow>(
 				`SELECT ${BASE_SELECT}
          FROM chart_stack_order_settings
-         WHERE target_type = @targetType AND target_id = @targetId`,
+         WHERE target_type = @targetType AND target_code = @targetCode`,
 			);
 
 		return result.recordset[0];
@@ -84,20 +84,20 @@ export const chartStackOrderSettingData = {
 
 	async findByTargetExcluding(
 		targetType: string,
-		targetId: number,
+		targetCode: string,
 		excludeId: number,
 	): Promise<ChartStackOrderSettingRow | undefined> {
 		const pool = await getPool();
 		const result = await pool
 			.request()
 			.input("targetType", sql.VarChar, targetType)
-			.input("targetId", sql.Int, targetId)
+			.input("targetCode", sql.VarChar, targetCode)
 			.input("excludeId", sql.Int, excludeId)
 			.query<ChartStackOrderSettingRow>(
 				`SELECT ${BASE_SELECT}
          FROM chart_stack_order_settings
          WHERE target_type = @targetType
-           AND target_id = @targetId
+           AND target_code = @targetCode
            AND chart_stack_order_setting_id <> @excludeId`,
 			);
 
@@ -106,20 +106,20 @@ export const chartStackOrderSettingData = {
 
 	async create(data: {
 		targetType: string;
-		targetId: number;
+		targetCode: string;
 		stackOrder: number;
 	}): Promise<ChartStackOrderSettingRow> {
 		const pool = await getPool();
 		const result = await pool
 			.request()
 			.input("targetType", sql.VarChar, data.targetType)
-			.input("targetId", sql.Int, data.targetId)
+			.input("targetCode", sql.VarChar, data.targetCode)
 			.input("stackOrder", sql.Int, data.stackOrder)
 			.query<ChartStackOrderSettingRow>(
-				`INSERT INTO chart_stack_order_settings (target_type, target_id, stack_order)
-         OUTPUT INSERTED.chart_stack_order_setting_id, INSERTED.target_type, INSERTED.target_id,
+				`INSERT INTO chart_stack_order_settings (target_type, target_code, stack_order)
+         OUTPUT INSERTED.chart_stack_order_setting_id, INSERTED.target_type, INSERTED.target_code,
                 INSERTED.stack_order, INSERTED.created_at, INSERTED.updated_at
-         VALUES (@targetType, @targetId, @stackOrder)`,
+         VALUES (@targetType, @targetCode, @stackOrder)`,
 			);
 
 		return result.recordset[0];
@@ -129,7 +129,7 @@ export const chartStackOrderSettingData = {
 		id: number,
 		data: Partial<{
 			targetType: string;
-			targetId: number;
+			targetCode: string;
 			stackOrder: number;
 		}>,
 	): Promise<ChartStackOrderSettingRow | undefined> {
@@ -141,9 +141,9 @@ export const chartStackOrderSettingData = {
 			setClauses.push("target_type = @targetType");
 			request.input("targetType", sql.VarChar, data.targetType);
 		}
-		if (data.targetId !== undefined) {
-			setClauses.push("target_id = @targetId");
-			request.input("targetId", sql.Int, data.targetId);
+		if (data.targetCode !== undefined) {
+			setClauses.push("target_code = @targetCode");
+			request.input("targetCode", sql.VarChar, data.targetCode);
 		}
 		if (data.stackOrder !== undefined) {
 			setClauses.push("stack_order = @stackOrder");
@@ -153,7 +153,7 @@ export const chartStackOrderSettingData = {
 		const result = await request.query<ChartStackOrderSettingRow>(
 			`UPDATE chart_stack_order_settings
        SET ${setClauses.join(", ")}
-       OUTPUT INSERTED.chart_stack_order_setting_id, INSERTED.target_type, INSERTED.target_id,
+       OUTPUT INSERTED.chart_stack_order_setting_id, INSERTED.target_type, INSERTED.target_code,
               INSERTED.stack_order, INSERTED.created_at, INSERTED.updated_at
        WHERE chart_stack_order_setting_id = @id`,
 		);
@@ -177,7 +177,7 @@ export const chartStackOrderSettingData = {
 	async bulkUpsert(
 		items: Array<{
 			targetType: string;
-			targetId: number;
+			targetCode: string;
 			stackOrder: number;
 		}>,
 	): Promise<ChartStackOrderSettingRow[]> {
@@ -193,18 +193,18 @@ export const chartStackOrderSettingData = {
 				const result = await transaction
 					.request()
 					.input("targetType", sql.VarChar, item.targetType)
-					.input("targetId", sql.Int, item.targetId)
+					.input("targetCode", sql.VarChar, item.targetCode)
 					.input("stackOrder", sql.Int, item.stackOrder)
 					.query<ChartStackOrderSettingRow>(
 						`MERGE chart_stack_order_settings AS target
-             USING (SELECT @targetType AS target_type, @targetId AS target_id) AS source
-             ON target.target_type = source.target_type AND target.target_id = source.target_id
+             USING (SELECT @targetType AS target_type, @targetCode AS target_code) AS source
+             ON target.target_type = source.target_type AND target.target_code = source.target_code
              WHEN MATCHED THEN
                UPDATE SET stack_order = @stackOrder, updated_at = GETDATE()
              WHEN NOT MATCHED THEN
-               INSERT (target_type, target_id, stack_order)
-               VALUES (@targetType, @targetId, @stackOrder)
-             OUTPUT INSERTED.chart_stack_order_setting_id, INSERTED.target_type, INSERTED.target_id,
+               INSERT (target_type, target_code, stack_order)
+               VALUES (@targetType, @targetCode, @stackOrder)
+             OUTPUT INSERTED.chart_stack_order_setting_id, INSERTED.target_type, INSERTED.target_code,
                     INSERTED.stack_order, INSERTED.created_at, INSERTED.updated_at;`,
 					);
 

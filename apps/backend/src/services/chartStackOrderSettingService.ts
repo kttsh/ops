@@ -35,11 +35,11 @@ export const chartStackOrderSettingService = {
 	): Promise<ChartStackOrderSetting> {
 		const existing = await chartStackOrderSettingData.findByTarget(
 			data.targetType,
-			data.targetId,
+			data.targetCode,
 		);
 		if (existing) {
 			throw new HTTPException(409, {
-				message: `Chart stack order setting with target type '${data.targetType}' and target ID '${data.targetId}' already exists`,
+				message: `Chart stack order setting with target type '${data.targetType}' and target code '${data.targetCode}' already exists`,
 			});
 		}
 
@@ -59,17 +59,17 @@ export const chartStackOrderSettingService = {
 		}
 
 		const targetType = data.targetType ?? existing.target_type;
-		const targetId = data.targetId ?? existing.target_id;
+		const targetCode = data.targetCode ?? existing.target_code;
 
-		if (data.targetType !== undefined || data.targetId !== undefined) {
+		if (data.targetType !== undefined || data.targetCode !== undefined) {
 			const duplicate = await chartStackOrderSettingData.findByTargetExcluding(
 				targetType,
-				targetId,
+				targetCode,
 				id,
 			);
 			if (duplicate) {
 				throw new HTTPException(409, {
-					message: `Chart stack order setting with target type '${targetType}' and target ID '${targetId}' already exists`,
+					message: `Chart stack order setting with target type '${targetType}' and target code '${targetCode}' already exists`,
 				});
 			}
 		}
@@ -97,12 +97,12 @@ export const chartStackOrderSettingService = {
 	async bulkUpsert(
 		items: CreateChartStackOrderSetting[],
 	): Promise<ChartStackOrderSetting[]> {
-		// 入力配列内の (targetType, targetId) 重複チェック
-		const keys = items.map((i) => `${i.targetType}:${i.targetId}`);
+		// 入力配列内の (targetType, targetCode) 重複チェック
+		const keys = items.map((i) => `${i.targetType}:${i.targetCode}`);
 		const uniqueKeys = new Set(keys);
 		if (uniqueKeys.size !== keys.length) {
 			throw new HTTPException(422, {
-				message: "Duplicate targetType and targetId combination found in items",
+				message: "Duplicate targetType and targetCode combination found in items",
 			});
 		}
 

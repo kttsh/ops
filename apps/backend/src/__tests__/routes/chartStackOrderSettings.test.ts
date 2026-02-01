@@ -69,7 +69,7 @@ function createApp() {
 const sampleSetting1 = {
 	chartStackOrderSettingId: 1,
 	targetType: "project",
-	targetId: 1,
+	targetCode: "1",
 	stackOrder: 1,
 	createdAt: "2026-01-01T00:00:00.000Z",
 	updatedAt: "2026-01-01T00:00:00.000Z",
@@ -78,7 +78,7 @@ const sampleSetting1 = {
 const sampleSetting2 = {
 	chartStackOrderSettingId: 2,
 	targetType: "indirect_work",
-	targetId: 2,
+	targetCode: "2",
 	stackOrder: 2,
 	createdAt: "2026-01-02T00:00:00.000Z",
 	updatedAt: "2026-01-02T00:00:00.000Z",
@@ -230,7 +230,7 @@ describe("POST /chart-stack-order-settings", () => {
 			method: "POST",
 			body: JSON.stringify({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				stackOrder: 1,
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -242,11 +242,11 @@ describe("POST /chart-stack-order-settings", () => {
 		expect(body.data).toMatchObject(sampleSetting1);
 	});
 
-	test("重複する targetType + targetId で 409 を返す", async () => {
+	test("重複する targetType + targetCode で 409 を返す", async () => {
 		mockedService.create.mockRejectedValue(
 			new HTTPException(409, {
 				message:
-					"Chart stack order setting with target type 'project' and target ID '1' already exists",
+					"Chart stack order setting with target type 'project' and target code '1' already exists",
 			}),
 		);
 
@@ -254,7 +254,7 @@ describe("POST /chart-stack-order-settings", () => {
 			method: "POST",
 			body: JSON.stringify({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				stackOrder: 1,
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -281,12 +281,12 @@ describe("POST /chart-stack-order-settings", () => {
 		expect(body.errors.length).toBeGreaterThan(0);
 	});
 
-	test("バリデーションエラー（targetId が負数）で 422 を返す", async () => {
+	test("バリデーションエラー（targetCode が空文字）で 422 を返す", async () => {
 		const res = await app.request(BASE_URL, {
 			method: "POST",
 			body: JSON.stringify({
 				targetType: "project",
-				targetId: -1,
+				targetCode: "",
 				stackOrder: 1,
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -302,7 +302,7 @@ describe("POST /chart-stack-order-settings", () => {
 			method: "POST",
 			body: JSON.stringify({
 				targetType: "a".repeat(21),
-				targetId: 1,
+				targetCode: "1",
 				stackOrder: 1,
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -372,17 +372,17 @@ describe("PUT /chart-stack-order-settings/:id", () => {
 		expect(body.type).toContain("resource-not-found");
 	});
 
-	test("更新後の targetType + targetId 重複で 409 を返す", async () => {
+	test("更新後の targetType + targetCode 重複で 409 を返す", async () => {
 		mockedService.update.mockRejectedValue(
 			new HTTPException(409, {
 				message:
-					"Chart stack order setting with target type 'project' and target ID '2' already exists",
+					"Chart stack order setting with target type 'project' and target code '2' already exists",
 			}),
 		);
 
 		const res = await app.request(`${BASE_URL}/1`, {
 			method: "PUT",
-			body: JSON.stringify({ targetId: 2 }),
+			body: JSON.stringify({ targetCode: "2" }),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
 		expect(res.status).toBe(409);
@@ -472,8 +472,8 @@ describe("PUT /chart-stack-order-settings/bulk", () => {
 			method: "PUT",
 			body: JSON.stringify({
 				items: [
-					{ targetType: "project", targetId: 1, stackOrder: 1 },
-					{ targetType: "indirect_work", targetId: 2, stackOrder: 2 },
+					{ targetType: "project", targetCode: "1", stackOrder: 1 },
+					{ targetType: "indirect_work", targetCode: "2", stackOrder: 2 },
 				],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -486,10 +486,10 @@ describe("PUT /chart-stack-order-settings/bulk", () => {
 		expect(body.data[1]).toMatchObject(sampleSetting2);
 	});
 
-	test("入力配列内の (targetType, targetId) 重複で 422 を返す", async () => {
+	test("入力配列内の (targetType, targetCode) 重複で 422 を返す", async () => {
 		mockedService.bulkUpsert.mockRejectedValue(
 			new HTTPException(422, {
-				message: "Duplicate targetType and targetId combination found in items",
+				message: "Duplicate targetType and targetCode combination found in items",
 			}),
 		);
 
@@ -497,8 +497,8 @@ describe("PUT /chart-stack-order-settings/bulk", () => {
 			method: "PUT",
 			body: JSON.stringify({
 				items: [
-					{ targetType: "project", targetId: 1, stackOrder: 1 },
-					{ targetType: "project", targetId: 1, stackOrder: 2 },
+					{ targetType: "project", targetCode: "1", stackOrder: 1 },
+					{ targetType: "project", targetCode: "1", stackOrder: 2 },
 				],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -527,7 +527,7 @@ describe("PUT /chart-stack-order-settings/bulk", () => {
 		const res = await app.request(`${BASE_URL}/bulk`, {
 			method: "PUT",
 			body: JSON.stringify({
-				items: [{ targetType: "project", targetId: 1 }],
+				items: [{ targetType: "project", targetCode: "1" }],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
@@ -543,7 +543,7 @@ describe("PUT /chart-stack-order-settings/bulk", () => {
 		const res = await app.request(`${BASE_URL}/bulk`, {
 			method: "PUT",
 			body: JSON.stringify({
-				items: [{ targetType: "project", targetId: 1, stackOrder: 1 }],
+				items: [{ targetType: "project", targetCode: "1", stackOrder: 1 }],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});

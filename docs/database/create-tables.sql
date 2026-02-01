@@ -468,14 +468,14 @@ CREATE INDEX IX_project_change_history_changed_at ON project_change_history (cha
 CREATE TABLE chart_stack_order_settings (
     chart_stack_order_setting_id INT IDENTITY(1,1) NOT NULL,
     target_type VARCHAR(20) NOT NULL,
-    target_id INT NOT NULL,
+    target_code VARCHAR(50) NOT NULL,
     stack_order INT NOT NULL,
     created_at DATETIME2 NOT NULL CONSTRAINT DF_chart_stack_order_settings_created_at DEFAULT GETDATE(),
     updated_at DATETIME2 NOT NULL CONSTRAINT DF_chart_stack_order_settings_updated_at DEFAULT GETDATE(),
     CONSTRAINT PK_chart_stack_order_settings PRIMARY KEY (chart_stack_order_setting_id)
 );
 
-CREATE UNIQUE INDEX UQ_chart_stack_order_settings_target ON chart_stack_order_settings (target_type, target_id);
+CREATE UNIQUE INDEX UQ_chart_stack_order_settings_target ON chart_stack_order_settings (target_type, target_code);
 
 -- -----------------------------------------------------------------------------
 -- chart_color_settings: カラー設定
@@ -483,14 +483,14 @@ CREATE UNIQUE INDEX UQ_chart_stack_order_settings_target ON chart_stack_order_se
 CREATE TABLE chart_color_settings (
     chart_color_setting_id INT IDENTITY(1,1) NOT NULL,
     target_type VARCHAR(20) NOT NULL,
-    target_id INT NOT NULL,
+    target_code VARCHAR(50) NOT NULL,
     color_code VARCHAR(7) NOT NULL,
     created_at DATETIME2 NOT NULL CONSTRAINT DF_chart_color_settings_created_at DEFAULT GETDATE(),
     updated_at DATETIME2 NOT NULL CONSTRAINT DF_chart_color_settings_updated_at DEFAULT GETDATE(),
     CONSTRAINT PK_chart_color_settings PRIMARY KEY (chart_color_setting_id)
 );
 
-CREATE UNIQUE INDEX UQ_chart_color_settings_target ON chart_color_settings (target_type, target_id);
+CREATE UNIQUE INDEX UQ_chart_color_settings_target ON chart_color_settings (target_type, target_code);
 
 -- -----------------------------------------------------------------------------
 -- chart_color_palettes: カラーパレット

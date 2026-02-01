@@ -69,7 +69,7 @@ function createApp() {
 const sampleSetting1 = {
 	chartColorSettingId: 1,
 	targetType: "project",
-	targetId: 1,
+	targetCode: "1",
 	colorCode: "#FF5733",
 	createdAt: "2026-01-01T00:00:00.000Z",
 	updatedAt: "2026-01-01T00:00:00.000Z",
@@ -78,7 +78,7 @@ const sampleSetting1 = {
 const sampleSetting2 = {
 	chartColorSettingId: 2,
 	targetType: "indirect_work",
-	targetId: 2,
+	targetCode: "2",
 	colorCode: "#33FF57",
 	createdAt: "2026-01-02T00:00:00.000Z",
 	updatedAt: "2026-01-02T00:00:00.000Z",
@@ -240,7 +240,7 @@ describe("POST /chart-color-settings", () => {
 			method: "POST",
 			body: JSON.stringify({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#FF5733",
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -252,11 +252,11 @@ describe("POST /chart-color-settings", () => {
 		expect(body.data).toMatchObject(sampleSetting1);
 	});
 
-	test("重複する targetType + targetId で 409 を返す", async () => {
+	test("重複する targetType + targetCode で 409 を返す", async () => {
 		mockedService.create.mockRejectedValue(
 			new HTTPException(409, {
 				message:
-					"Chart color setting for target_type 'project' and target_id '1' already exists",
+					"Chart color setting for target_type 'project' and target_code '1' already exists",
 			}),
 		);
 
@@ -264,7 +264,7 @@ describe("POST /chart-color-settings", () => {
 			method: "POST",
 			body: JSON.stringify({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#FF5733",
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -296,7 +296,7 @@ describe("POST /chart-color-settings", () => {
 			method: "POST",
 			body: JSON.stringify({
 				targetType: "project",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "FF5733",
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -312,7 +312,7 @@ describe("POST /chart-color-settings", () => {
 			method: "POST",
 			body: JSON.stringify({
 				targetType: "unknown",
-				targetId: 1,
+				targetCode: "1",
 				colorCode: "#FF5733",
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -384,17 +384,17 @@ describe("PUT /chart-color-settings/:id", () => {
 		expect(body.type).toContain("resource-not-found");
 	});
 
-	test("更新後の targetType + targetId 重複で 409 を返す", async () => {
+	test("更新後の targetType + targetCode 重複で 409 を返す", async () => {
 		mockedService.update.mockRejectedValue(
 			new HTTPException(409, {
 				message:
-					"Chart color setting for target_type 'project' and target_id '2' already exists",
+					"Chart color setting for target_type 'project' and target_code '2' already exists",
 			}),
 		);
 
 		const res = await app.request(`${BASE_URL}/1`, {
 			method: "PUT",
-			body: JSON.stringify({ targetId: 2 }),
+			body: JSON.stringify({ targetCode: "2" }),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
 		expect(res.status).toBe(409);
@@ -484,8 +484,8 @@ describe("PUT /chart-color-settings/bulk", () => {
 			method: "PUT",
 			body: JSON.stringify({
 				items: [
-					{ targetType: "project", targetId: 1, colorCode: "#FF5733" },
-					{ targetType: "indirect_work", targetId: 2, colorCode: "#33FF57" },
+					{ targetType: "project", targetCode: "1", colorCode: "#FF5733" },
+					{ targetType: "indirect_work", targetCode: "2", colorCode: "#33FF57" },
 				],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -509,8 +509,8 @@ describe("PUT /chart-color-settings/bulk", () => {
 			method: "PUT",
 			body: JSON.stringify({
 				items: [
-					{ targetType: "project", targetId: 1, colorCode: "#000000" },
-					{ targetType: "indirect_work", targetId: 2, colorCode: "#33FF57" },
+					{ targetType: "project", targetCode: "1", colorCode: "#000000" },
+					{ targetType: "indirect_work", targetCode: "2", colorCode: "#33FF57" },
 				],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -525,7 +525,7 @@ describe("PUT /chart-color-settings/bulk", () => {
 		const res = await app.request(`${BASE_URL}/bulk`, {
 			method: "PUT",
 			body: JSON.stringify({
-				items: [{ targetType: "project", targetId: 1, colorCode: "INVALID" }],
+				items: [{ targetType: "project", targetCode: "1", colorCode: "INVALID" }],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
@@ -553,7 +553,7 @@ describe("PUT /chart-color-settings/bulk", () => {
 		const res = await app.request(`${BASE_URL}/bulk`, {
 			method: "PUT",
 			body: JSON.stringify({
-				items: [{ targetType: "project", targetId: 1 }],
+				items: [{ targetType: "project", targetCode: "1" }],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
@@ -569,7 +569,7 @@ describe("PUT /chart-color-settings/bulk", () => {
 		const res = await app.request(`${BASE_URL}/bulk`, {
 			method: "PUT",
 			body: JSON.stringify({
-				items: [{ targetType: "project", targetId: 1, colorCode: "#FF5733" }],
+				items: [{ targetType: "project", targetCode: "1", colorCode: "#FF5733" }],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});

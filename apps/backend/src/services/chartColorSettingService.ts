@@ -33,11 +33,11 @@ export const chartColorSettingService = {
 	async create(data: CreateChartColorSetting): Promise<ChartColorSetting> {
 		const existing = await chartColorSettingData.findByTarget(
 			data.targetType,
-			data.targetId,
+			data.targetCode,
 		);
 		if (existing) {
 			throw new HTTPException(409, {
-				message: `Chart color setting for target_type '${data.targetType}' and target_id '${data.targetId}' already exists`,
+				message: `Chart color setting for target_type '${data.targetType}' and target_code '${data.targetCode}' already exists`,
 			});
 		}
 
@@ -57,17 +57,17 @@ export const chartColorSettingService = {
 		}
 
 		const targetType = data.targetType ?? existing.target_type;
-		const targetId = data.targetId ?? existing.target_id;
+		const targetCode = data.targetCode ?? existing.target_code;
 
-		if (data.targetType !== undefined || data.targetId !== undefined) {
+		if (data.targetType !== undefined || data.targetCode !== undefined) {
 			const duplicate = await chartColorSettingData.findByTargetExcluding(
 				targetType,
-				targetId,
+				targetCode,
 				id,
 			);
 			if (duplicate) {
 				throw new HTTPException(409, {
-					message: `Chart color setting for target_type '${targetType}' and target_id '${targetId}' already exists`,
+					message: `Chart color setting for target_type '${targetType}' and target_code '${targetCode}' already exists`,
 				});
 			}
 		}

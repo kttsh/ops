@@ -183,7 +183,7 @@ export function SidePanelSettings({
 				Object.entries(updated).map(([id, col]) => ({
 					targetType: "project",
 					targetCode: id,
-					color: col,
+					colorCode: col,
 				})),
 			);
 			onProjectColorsChange?.(updated);

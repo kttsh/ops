@@ -3,7 +3,7 @@ import { getPool } from "@/database/client";
 import type { ChartColorSettingRow } from "@/types/chartColorSetting";
 
 const BASE_SELECT = `
-  chart_color_setting_id, target_type, target_id,
+  chart_color_setting_id, target_type, target_code,
   color_code, created_at, updated_at
 `;
 
@@ -66,17 +66,17 @@ export const chartColorSettingData = {
 
 	async findByTarget(
 		targetType: string,
-		targetId: number,
+		targetCode: string,
 	): Promise<ChartColorSettingRow | undefined> {
 		const pool = await getPool();
 		const result = await pool
 			.request()
 			.input("targetType", sql.VarChar, targetType)
-			.input("targetId", sql.Int, targetId)
+			.input("targetCode", sql.VarChar, targetCode)
 			.query<ChartColorSettingRow>(
 				`SELECT ${BASE_SELECT}
          FROM chart_color_settings
-         WHERE target_type = @targetType AND target_id = @targetId`,
+         WHERE target_type = @targetType AND target_code = @targetCode`,
 			);
 
 		return result.recordset[0];
@@ -84,20 +84,20 @@ export const chartColorSettingData = {
 
 	async findByTargetExcluding(
 		targetType: string,
-		targetId: number,
+		targetCode: string,
 		excludeId: number,
 	): Promise<ChartColorSettingRow | undefined> {
 		const pool = await getPool();
 		const result = await pool
 			.request()
 			.input("targetType", sql.VarChar, targetType)
-			.input("targetId", sql.Int, targetId)
+			.input("targetCode", sql.VarChar, targetCode)
 			.input("excludeId", sql.Int, excludeId)
 			.query<ChartColorSettingRow>(
 				`SELECT ${BASE_SELECT}
          FROM chart_color_settings
          WHERE target_type = @targetType
-           AND target_id = @targetId
+           AND target_code = @targetCode
            AND chart_color_setting_id <> @excludeId`,
 			);
 
@@ -106,20 +106,20 @@ export const chartColorSettingData = {
 
 	async create(data: {
 		targetType: string;
-		targetId: number;
+		targetCode: string;
 		colorCode: string;
 	}): Promise<ChartColorSettingRow> {
 		const pool = await getPool();
 		const result = await pool
 			.request()
 			.input("targetType", sql.VarChar, data.targetType)
-			.input("targetId", sql.Int, data.targetId)
+			.input("targetCode", sql.VarChar, data.targetCode)
 			.input("colorCode", sql.VarChar, data.colorCode)
 			.query<ChartColorSettingRow>(
-				`INSERT INTO chart_color_settings (target_type, target_id, color_code)
-         OUTPUT INSERTED.chart_color_setting_id, INSERTED.target_type, INSERTED.target_id,
+				`INSERT INTO chart_color_settings (target_type, target_code, color_code)
+         OUTPUT INSERTED.chart_color_setting_id, INSERTED.target_type, INSERTED.target_code,
                 INSERTED.color_code, INSERTED.created_at, INSERTED.updated_at
-         VALUES (@targetType, @targetId, @colorCode)`,
+         VALUES (@targetType, @targetCode, @colorCode)`,
 			);
 
 		return result.recordset[0];
@@ -129,7 +129,7 @@ export const chartColorSettingData = {
 		id: number,
 		data: Partial<{
 			targetType: string;
-			targetId: number;
+			targetCode: string;
 			colorCode: string;
 		}>,
 	): Promise<ChartColorSettingRow | undefined> {
@@ -141,9 +141,9 @@ export const chartColorSettingData = {
 			setClauses.push("target_type = @targetType");
 			request.input("targetType", sql.VarChar, data.targetType);
 		}
-		if (data.targetId !== undefined) {
-			setClauses.push("target_id = @targetId");
-			request.input("targetId", sql.Int, data.targetId);
+		if (data.targetCode !== undefined) {
+			setClauses.push("target_code = @targetCode");
+			request.input("targetCode", sql.VarChar, data.targetCode);
 		}
 		if (data.colorCode !== undefined) {
 			setClauses.push("color_code = @colorCode");
@@ -153,7 +153,7 @@ export const chartColorSettingData = {
 		const result = await request.query<ChartColorSettingRow>(
 			`UPDATE chart_color_settings
        SET ${setClauses.join(", ")}
-       OUTPUT INSERTED.chart_color_setting_id, INSERTED.target_type, INSERTED.target_id,
+       OUTPUT INSERTED.chart_color_setting_id, INSERTED.target_type, INSERTED.target_code,
               INSERTED.color_code, INSERTED.created_at, INSERTED.updated_at
        WHERE chart_color_setting_id = @id`,
 		);
@@ -177,7 +177,7 @@ export const chartColorSettingData = {
 	async bulkUpsert(
 		items: Array<{
 			targetType: string;
-			targetId: number;
+			targetCode: string;
 			colorCode: string;
 		}>,
 	): Promise<ChartColorSettingRow[]> {
@@ -193,18 +193,18 @@ export const chartColorSettingData = {
 				const result = await transaction
 					.request()
 					.input("targetType", sql.VarChar, item.targetType)
-					.input("targetId", sql.Int, item.targetId)
+					.input("targetCode", sql.VarChar, item.targetCode)
 					.input("colorCode", sql.VarChar, item.colorCode)
 					.query<ChartColorSettingRow>(
 						`MERGE chart_color_settings AS target
-             USING (SELECT @targetType AS target_type, @targetId AS target_id) AS source
-             ON target.target_type = source.target_type AND target.target_id = source.target_id
+             USING (SELECT @targetType AS target_type, @targetCode AS target_code) AS source
+             ON target.target_type = source.target_type AND target.target_code = source.target_code
              WHEN MATCHED THEN
                UPDATE SET color_code = @colorCode, updated_at = GETDATE()
              WHEN NOT MATCHED THEN
-               INSERT (target_type, target_id, color_code)
-               VALUES (@targetType, @targetId, @colorCode)
-             OUTPUT INSERTED.chart_color_setting_id, INSERTED.target_type, INSERTED.target_id,
+               INSERT (target_type, target_code, color_code)
+               VALUES (@targetType, @targetCode, @colorCode)
+             OUTPUT INSERTED.chart_color_setting_id, INSERTED.target_type, INSERTED.target_code,
                     INSERTED.color_code, INSERTED.created_at, INSERTED.updated_at;`,
 					);
 

@@ -72,8 +72,7 @@ export function SidePanelIndirect() {
 					updated.map((it) => ({
 						targetType: "indirect_work_type",
 						targetCode: it.workTypeCode,
-						displayOrder: it.displayOrder,
-						isVisible: it.isVisible,
+						stackOrder: it.displayOrder,
 					})),
 				);
 				return updated;
@@ -95,8 +94,7 @@ export function SidePanelIndirect() {
 					reordered.map((it) => ({
 						targetType: "indirect_work_type",
 						targetCode: it.workTypeCode,
-						displayOrder: it.displayOrder,
-						isVisible: it.isVisible,
+						stackOrder: it.displayOrder,
 					})),
 				);
 				return reordered;
@@ -118,8 +116,7 @@ export function SidePanelIndirect() {
 					reordered.map((it) => ({
 						targetType: "indirect_work_type",
 						targetCode: it.workTypeCode,
-						displayOrder: it.displayOrder,
-						isVisible: it.isVisible,
+						stackOrder: it.displayOrder,
 					})),
 				);
 				return reordered;
@@ -138,7 +135,7 @@ export function SidePanelIndirect() {
 					updated.map((it) => ({
 						targetType: "indirect_work_type",
 						targetCode: it.workTypeCode,
-						color: it.color,
+						colorCode: it.color,
 					})),
 				);
 				return updated;
@@ -157,7 +154,7 @@ export function SidePanelIndirect() {
 				updated.map((it) => ({
 					targetType: "indirect_work_type",
 					targetCode: it.workTypeCode,
-					color: it.color,
+					colorCode: it.color,
 				})),
 			);
 			return updated;

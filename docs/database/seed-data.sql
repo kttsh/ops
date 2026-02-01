@@ -667,31 +667,31 @@ INSERT INTO chart_view_indirect_work_items (chart_view_id, indirect_work_case_id
 -- -----------------------------------------------------------------------------
 -- chart_stack_order_settings: 山積順設定
 -- -----------------------------------------------------------------------------
-INSERT INTO chart_stack_order_settings (target_type, target_id, stack_order) VALUES
-('PROJECT', 1, 1),
-('PROJECT', 2, 2),
-('PROJECT', 3, 3),
-('PROJECT', 4, 4),
-('PROJECT', 5, 5),
-('INDIRECT', 1, 100);
+INSERT INTO chart_stack_order_settings (target_type, target_code, stack_order) VALUES
+('PROJECT', '1', 1),
+('PROJECT', '2', 2),
+('PROJECT', '3', 3),
+('PROJECT', '4', 4),
+('PROJECT', '5', 5),
+('INDIRECT', '1', 100);
 
 -- -----------------------------------------------------------------------------
 -- chart_color_settings: カラー設定
 -- -----------------------------------------------------------------------------
-INSERT INTO chart_color_settings (target_type, target_id, color_code) VALUES
-('PROJECT', 1, '#3B82F6'),  -- Blue
-('PROJECT', 2, '#22C55E'),  -- Green
-('PROJECT', 3, '#EAB308'),  -- Yellow
-('PROJECT', 4, '#EF4444'),  -- Red
-('PROJECT', 5, '#A855F7'),  -- Purple
-('PROJECT', 6, '#EC4899'),  -- Pink
-('PROJECT', 7, '#6366F1'),  -- Indigo
-('PROJECT', 8, '#14B8A6'),  -- Teal
-('PROJECT', 9, '#F97316'),  -- Orange
-('PROJECT', 10, '#06B6D4'), -- Cyan
-('INDIRECT', 1, '#64748B'), -- Slate
-('INDIRECT', 2, '#64748B'), -- Slate
-('INDIRECT', 3, '#64748B'); -- Slate
+INSERT INTO chart_color_settings (target_type, target_code, color_code) VALUES
+('PROJECT', '1', '#3B82F6'),  -- Blue
+('PROJECT', '2', '#22C55E'),  -- Green
+('PROJECT', '3', '#EAB308'),  -- Yellow
+('PROJECT', '4', '#EF4444'),  -- Red
+('PROJECT', '5', '#A855F7'),  -- Purple
+('PROJECT', '6', '#EC4899'),  -- Pink
+('PROJECT', '7', '#6366F1'),  -- Indigo
+('PROJECT', '8', '#14B8A6'),  -- Teal
+('PROJECT', '9', '#F97316'),  -- Orange
+('PROJECT', '10', '#06B6D4'), -- Cyan
+('INDIRECT', '1', '#64748B'), -- Slate
+('INDIRECT', '2', '#64748B'), -- Slate
+('INDIRECT', '3', '#64748B'); -- Slate
 
 -- -----------------------------------------------------------------------------
 -- project_load: P-2026-001 ベースケース (project_case_id = 5)

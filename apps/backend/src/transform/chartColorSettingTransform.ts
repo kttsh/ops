@@ -9,7 +9,7 @@ export function toChartColorSettingResponse(
 	return {
 		chartColorSettingId: row.chart_color_setting_id,
 		targetType: row.target_type,
-		targetId: row.target_id,
+		targetCode: row.target_code,
 		colorCode: row.color_code,
 		createdAt: row.created_at.toISOString(),
 		updatedAt: row.updated_at.toISOString(),
