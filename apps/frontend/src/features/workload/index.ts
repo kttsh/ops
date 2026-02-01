@@ -1,7 +1,6 @@
 // Types
 export type {
   ChartDataResponse,
-  ProjectDetail,
   ProjectLoadAggregation,
   IndirectWorkLoadAggregation,
   CapacityAggregation,

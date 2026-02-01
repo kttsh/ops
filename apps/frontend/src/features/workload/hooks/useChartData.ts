@@ -79,16 +79,16 @@ export function useChartData(params: ChartDataParams | null): UseChartDataReturn
       })
     })
 
-    // 案件タイプエリアシリーズ（上層）
+    // 案件エリアシリーズ（上層）
     rawResponse.projectLoads.forEach((pl, idx) => {
-      const key = `project_${pl.projectTypeCode ?? 'none'}`
+      const key = `project_${pl.projectId}`
       areas.push({
         dataKey: key,
         stackId: 'workload',
         fill: PROJECT_TYPE_COLORS[idx % PROJECT_TYPE_COLORS.length],
         stroke: PROJECT_TYPE_COLORS[idx % PROJECT_TYPE_COLORS.length],
         fillOpacity: 0.8,
-        name: pl.projectTypeName ?? '未分類',
+        name: pl.projectName,
         type: 'project',
       })
     })
@@ -118,9 +118,9 @@ export function useChartData(params: ChartDataParams | null): UseChartDataReturn
         point[key] = monthData?.manhour ?? 0
       }
 
-      // 案件タイプ
+      // 案件
       for (const pl of rawResponse.projectLoads) {
-        const key = `project_${pl.projectTypeCode ?? 'none'}`
+        const key = `project_${pl.projectId}`
         const monthData = pl.monthly.find((m) => m.yearMonth === ym)
         point[key] = monthData?.manhour ?? 0
       }
@@ -138,11 +138,11 @@ export function useChartData(params: ChartDataParams | null): UseChartDataReturn
     // 凡例パネル用データ
     const legendMap = new Map<string, LegendMonthData>()
     for (const ym of months) {
-      const projectTypes = rawResponse.projectLoads.map((pl) => {
+      const projects = rawResponse.projectLoads.map((pl) => {
         const monthData = pl.monthly.find((m) => m.yearMonth === ym)
         return {
-          code: pl.projectTypeCode,
-          name: pl.projectTypeName,
+          projectId: pl.projectId,
+          name: pl.projectName,
           manhour: monthData?.manhour ?? 0,
         }
       })
@@ -166,14 +166,14 @@ export function useChartData(params: ChartDataParams | null): UseChartDataReturn
       })
 
       const totalManhour =
-        projectTypes.reduce((sum, pt) => sum + pt.manhour, 0) +
+        projects.reduce((sum, p) => sum + p.manhour, 0) +
         indirectWorks.reduce((sum, iw) => sum + iw.manhour, 0)
       const totalCapacity = capacities.length > 0 ? Math.max(...capacities.map((c) => c.capacity)) : 0
 
       legendMap.set(ym, {
         yearMonth: ym,
         month: `${ym.slice(0, 4)}/${ym.slice(4, 6)}`,
-        projectTypes,
+        projects,
         indirectWorks,
         capacities,
         totalManhour,

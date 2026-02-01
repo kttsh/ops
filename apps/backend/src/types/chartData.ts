@@ -85,25 +85,15 @@ export type IndirectWorkLoadMonthly = {
   breakdownCoverage: number
 }
 
-/** 個別案件工数 */
-export type ProjectDetail = {
+/** 案件工数集約（案件単位） */
+export type ProjectLoadAggregation = {
   projectId: number
   projectName: string
-  monthly: Array<{
-    yearMonth: string
-    manhour: number
-  }>
-}
-
-/** 案件工数集約 */
-export type ProjectLoadAggregation = {
   projectTypeCode: string | null
-  projectTypeName: string | null
   monthly: Array<{
     yearMonth: string
     manhour: number
   }>
-  projects: ProjectDetail[]
 }
 
 /** 間接工数集約 */
@@ -137,15 +127,6 @@ export type ChartDataResponse = {
 }
 
 // --- DB行型（データ層からの戻り値） ---
-
-/** 案件工数集約行 */
-export type ProjectLoadRow = {
-  projectTypeCode: string | null
-  projectTypeName: string | null
-  displayOrder: number | null
-  yearMonth: string
-  manhour: number
-}
 
 /** 個別案件工数行 */
 export type ProjectDetailRow = {

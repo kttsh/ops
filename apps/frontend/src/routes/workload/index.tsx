@@ -87,7 +87,7 @@ function WorkloadPage() {
     refetch,
   } = useChartData(chartDataParamsWithProjects)
 
-  const { state: legendState, dispatch: legendDispatch, activeMonth, isPinned } =
+  const { dispatch: legendDispatch, activeMonth, isPinned } =
     useLegendState(latestMonth)
 
   const tableData = useTableData(rawResponse)
@@ -176,7 +176,6 @@ function WorkloadPage() {
                   <LegendPanel
                     data={currentLegendData}
                     isPinned={isPinned}
-                    expandedTypeCode={legendState.expandedTypeCode}
                     dispatch={legendDispatch}
                     seriesConfig={seriesConfig}
                   />

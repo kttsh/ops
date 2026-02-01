@@ -12,17 +12,11 @@ export type {
 // API レスポンス型（バックエンド ChartDataResponse と対応）
 // ============================================================
 
-export type ProjectDetail = {
+export type ProjectLoadAggregation = {
   projectId: number
   projectName: string
-  monthly: Array<{ yearMonth: string; manhour: number }>
-}
-
-export type ProjectLoadAggregation = {
   projectTypeCode: string | null
-  projectTypeName: string | null
   monthly: Array<{ yearMonth: string; manhour: number }>
-  projects: ProjectDetail[]
 }
 
 export type IndirectWorkTypeBreakdown = {
@@ -214,11 +208,10 @@ export type MonthlyDataPoint = {
 export type LegendMonthData = {
   yearMonth: string
   month: string
-  projectTypes: Array<{
-    code: string | null
-    name: string | null
+  projects: Array<{
+    projectId: number
+    name: string
     manhour: number
-    projects?: Array<{ name: string; manhour: number }>
   }>
   indirectWorks: Array<{
     caseId: number
@@ -277,7 +270,6 @@ export type LegendState = {
   mode: LegendMode
   activeMonth: string | null
   pinnedMonth: string | null
-  expandedTypeCode: string | null
 }
 
 export type LegendAction =
@@ -285,7 +277,6 @@ export type LegendAction =
   | { type: 'HOVER_LEAVE' }
   | { type: 'CLICK'; yearMonth: string }
   | { type: 'UNPIN' }
-  | { type: 'TOGGLE_DRILLDOWN'; typeCode: string }
 
 // ============================================================
 // URL Search Params スキーマ

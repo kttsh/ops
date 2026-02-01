@@ -69,7 +69,7 @@ export function useTableData(rawResponse: ChartDataResponse | undefined): UseTab
       })
     }
 
-    // 案件行（案件タイプ別集約 + 個別案件サブ行）
+    // 案件行（案件単位）
     for (const pl of rawResponse.projectLoads) {
       const monthly: Record<string, number> = {}
       let total = 0
@@ -81,39 +81,13 @@ export function useTableData(rawResponse: ChartDataResponse | undefined): UseTab
         total += m.manhour
       }
 
-      const parentId = `project_${pl.projectTypeCode ?? 'none'}`
-
-      // 個別案件のサブ行を生成
-      const subRows: TableRow[] = (pl.projects ?? []).map((proj) => {
-        const projMonthly: Record<string, number> = {}
-        let projTotal = 0
-        for (const m of proj.monthly) {
-          const month = m.yearMonth.slice(4, 6)
-          const year = parseInt(m.yearMonth.slice(0, 4), 10)
-          projMonthly[`${year}_${month}`] = m.manhour
-          projTotal += m.manhour
-        }
-        return {
-          id: `projectDetail_${proj.projectId}`,
-          rowType: 'projectDetail' as const,
-          name: proj.projectName,
-          projectTypeCode: pl.projectTypeCode,
-          projectTypeName: pl.projectTypeName,
-          total: projTotal,
-          monthly: projMonthly,
-          parentId,
-        }
-      })
-
       allRows.push({
-        id: parentId,
+        id: `project_${pl.projectId}`,
         rowType: 'project',
-        name: pl.projectTypeName ?? '未分類',
+        name: pl.projectName,
         projectTypeCode: pl.projectTypeCode,
-        projectTypeName: pl.projectTypeName,
         total,
         monthly,
-        subRows,
       })
     }
 

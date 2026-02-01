@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('@/data/chartDataData', () => ({
   chartDataData: {
-    getProjectLoadsByDefault: vi.fn(),
-    getProjectLoadsByChartView: vi.fn(),
+    getProjectDetailsByDefault: vi.fn(),
+    getProjectDetailsByChartView: vi.fn(),
     getIndirectWorkLoadsByDefault: vi.fn(),
     getIndirectWorkLoadsByChartView: vi.fn(),
     getCapacities: vi.fn(),
@@ -13,7 +13,7 @@ vi.mock('@/data/chartDataData', () => ({
 import { chartDataService } from '@/services/chartDataService'
 import { chartDataData } from '@/data/chartDataData'
 import type {
-  ProjectLoadRow,
+  ProjectDetailRow,
   IndirectWorkLoadRow,
   CapacityRow,
 } from '@/types/chartData'
@@ -29,22 +29,22 @@ describe('chartDataService.getChartData', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockedData.getProjectLoadsByDefault.mockResolvedValue([])
-    mockedData.getProjectLoadsByChartView.mockResolvedValue([])
+    mockedData.getProjectDetailsByDefault.mockResolvedValue([])
+    mockedData.getProjectDetailsByChartView.mockResolvedValue([])
     mockedData.getIndirectWorkLoadsByDefault.mockResolvedValue([])
     mockedData.getIndirectWorkLoadsByChartView.mockResolvedValue([])
     mockedData.getCapacities.mockResolvedValue([])
   })
 
   describe('chartViewId未指定時の分岐動作', () => {
-    it('getProjectLoadsByDefault を呼び出す', async () => {
+    it('getProjectDetailsByDefault を呼び出す', async () => {
       await chartDataService.getChartData(baseParams)
-      expect(mockedData.getProjectLoadsByDefault).toHaveBeenCalledWith({
+      expect(mockedData.getProjectDetailsByDefault).toHaveBeenCalledWith({
         businessUnitCodes: ['BU001'],
         startYearMonth: '202504',
         endYearMonth: '202603',
       })
-      expect(mockedData.getProjectLoadsByChartView).not.toHaveBeenCalled()
+      expect(mockedData.getProjectDetailsByChartView).not.toHaveBeenCalled()
     })
 
     it('getIndirectWorkLoadsByDefault を呼び出す', async () => {
@@ -73,15 +73,15 @@ describe('chartDataService.getChartData', () => {
   })
 
   describe('chartViewId指定時の分岐動作', () => {
-    it('getProjectLoadsByChartView を呼び出す', async () => {
+    it('getProjectDetailsByChartView を呼び出す', async () => {
       await chartDataService.getChartData({ ...baseParams, chartViewId: 1 })
-      expect(mockedData.getProjectLoadsByChartView).toHaveBeenCalledWith({
+      expect(mockedData.getProjectDetailsByChartView).toHaveBeenCalledWith({
         chartViewId: 1,
         businessUnitCodes: ['BU001'],
         startYearMonth: '202504',
         endYearMonth: '202603',
       })
-      expect(mockedData.getProjectLoadsByDefault).not.toHaveBeenCalled()
+      expect(mockedData.getProjectDetailsByDefault).not.toHaveBeenCalled()
     })
 
     it('getIndirectWorkLoadsByChartView を呼び出す', async () => {
@@ -138,28 +138,30 @@ describe('chartDataService.getChartData', () => {
   })
 
   describe('案件工数のネスト構造変換', () => {
-    it('フラットデータを案件タイプ別にグループ化し月別配列にする', async () => {
-      const rows: ProjectLoadRow[] = [
-        { projectTypeCode: 'PT001', projectTypeName: '設計', displayOrder: 1, yearMonth: '202504', manhour: 100 },
-        { projectTypeCode: 'PT001', projectTypeName: '設計', displayOrder: 1, yearMonth: '202505', manhour: 200 },
-        { projectTypeCode: 'PT002', projectTypeName: '施工', displayOrder: 2, yearMonth: '202504', manhour: 50 },
+    it('フラットデータを案件別にグループ化し月別配列にする', async () => {
+      const rows: ProjectDetailRow[] = [
+        { projectId: 1, projectName: '案件A', projectTypeCode: 'PT001', yearMonth: '202504', manhour: 100 },
+        { projectId: 1, projectName: '案件A', projectTypeCode: 'PT001', yearMonth: '202505', manhour: 200 },
+        { projectId: 2, projectName: '案件B', projectTypeCode: 'PT002', yearMonth: '202504', manhour: 50 },
       ]
-      mockedData.getProjectLoadsByDefault.mockResolvedValue(rows)
+      mockedData.getProjectDetailsByDefault.mockResolvedValue(rows)
 
       const result = await chartDataService.getChartData(baseParams)
 
       expect(result.projectLoads).toHaveLength(2)
       expect(result.projectLoads[0]).toEqual({
+        projectId: 1,
+        projectName: '案件A',
         projectTypeCode: 'PT001',
-        projectTypeName: '設計',
         monthly: [
           { yearMonth: '202504', manhour: 100 },
           { yearMonth: '202505', manhour: 200 },
         ],
       })
       expect(result.projectLoads[1]).toEqual({
+        projectId: 2,
+        projectName: '案件B',
         projectTypeCode: 'PT002',
-        projectTypeName: '施工',
         monthly: [
           { yearMonth: '202504', manhour: 50 },
         ],
@@ -167,16 +169,16 @@ describe('chartDataService.getChartData', () => {
     })
 
     it('projectTypeCode が null の場合も集約する', async () => {
-      const rows: ProjectLoadRow[] = [
-        { projectTypeCode: null, projectTypeName: null, displayOrder: null, yearMonth: '202504', manhour: 30 },
+      const rows: ProjectDetailRow[] = [
+        { projectId: 3, projectName: '案件C', projectTypeCode: null, yearMonth: '202504', manhour: 30 },
       ]
-      mockedData.getProjectLoadsByDefault.mockResolvedValue(rows)
+      mockedData.getProjectDetailsByDefault.mockResolvedValue(rows)
 
       const result = await chartDataService.getChartData(baseParams)
 
       expect(result.projectLoads).toHaveLength(1)
       expect(result.projectLoads[0].projectTypeCode).toBeNull()
-      expect(result.projectLoads[0].projectTypeName).toBeNull()
+      expect(result.projectLoads[0].projectId).toBe(3)
     })
   })
 

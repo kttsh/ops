@@ -25,14 +25,12 @@ function legendReducer(state: LegendState, action: LegendAction): LegendState {
           mode: 'initial',
           activeMonth: null,
           pinnedMonth: null,
-          expandedTypeCode: null,
         }
       }
       return {
         mode: 'pinned',
         activeMonth: action.yearMonth,
         pinnedMonth: action.yearMonth,
-        expandedTypeCode: null,
       }
 
     case 'UNPIN':
@@ -40,15 +38,6 @@ function legendReducer(state: LegendState, action: LegendAction): LegendState {
         mode: 'initial',
         activeMonth: null,
         pinnedMonth: null,
-        expandedTypeCode: null,
-      }
-
-    case 'TOGGLE_DRILLDOWN':
-      if (state.mode !== 'pinned') return state
-      return {
-        ...state,
-        expandedTypeCode:
-          state.expandedTypeCode === action.typeCode ? null : action.typeCode,
       }
 
     default:
@@ -60,7 +49,6 @@ const initialState: LegendState = {
   mode: 'initial',
   activeMonth: null,
   pinnedMonth: null,
-  expandedTypeCode: null,
 }
 
 export interface UseLegendStateReturn {

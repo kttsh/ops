@@ -1,125 +1,12 @@
 import sql from 'mssql'
 import { getPool } from '@/database/client'
 import type {
-  ProjectLoadRow,
   ProjectDetailRow,
   IndirectWorkLoadRow,
   CapacityRow,
 } from '@/types/chartData'
 
 export const chartDataData = {
-  /**
-   * 案件工数集約（chartViewId未指定時 — isPrimary = true ベース）
-   */
-  async getProjectLoadsByDefault(params: {
-    businessUnitCodes: string[]
-    startYearMonth: string
-    endYearMonth: string
-    projectIds?: number[]
-  }): Promise<ProjectLoadRow[]> {
-    const pool = await getPool()
-    const request = pool.request()
-    request.input('startYearMonth', sql.Char(6), params.startYearMonth)
-    request.input('endYearMonth', sql.Char(6), params.endYearMonth)
-
-    const buPlaceholders = params.businessUnitCodes.map((code, i) => {
-      request.input(`bu${i}`, sql.VarChar(20), code)
-      return `@bu${i}`
-    })
-
-    let projectIdFilter = ''
-    if (params.projectIds?.length) {
-      const pidPlaceholders = params.projectIds.map((id, i) => {
-        request.input(`pid${i}`, sql.Int, id)
-        return `@pid${i}`
-      })
-      projectIdFilter = `AND p.project_id IN (${pidPlaceholders.join(',')})`
-    }
-
-    const result = await request.query<ProjectLoadRow>(
-      `SELECT
-        pt.project_type_code AS projectTypeCode,
-        pt.name AS projectTypeName,
-        pt.display_order AS displayOrder,
-        pl.year_month AS yearMonth,
-        SUM(pl.manhour) AS manhour
-      FROM project_load pl
-      JOIN project_cases pc ON pl.project_case_id = pc.project_case_id
-      JOIN projects p ON pc.project_id = p.project_id
-      LEFT JOIN project_types pt ON p.project_type_code = pt.project_type_code
-      WHERE p.business_unit_code IN (${buPlaceholders.join(',')})
-        AND pl.year_month BETWEEN @startYearMonth AND @endYearMonth
-        AND pc.is_primary = 1
-        AND p.deleted_at IS NULL
-        AND pc.deleted_at IS NULL
-        ${projectIdFilter}
-      GROUP BY pt.project_type_code, pt.name, pt.display_order, pl.year_month
-      ORDER BY pt.display_order, pl.year_month`,
-    )
-
-    return result.recordset
-  },
-
-  /**
-   * 案件工数集約（chartViewId指定時 — chart_view_project_items ベース）
-   */
-  async getProjectLoadsByChartView(params: {
-    chartViewId: number
-    businessUnitCodes: string[]
-    startYearMonth: string
-    endYearMonth: string
-    projectIds?: number[]
-  }): Promise<ProjectLoadRow[]> {
-    const pool = await getPool()
-    const request = pool.request()
-    request.input('chartViewId', sql.Int, params.chartViewId)
-    request.input('startYearMonth', sql.Char(6), params.startYearMonth)
-    request.input('endYearMonth', sql.Char(6), params.endYearMonth)
-
-    const buPlaceholders = params.businessUnitCodes.map((code, i) => {
-      request.input(`bu${i}`, sql.VarChar(20), code)
-      return `@bu${i}`
-    })
-
-    let projectIdFilter = ''
-    if (params.projectIds?.length) {
-      const pidPlaceholders = params.projectIds.map((id, i) => {
-        request.input(`pid${i}`, sql.Int, id)
-        return `@pid${i}`
-      })
-      projectIdFilter = `AND p.project_id IN (${pidPlaceholders.join(',')})`
-    }
-
-    const result = await request.query<ProjectLoadRow>(
-      `SELECT
-        pt.project_type_code AS projectTypeCode,
-        pt.name AS projectTypeName,
-        pt.display_order AS displayOrder,
-        pl.year_month AS yearMonth,
-        SUM(pl.manhour) AS manhour
-      FROM chart_view_project_items cvpi
-      JOIN projects p ON cvpi.project_id = p.project_id
-      JOIN project_cases pc ON p.project_id = pc.project_id
-        AND (
-          (cvpi.project_case_id IS NOT NULL AND pc.project_case_id = cvpi.project_case_id)
-          OR (cvpi.project_case_id IS NULL AND pc.is_primary = 1)
-        )
-      JOIN project_load pl ON pc.project_case_id = pl.project_case_id
-      LEFT JOIN project_types pt ON p.project_type_code = pt.project_type_code
-      WHERE cvpi.chart_view_id = @chartViewId
-        AND cvpi.is_visible = 1
-        AND p.business_unit_code IN (${buPlaceholders.join(',')})
-        AND pl.year_month BETWEEN @startYearMonth AND @endYearMonth
-        AND p.deleted_at IS NULL
-        AND pc.deleted_at IS NULL
-        ${projectIdFilter}
-      GROUP BY pt.project_type_code, pt.name, pt.display_order, pl.year_month
-      ORDER BY pt.display_order, pl.year_month`,
-    )
-
-    return result.recordset
-  },
-
   /**
    * 間接工数 + 種類別内訳（chartViewId未指定時）
    */
