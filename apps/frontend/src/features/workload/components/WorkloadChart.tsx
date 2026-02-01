@@ -18,7 +18,7 @@ import type {
 
 /** Recharts ComposedChart のマウスイベントハンドラに渡される状態 */
 interface ChartMouseState {
-	activeLabel?: string;
+	activeLabel?: string | number;
 }
 
 interface WorkloadChartProps {

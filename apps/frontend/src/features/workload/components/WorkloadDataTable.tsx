@@ -332,7 +332,7 @@ export function WorkloadDataTable({
 												header.column.columnDef.header,
 												header.getContext(),
 											)}
-											{/* リサイズハンドル */}
+											{/* biome-ignore lint/a11y/noStaticElementInteractions: カラムリサイズ用のドラッグハンドルであり、マウス/タッチ操作専用のUI要素 */}
 											<div
 												onMouseDown={header.getResizeHandler()}
 												onTouchStart={header.getResizeHandler()}

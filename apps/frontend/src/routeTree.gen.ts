@@ -8,449 +8,449 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as MasterBusinessUnitsBusinessUnitCodeEditRouteImport } from "./routes/master/business-units/$businessUnitCode/edit";
-import { Route as MasterBusinessUnitsBusinessUnitCodeIndexRouteImport } from "./routes/master/business-units/$businessUnitCode/index";
-import { Route as MasterBusinessUnitsIndexRouteImport } from "./routes/master/business-units/index";
-import { Route as MasterBusinessUnitsNewRouteImport } from "./routes/master/business-units/new";
-import { Route as MasterIndirectCapacitySettingsIndexRouteImport } from "./routes/master/indirect-capacity-settings/index";
-import { Route as MasterProjectTypesProjectTypeCodeEditRouteImport } from "./routes/master/project-types/$projectTypeCode/edit";
-import { Route as MasterProjectTypesProjectTypeCodeIndexRouteImport } from "./routes/master/project-types/$projectTypeCode/index";
-import { Route as MasterProjectTypesIndexRouteImport } from "./routes/master/project-types/index";
-import { Route as MasterProjectTypesNewRouteImport } from "./routes/master/project-types/new";
-import { Route as MasterProjectsProjectIdEditRouteImport } from "./routes/master/projects/$projectId/edit";
-import { Route as MasterProjectsProjectIdIndexRouteImport } from "./routes/master/projects/$projectId/index";
-import { Route as MasterProjectsIndexRouteImport } from "./routes/master/projects/index";
-import { Route as MasterProjectsNewRouteImport } from "./routes/master/projects/new";
-import { Route as MasterWorkTypesWorkTypeCodeEditRouteImport } from "./routes/master/work-types/$workTypeCode/edit";
-import { Route as MasterWorkTypesWorkTypeCodeIndexRouteImport } from "./routes/master/work-types/$workTypeCode/index";
-import { Route as MasterWorkTypesIndexRouteImport } from "./routes/master/work-types/index";
-import { Route as MasterWorkTypesNewRouteImport } from "./routes/master/work-types/new";
-import { Route as WorkloadIndexRouteImport } from "./routes/workload/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkloadIndexRouteImport } from './routes/workload/index'
+import { Route as MasterWorkTypesIndexRouteImport } from './routes/master/work-types/index'
+import { Route as MasterProjectsIndexRouteImport } from './routes/master/projects/index'
+import { Route as MasterProjectTypesIndexRouteImport } from './routes/master/project-types/index'
+import { Route as MasterIndirectCapacitySettingsIndexRouteImport } from './routes/master/indirect-capacity-settings/index'
+import { Route as MasterBusinessUnitsIndexRouteImport } from './routes/master/business-units/index'
+import { Route as MasterWorkTypesNewRouteImport } from './routes/master/work-types/new'
+import { Route as MasterProjectsNewRouteImport } from './routes/master/projects/new'
+import { Route as MasterProjectTypesNewRouteImport } from './routes/master/project-types/new'
+import { Route as MasterBusinessUnitsNewRouteImport } from './routes/master/business-units/new'
+import { Route as MasterWorkTypesWorkTypeCodeIndexRouteImport } from './routes/master/work-types/$workTypeCode/index'
+import { Route as MasterProjectsProjectIdIndexRouteImport } from './routes/master/projects/$projectId/index'
+import { Route as MasterProjectTypesProjectTypeCodeIndexRouteImport } from './routes/master/project-types/$projectTypeCode/index'
+import { Route as MasterBusinessUnitsBusinessUnitCodeIndexRouteImport } from './routes/master/business-units/$businessUnitCode/index'
+import { Route as MasterWorkTypesWorkTypeCodeEditRouteImport } from './routes/master/work-types/$workTypeCode/edit'
+import { Route as MasterProjectsProjectIdEditRouteImport } from './routes/master/projects/$projectId/edit'
+import { Route as MasterProjectTypesProjectTypeCodeEditRouteImport } from './routes/master/project-types/$projectTypeCode/edit'
+import { Route as MasterBusinessUnitsBusinessUnitCodeEditRouteImport } from './routes/master/business-units/$businessUnitCode/edit'
 
 const IndexRoute = IndexRouteImport.update({
-	id: "/",
-	path: "/",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorkloadIndexRoute = WorkloadIndexRouteImport.update({
-	id: "/workload/",
-	path: "/workload/",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/workload/',
+  path: '/workload/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterWorkTypesIndexRoute = MasterWorkTypesIndexRouteImport.update({
-	id: "/master/work-types/",
-	path: "/master/work-types/",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/master/work-types/',
+  path: '/master/work-types/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterProjectsIndexRoute = MasterProjectsIndexRouteImport.update({
-	id: "/master/projects/",
-	path: "/master/projects/",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/master/projects/',
+  path: '/master/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterProjectTypesIndexRoute = MasterProjectTypesIndexRouteImport.update({
-	id: "/master/project-types/",
-	path: "/master/project-types/",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/master/project-types/',
+  path: '/master/project-types/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterIndirectCapacitySettingsIndexRoute =
-	MasterIndirectCapacitySettingsIndexRouteImport.update({
-		id: "/master/indirect-capacity-settings/",
-		path: "/master/indirect-capacity-settings/",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterIndirectCapacitySettingsIndexRouteImport.update({
+    id: '/master/indirect-capacity-settings/',
+    path: '/master/indirect-capacity-settings/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterBusinessUnitsIndexRoute =
-	MasterBusinessUnitsIndexRouteImport.update({
-		id: "/master/business-units/",
-		path: "/master/business-units/",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterBusinessUnitsIndexRouteImport.update({
+    id: '/master/business-units/',
+    path: '/master/business-units/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterWorkTypesNewRoute = MasterWorkTypesNewRouteImport.update({
-	id: "/master/work-types/new",
-	path: "/master/work-types/new",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/master/work-types/new',
+  path: '/master/work-types/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterProjectsNewRoute = MasterProjectsNewRouteImport.update({
-	id: "/master/projects/new",
-	path: "/master/projects/new",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/master/projects/new',
+  path: '/master/projects/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterProjectTypesNewRoute = MasterProjectTypesNewRouteImport.update({
-	id: "/master/project-types/new",
-	path: "/master/project-types/new",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/master/project-types/new',
+  path: '/master/project-types/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterBusinessUnitsNewRoute = MasterBusinessUnitsNewRouteImport.update({
-	id: "/master/business-units/new",
-	path: "/master/business-units/new",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/master/business-units/new',
+  path: '/master/business-units/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterWorkTypesWorkTypeCodeIndexRoute =
-	MasterWorkTypesWorkTypeCodeIndexRouteImport.update({
-		id: "/master/work-types/$workTypeCode/",
-		path: "/master/work-types/$workTypeCode/",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterWorkTypesWorkTypeCodeIndexRouteImport.update({
+    id: '/master/work-types/$workTypeCode/',
+    path: '/master/work-types/$workTypeCode/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterProjectsProjectIdIndexRoute =
-	MasterProjectsProjectIdIndexRouteImport.update({
-		id: "/master/projects/$projectId/",
-		path: "/master/projects/$projectId/",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterProjectsProjectIdIndexRouteImport.update({
+    id: '/master/projects/$projectId/',
+    path: '/master/projects/$projectId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterProjectTypesProjectTypeCodeIndexRoute =
-	MasterProjectTypesProjectTypeCodeIndexRouteImport.update({
-		id: "/master/project-types/$projectTypeCode/",
-		path: "/master/project-types/$projectTypeCode/",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterProjectTypesProjectTypeCodeIndexRouteImport.update({
+    id: '/master/project-types/$projectTypeCode/',
+    path: '/master/project-types/$projectTypeCode/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterBusinessUnitsBusinessUnitCodeIndexRoute =
-	MasterBusinessUnitsBusinessUnitCodeIndexRouteImport.update({
-		id: "/master/business-units/$businessUnitCode/",
-		path: "/master/business-units/$businessUnitCode/",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterBusinessUnitsBusinessUnitCodeIndexRouteImport.update({
+    id: '/master/business-units/$businessUnitCode/',
+    path: '/master/business-units/$businessUnitCode/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterWorkTypesWorkTypeCodeEditRoute =
-	MasterWorkTypesWorkTypeCodeEditRouteImport.update({
-		id: "/master/work-types/$workTypeCode/edit",
-		path: "/master/work-types/$workTypeCode/edit",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterWorkTypesWorkTypeCodeEditRouteImport.update({
+    id: '/master/work-types/$workTypeCode/edit',
+    path: '/master/work-types/$workTypeCode/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterProjectsProjectIdEditRoute =
-	MasterProjectsProjectIdEditRouteImport.update({
-		id: "/master/projects/$projectId/edit",
-		path: "/master/projects/$projectId/edit",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterProjectsProjectIdEditRouteImport.update({
+    id: '/master/projects/$projectId/edit',
+    path: '/master/projects/$projectId/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterProjectTypesProjectTypeCodeEditRoute =
-	MasterProjectTypesProjectTypeCodeEditRouteImport.update({
-		id: "/master/project-types/$projectTypeCode/edit",
-		path: "/master/project-types/$projectTypeCode/edit",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterProjectTypesProjectTypeCodeEditRouteImport.update({
+    id: '/master/project-types/$projectTypeCode/edit',
+    path: '/master/project-types/$projectTypeCode/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterBusinessUnitsBusinessUnitCodeEditRoute =
-	MasterBusinessUnitsBusinessUnitCodeEditRouteImport.update({
-		id: "/master/business-units/$businessUnitCode/edit",
-		path: "/master/business-units/$businessUnitCode/edit",
-		getParentRoute: () => rootRouteImport,
-	} as any);
+  MasterBusinessUnitsBusinessUnitCodeEditRouteImport.update({
+    id: '/master/business-units/$businessUnitCode/edit',
+    path: '/master/business-units/$businessUnitCode/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
-	"/": typeof IndexRoute;
-	"/workload/": typeof WorkloadIndexRoute;
-	"/master/business-units/new": typeof MasterBusinessUnitsNewRoute;
-	"/master/project-types/new": typeof MasterProjectTypesNewRoute;
-	"/master/projects/new": typeof MasterProjectsNewRoute;
-	"/master/work-types/new": typeof MasterWorkTypesNewRoute;
-	"/master/business-units/": typeof MasterBusinessUnitsIndexRoute;
-	"/master/indirect-capacity-settings/": typeof MasterIndirectCapacitySettingsIndexRoute;
-	"/master/project-types/": typeof MasterProjectTypesIndexRoute;
-	"/master/projects/": typeof MasterProjectsIndexRoute;
-	"/master/work-types/": typeof MasterWorkTypesIndexRoute;
-	"/master/business-units/$businessUnitCode/edit": typeof MasterBusinessUnitsBusinessUnitCodeEditRoute;
-	"/master/project-types/$projectTypeCode/edit": typeof MasterProjectTypesProjectTypeCodeEditRoute;
-	"/master/projects/$projectId/edit": typeof MasterProjectsProjectIdEditRoute;
-	"/master/work-types/$workTypeCode/edit": typeof MasterWorkTypesWorkTypeCodeEditRoute;
-	"/master/business-units/$businessUnitCode/": typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute;
-	"/master/project-types/$projectTypeCode/": typeof MasterProjectTypesProjectTypeCodeIndexRoute;
-	"/master/projects/$projectId/": typeof MasterProjectsProjectIdIndexRoute;
-	"/master/work-types/$workTypeCode/": typeof MasterWorkTypesWorkTypeCodeIndexRoute;
+  '/': typeof IndexRoute
+  '/workload/': typeof WorkloadIndexRoute
+  '/master/business-units/new': typeof MasterBusinessUnitsNewRoute
+  '/master/project-types/new': typeof MasterProjectTypesNewRoute
+  '/master/projects/new': typeof MasterProjectsNewRoute
+  '/master/work-types/new': typeof MasterWorkTypesNewRoute
+  '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
+  '/master/indirect-capacity-settings/': typeof MasterIndirectCapacitySettingsIndexRoute
+  '/master/project-types/': typeof MasterProjectTypesIndexRoute
+  '/master/projects/': typeof MasterProjectsIndexRoute
+  '/master/work-types/': typeof MasterWorkTypesIndexRoute
+  '/master/business-units/$businessUnitCode/edit': typeof MasterBusinessUnitsBusinessUnitCodeEditRoute
+  '/master/project-types/$projectTypeCode/edit': typeof MasterProjectTypesProjectTypeCodeEditRoute
+  '/master/projects/$projectId/edit': typeof MasterProjectsProjectIdEditRoute
+  '/master/work-types/$workTypeCode/edit': typeof MasterWorkTypesWorkTypeCodeEditRoute
+  '/master/business-units/$businessUnitCode/': typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute
+  '/master/project-types/$projectTypeCode/': typeof MasterProjectTypesProjectTypeCodeIndexRoute
+  '/master/projects/$projectId/': typeof MasterProjectsProjectIdIndexRoute
+  '/master/work-types/$workTypeCode/': typeof MasterWorkTypesWorkTypeCodeIndexRoute
 }
 export interface FileRoutesByTo {
-	"/": typeof IndexRoute;
-	"/workload": typeof WorkloadIndexRoute;
-	"/master/business-units/new": typeof MasterBusinessUnitsNewRoute;
-	"/master/project-types/new": typeof MasterProjectTypesNewRoute;
-	"/master/projects/new": typeof MasterProjectsNewRoute;
-	"/master/work-types/new": typeof MasterWorkTypesNewRoute;
-	"/master/business-units": typeof MasterBusinessUnitsIndexRoute;
-	"/master/indirect-capacity-settings": typeof MasterIndirectCapacitySettingsIndexRoute;
-	"/master/project-types": typeof MasterProjectTypesIndexRoute;
-	"/master/projects": typeof MasterProjectsIndexRoute;
-	"/master/work-types": typeof MasterWorkTypesIndexRoute;
-	"/master/business-units/$businessUnitCode/edit": typeof MasterBusinessUnitsBusinessUnitCodeEditRoute;
-	"/master/project-types/$projectTypeCode/edit": typeof MasterProjectTypesProjectTypeCodeEditRoute;
-	"/master/projects/$projectId/edit": typeof MasterProjectsProjectIdEditRoute;
-	"/master/work-types/$workTypeCode/edit": typeof MasterWorkTypesWorkTypeCodeEditRoute;
-	"/master/business-units/$businessUnitCode": typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute;
-	"/master/project-types/$projectTypeCode": typeof MasterProjectTypesProjectTypeCodeIndexRoute;
-	"/master/projects/$projectId": typeof MasterProjectsProjectIdIndexRoute;
-	"/master/work-types/$workTypeCode": typeof MasterWorkTypesWorkTypeCodeIndexRoute;
+  '/': typeof IndexRoute
+  '/workload': typeof WorkloadIndexRoute
+  '/master/business-units/new': typeof MasterBusinessUnitsNewRoute
+  '/master/project-types/new': typeof MasterProjectTypesNewRoute
+  '/master/projects/new': typeof MasterProjectsNewRoute
+  '/master/work-types/new': typeof MasterWorkTypesNewRoute
+  '/master/business-units': typeof MasterBusinessUnitsIndexRoute
+  '/master/indirect-capacity-settings': typeof MasterIndirectCapacitySettingsIndexRoute
+  '/master/project-types': typeof MasterProjectTypesIndexRoute
+  '/master/projects': typeof MasterProjectsIndexRoute
+  '/master/work-types': typeof MasterWorkTypesIndexRoute
+  '/master/business-units/$businessUnitCode/edit': typeof MasterBusinessUnitsBusinessUnitCodeEditRoute
+  '/master/project-types/$projectTypeCode/edit': typeof MasterProjectTypesProjectTypeCodeEditRoute
+  '/master/projects/$projectId/edit': typeof MasterProjectsProjectIdEditRoute
+  '/master/work-types/$workTypeCode/edit': typeof MasterWorkTypesWorkTypeCodeEditRoute
+  '/master/business-units/$businessUnitCode': typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute
+  '/master/project-types/$projectTypeCode': typeof MasterProjectTypesProjectTypeCodeIndexRoute
+  '/master/projects/$projectId': typeof MasterProjectsProjectIdIndexRoute
+  '/master/work-types/$workTypeCode': typeof MasterWorkTypesWorkTypeCodeIndexRoute
 }
 export interface FileRoutesById {
-	__root__: typeof rootRouteImport;
-	"/": typeof IndexRoute;
-	"/workload/": typeof WorkloadIndexRoute;
-	"/master/business-units/new": typeof MasterBusinessUnitsNewRoute;
-	"/master/project-types/new": typeof MasterProjectTypesNewRoute;
-	"/master/projects/new": typeof MasterProjectsNewRoute;
-	"/master/work-types/new": typeof MasterWorkTypesNewRoute;
-	"/master/business-units/": typeof MasterBusinessUnitsIndexRoute;
-	"/master/indirect-capacity-settings/": typeof MasterIndirectCapacitySettingsIndexRoute;
-	"/master/project-types/": typeof MasterProjectTypesIndexRoute;
-	"/master/projects/": typeof MasterProjectsIndexRoute;
-	"/master/work-types/": typeof MasterWorkTypesIndexRoute;
-	"/master/business-units/$businessUnitCode/edit": typeof MasterBusinessUnitsBusinessUnitCodeEditRoute;
-	"/master/project-types/$projectTypeCode/edit": typeof MasterProjectTypesProjectTypeCodeEditRoute;
-	"/master/projects/$projectId/edit": typeof MasterProjectsProjectIdEditRoute;
-	"/master/work-types/$workTypeCode/edit": typeof MasterWorkTypesWorkTypeCodeEditRoute;
-	"/master/business-units/$businessUnitCode/": typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute;
-	"/master/project-types/$projectTypeCode/": typeof MasterProjectTypesProjectTypeCodeIndexRoute;
-	"/master/projects/$projectId/": typeof MasterProjectsProjectIdIndexRoute;
-	"/master/work-types/$workTypeCode/": typeof MasterWorkTypesWorkTypeCodeIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/workload/': typeof WorkloadIndexRoute
+  '/master/business-units/new': typeof MasterBusinessUnitsNewRoute
+  '/master/project-types/new': typeof MasterProjectTypesNewRoute
+  '/master/projects/new': typeof MasterProjectsNewRoute
+  '/master/work-types/new': typeof MasterWorkTypesNewRoute
+  '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
+  '/master/indirect-capacity-settings/': typeof MasterIndirectCapacitySettingsIndexRoute
+  '/master/project-types/': typeof MasterProjectTypesIndexRoute
+  '/master/projects/': typeof MasterProjectsIndexRoute
+  '/master/work-types/': typeof MasterWorkTypesIndexRoute
+  '/master/business-units/$businessUnitCode/edit': typeof MasterBusinessUnitsBusinessUnitCodeEditRoute
+  '/master/project-types/$projectTypeCode/edit': typeof MasterProjectTypesProjectTypeCodeEditRoute
+  '/master/projects/$projectId/edit': typeof MasterProjectsProjectIdEditRoute
+  '/master/work-types/$workTypeCode/edit': typeof MasterWorkTypesWorkTypeCodeEditRoute
+  '/master/business-units/$businessUnitCode/': typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute
+  '/master/project-types/$projectTypeCode/': typeof MasterProjectTypesProjectTypeCodeIndexRoute
+  '/master/projects/$projectId/': typeof MasterProjectsProjectIdIndexRoute
+  '/master/work-types/$workTypeCode/': typeof MasterWorkTypesWorkTypeCodeIndexRoute
 }
 export interface FileRouteTypes {
-	fileRoutesByFullPath: FileRoutesByFullPath;
-	fullPaths:
-		| "/"
-		| "/workload/"
-		| "/master/business-units/new"
-		| "/master/project-types/new"
-		| "/master/projects/new"
-		| "/master/work-types/new"
-		| "/master/business-units/"
-		| "/master/indirect-capacity-settings/"
-		| "/master/project-types/"
-		| "/master/projects/"
-		| "/master/work-types/"
-		| "/master/business-units/$businessUnitCode/edit"
-		| "/master/project-types/$projectTypeCode/edit"
-		| "/master/projects/$projectId/edit"
-		| "/master/work-types/$workTypeCode/edit"
-		| "/master/business-units/$businessUnitCode/"
-		| "/master/project-types/$projectTypeCode/"
-		| "/master/projects/$projectId/"
-		| "/master/work-types/$workTypeCode/";
-	fileRoutesByTo: FileRoutesByTo;
-	to:
-		| "/"
-		| "/workload"
-		| "/master/business-units/new"
-		| "/master/project-types/new"
-		| "/master/projects/new"
-		| "/master/work-types/new"
-		| "/master/business-units"
-		| "/master/indirect-capacity-settings"
-		| "/master/project-types"
-		| "/master/projects"
-		| "/master/work-types"
-		| "/master/business-units/$businessUnitCode/edit"
-		| "/master/project-types/$projectTypeCode/edit"
-		| "/master/projects/$projectId/edit"
-		| "/master/work-types/$workTypeCode/edit"
-		| "/master/business-units/$businessUnitCode"
-		| "/master/project-types/$projectTypeCode"
-		| "/master/projects/$projectId"
-		| "/master/work-types/$workTypeCode";
-	id:
-		| "__root__"
-		| "/"
-		| "/workload/"
-		| "/master/business-units/new"
-		| "/master/project-types/new"
-		| "/master/projects/new"
-		| "/master/work-types/new"
-		| "/master/business-units/"
-		| "/master/indirect-capacity-settings/"
-		| "/master/project-types/"
-		| "/master/projects/"
-		| "/master/work-types/"
-		| "/master/business-units/$businessUnitCode/edit"
-		| "/master/project-types/$projectTypeCode/edit"
-		| "/master/projects/$projectId/edit"
-		| "/master/work-types/$workTypeCode/edit"
-		| "/master/business-units/$businessUnitCode/"
-		| "/master/project-types/$projectTypeCode/"
-		| "/master/projects/$projectId/"
-		| "/master/work-types/$workTypeCode/";
-	fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/workload/'
+    | '/master/business-units/new'
+    | '/master/project-types/new'
+    | '/master/projects/new'
+    | '/master/work-types/new'
+    | '/master/business-units/'
+    | '/master/indirect-capacity-settings/'
+    | '/master/project-types/'
+    | '/master/projects/'
+    | '/master/work-types/'
+    | '/master/business-units/$businessUnitCode/edit'
+    | '/master/project-types/$projectTypeCode/edit'
+    | '/master/projects/$projectId/edit'
+    | '/master/work-types/$workTypeCode/edit'
+    | '/master/business-units/$businessUnitCode/'
+    | '/master/project-types/$projectTypeCode/'
+    | '/master/projects/$projectId/'
+    | '/master/work-types/$workTypeCode/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/workload'
+    | '/master/business-units/new'
+    | '/master/project-types/new'
+    | '/master/projects/new'
+    | '/master/work-types/new'
+    | '/master/business-units'
+    | '/master/indirect-capacity-settings'
+    | '/master/project-types'
+    | '/master/projects'
+    | '/master/work-types'
+    | '/master/business-units/$businessUnitCode/edit'
+    | '/master/project-types/$projectTypeCode/edit'
+    | '/master/projects/$projectId/edit'
+    | '/master/work-types/$workTypeCode/edit'
+    | '/master/business-units/$businessUnitCode'
+    | '/master/project-types/$projectTypeCode'
+    | '/master/projects/$projectId'
+    | '/master/work-types/$workTypeCode'
+  id:
+    | '__root__'
+    | '/'
+    | '/workload/'
+    | '/master/business-units/new'
+    | '/master/project-types/new'
+    | '/master/projects/new'
+    | '/master/work-types/new'
+    | '/master/business-units/'
+    | '/master/indirect-capacity-settings/'
+    | '/master/project-types/'
+    | '/master/projects/'
+    | '/master/work-types/'
+    | '/master/business-units/$businessUnitCode/edit'
+    | '/master/project-types/$projectTypeCode/edit'
+    | '/master/projects/$projectId/edit'
+    | '/master/work-types/$workTypeCode/edit'
+    | '/master/business-units/$businessUnitCode/'
+    | '/master/project-types/$projectTypeCode/'
+    | '/master/projects/$projectId/'
+    | '/master/work-types/$workTypeCode/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-	IndexRoute: typeof IndexRoute;
-	WorkloadIndexRoute: typeof WorkloadIndexRoute;
-	MasterBusinessUnitsNewRoute: typeof MasterBusinessUnitsNewRoute;
-	MasterProjectTypesNewRoute: typeof MasterProjectTypesNewRoute;
-	MasterProjectsNewRoute: typeof MasterProjectsNewRoute;
-	MasterWorkTypesNewRoute: typeof MasterWorkTypesNewRoute;
-	MasterBusinessUnitsIndexRoute: typeof MasterBusinessUnitsIndexRoute;
-	MasterIndirectCapacitySettingsIndexRoute: typeof MasterIndirectCapacitySettingsIndexRoute;
-	MasterProjectTypesIndexRoute: typeof MasterProjectTypesIndexRoute;
-	MasterProjectsIndexRoute: typeof MasterProjectsIndexRoute;
-	MasterWorkTypesIndexRoute: typeof MasterWorkTypesIndexRoute;
-	MasterBusinessUnitsBusinessUnitCodeEditRoute: typeof MasterBusinessUnitsBusinessUnitCodeEditRoute;
-	MasterProjectTypesProjectTypeCodeEditRoute: typeof MasterProjectTypesProjectTypeCodeEditRoute;
-	MasterProjectsProjectIdEditRoute: typeof MasterProjectsProjectIdEditRoute;
-	MasterWorkTypesWorkTypeCodeEditRoute: typeof MasterWorkTypesWorkTypeCodeEditRoute;
-	MasterBusinessUnitsBusinessUnitCodeIndexRoute: typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute;
-	MasterProjectTypesProjectTypeCodeIndexRoute: typeof MasterProjectTypesProjectTypeCodeIndexRoute;
-	MasterProjectsProjectIdIndexRoute: typeof MasterProjectsProjectIdIndexRoute;
-	MasterWorkTypesWorkTypeCodeIndexRoute: typeof MasterWorkTypesWorkTypeCodeIndexRoute;
+  IndexRoute: typeof IndexRoute
+  WorkloadIndexRoute: typeof WorkloadIndexRoute
+  MasterBusinessUnitsNewRoute: typeof MasterBusinessUnitsNewRoute
+  MasterProjectTypesNewRoute: typeof MasterProjectTypesNewRoute
+  MasterProjectsNewRoute: typeof MasterProjectsNewRoute
+  MasterWorkTypesNewRoute: typeof MasterWorkTypesNewRoute
+  MasterBusinessUnitsIndexRoute: typeof MasterBusinessUnitsIndexRoute
+  MasterIndirectCapacitySettingsIndexRoute: typeof MasterIndirectCapacitySettingsIndexRoute
+  MasterProjectTypesIndexRoute: typeof MasterProjectTypesIndexRoute
+  MasterProjectsIndexRoute: typeof MasterProjectsIndexRoute
+  MasterWorkTypesIndexRoute: typeof MasterWorkTypesIndexRoute
+  MasterBusinessUnitsBusinessUnitCodeEditRoute: typeof MasterBusinessUnitsBusinessUnitCodeEditRoute
+  MasterProjectTypesProjectTypeCodeEditRoute: typeof MasterProjectTypesProjectTypeCodeEditRoute
+  MasterProjectsProjectIdEditRoute: typeof MasterProjectsProjectIdEditRoute
+  MasterWorkTypesWorkTypeCodeEditRoute: typeof MasterWorkTypesWorkTypeCodeEditRoute
+  MasterBusinessUnitsBusinessUnitCodeIndexRoute: typeof MasterBusinessUnitsBusinessUnitCodeIndexRoute
+  MasterProjectTypesProjectTypeCodeIndexRoute: typeof MasterProjectTypesProjectTypeCodeIndexRoute
+  MasterProjectsProjectIdIndexRoute: typeof MasterProjectsProjectIdIndexRoute
+  MasterWorkTypesWorkTypeCodeIndexRoute: typeof MasterWorkTypesWorkTypeCodeIndexRoute
 }
 
-declare module "@tanstack/react-router" {
-	interface FileRoutesByPath {
-		"/": {
-			id: "/";
-			path: "/";
-			fullPath: "/";
-			preLoaderRoute: typeof IndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/workload/": {
-			id: "/workload/";
-			path: "/workload";
-			fullPath: "/workload/";
-			preLoaderRoute: typeof WorkloadIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/work-types/": {
-			id: "/master/work-types/";
-			path: "/master/work-types";
-			fullPath: "/master/work-types/";
-			preLoaderRoute: typeof MasterWorkTypesIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/projects/": {
-			id: "/master/projects/";
-			path: "/master/projects";
-			fullPath: "/master/projects/";
-			preLoaderRoute: typeof MasterProjectsIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/project-types/": {
-			id: "/master/project-types/";
-			path: "/master/project-types";
-			fullPath: "/master/project-types/";
-			preLoaderRoute: typeof MasterProjectTypesIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/indirect-capacity-settings/": {
-			id: "/master/indirect-capacity-settings/";
-			path: "/master/indirect-capacity-settings";
-			fullPath: "/master/indirect-capacity-settings/";
-			preLoaderRoute: typeof MasterIndirectCapacitySettingsIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/business-units/": {
-			id: "/master/business-units/";
-			path: "/master/business-units";
-			fullPath: "/master/business-units/";
-			preLoaderRoute: typeof MasterBusinessUnitsIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/work-types/new": {
-			id: "/master/work-types/new";
-			path: "/master/work-types/new";
-			fullPath: "/master/work-types/new";
-			preLoaderRoute: typeof MasterWorkTypesNewRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/projects/new": {
-			id: "/master/projects/new";
-			path: "/master/projects/new";
-			fullPath: "/master/projects/new";
-			preLoaderRoute: typeof MasterProjectsNewRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/project-types/new": {
-			id: "/master/project-types/new";
-			path: "/master/project-types/new";
-			fullPath: "/master/project-types/new";
-			preLoaderRoute: typeof MasterProjectTypesNewRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/business-units/new": {
-			id: "/master/business-units/new";
-			path: "/master/business-units/new";
-			fullPath: "/master/business-units/new";
-			preLoaderRoute: typeof MasterBusinessUnitsNewRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/work-types/$workTypeCode/": {
-			id: "/master/work-types/$workTypeCode/";
-			path: "/master/work-types/$workTypeCode";
-			fullPath: "/master/work-types/$workTypeCode/";
-			preLoaderRoute: typeof MasterWorkTypesWorkTypeCodeIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/projects/$projectId/": {
-			id: "/master/projects/$projectId/";
-			path: "/master/projects/$projectId";
-			fullPath: "/master/projects/$projectId/";
-			preLoaderRoute: typeof MasterProjectsProjectIdIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/project-types/$projectTypeCode/": {
-			id: "/master/project-types/$projectTypeCode/";
-			path: "/master/project-types/$projectTypeCode";
-			fullPath: "/master/project-types/$projectTypeCode/";
-			preLoaderRoute: typeof MasterProjectTypesProjectTypeCodeIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/business-units/$businessUnitCode/": {
-			id: "/master/business-units/$businessUnitCode/";
-			path: "/master/business-units/$businessUnitCode";
-			fullPath: "/master/business-units/$businessUnitCode/";
-			preLoaderRoute: typeof MasterBusinessUnitsBusinessUnitCodeIndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/work-types/$workTypeCode/edit": {
-			id: "/master/work-types/$workTypeCode/edit";
-			path: "/master/work-types/$workTypeCode/edit";
-			fullPath: "/master/work-types/$workTypeCode/edit";
-			preLoaderRoute: typeof MasterWorkTypesWorkTypeCodeEditRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/projects/$projectId/edit": {
-			id: "/master/projects/$projectId/edit";
-			path: "/master/projects/$projectId/edit";
-			fullPath: "/master/projects/$projectId/edit";
-			preLoaderRoute: typeof MasterProjectsProjectIdEditRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/project-types/$projectTypeCode/edit": {
-			id: "/master/project-types/$projectTypeCode/edit";
-			path: "/master/project-types/$projectTypeCode/edit";
-			fullPath: "/master/project-types/$projectTypeCode/edit";
-			preLoaderRoute: typeof MasterProjectTypesProjectTypeCodeEditRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/master/business-units/$businessUnitCode/edit": {
-			id: "/master/business-units/$businessUnitCode/edit";
-			path: "/master/business-units/$businessUnitCode/edit";
-			fullPath: "/master/business-units/$businessUnitCode/edit";
-			preLoaderRoute: typeof MasterBusinessUnitsBusinessUnitCodeEditRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-	}
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workload/': {
+      id: '/workload/'
+      path: '/workload'
+      fullPath: '/workload/'
+      preLoaderRoute: typeof WorkloadIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/work-types/': {
+      id: '/master/work-types/'
+      path: '/master/work-types'
+      fullPath: '/master/work-types/'
+      preLoaderRoute: typeof MasterWorkTypesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/projects/': {
+      id: '/master/projects/'
+      path: '/master/projects'
+      fullPath: '/master/projects/'
+      preLoaderRoute: typeof MasterProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/project-types/': {
+      id: '/master/project-types/'
+      path: '/master/project-types'
+      fullPath: '/master/project-types/'
+      preLoaderRoute: typeof MasterProjectTypesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/indirect-capacity-settings/': {
+      id: '/master/indirect-capacity-settings/'
+      path: '/master/indirect-capacity-settings'
+      fullPath: '/master/indirect-capacity-settings/'
+      preLoaderRoute: typeof MasterIndirectCapacitySettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/business-units/': {
+      id: '/master/business-units/'
+      path: '/master/business-units'
+      fullPath: '/master/business-units/'
+      preLoaderRoute: typeof MasterBusinessUnitsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/work-types/new': {
+      id: '/master/work-types/new'
+      path: '/master/work-types/new'
+      fullPath: '/master/work-types/new'
+      preLoaderRoute: typeof MasterWorkTypesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/projects/new': {
+      id: '/master/projects/new'
+      path: '/master/projects/new'
+      fullPath: '/master/projects/new'
+      preLoaderRoute: typeof MasterProjectsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/project-types/new': {
+      id: '/master/project-types/new'
+      path: '/master/project-types/new'
+      fullPath: '/master/project-types/new'
+      preLoaderRoute: typeof MasterProjectTypesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/business-units/new': {
+      id: '/master/business-units/new'
+      path: '/master/business-units/new'
+      fullPath: '/master/business-units/new'
+      preLoaderRoute: typeof MasterBusinessUnitsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/work-types/$workTypeCode/': {
+      id: '/master/work-types/$workTypeCode/'
+      path: '/master/work-types/$workTypeCode'
+      fullPath: '/master/work-types/$workTypeCode/'
+      preLoaderRoute: typeof MasterWorkTypesWorkTypeCodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/projects/$projectId/': {
+      id: '/master/projects/$projectId/'
+      path: '/master/projects/$projectId'
+      fullPath: '/master/projects/$projectId/'
+      preLoaderRoute: typeof MasterProjectsProjectIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/project-types/$projectTypeCode/': {
+      id: '/master/project-types/$projectTypeCode/'
+      path: '/master/project-types/$projectTypeCode'
+      fullPath: '/master/project-types/$projectTypeCode/'
+      preLoaderRoute: typeof MasterProjectTypesProjectTypeCodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/business-units/$businessUnitCode/': {
+      id: '/master/business-units/$businessUnitCode/'
+      path: '/master/business-units/$businessUnitCode'
+      fullPath: '/master/business-units/$businessUnitCode/'
+      preLoaderRoute: typeof MasterBusinessUnitsBusinessUnitCodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/work-types/$workTypeCode/edit': {
+      id: '/master/work-types/$workTypeCode/edit'
+      path: '/master/work-types/$workTypeCode/edit'
+      fullPath: '/master/work-types/$workTypeCode/edit'
+      preLoaderRoute: typeof MasterWorkTypesWorkTypeCodeEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/projects/$projectId/edit': {
+      id: '/master/projects/$projectId/edit'
+      path: '/master/projects/$projectId/edit'
+      fullPath: '/master/projects/$projectId/edit'
+      preLoaderRoute: typeof MasterProjectsProjectIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/project-types/$projectTypeCode/edit': {
+      id: '/master/project-types/$projectTypeCode/edit'
+      path: '/master/project-types/$projectTypeCode/edit'
+      fullPath: '/master/project-types/$projectTypeCode/edit'
+      preLoaderRoute: typeof MasterProjectTypesProjectTypeCodeEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/business-units/$businessUnitCode/edit': {
+      id: '/master/business-units/$businessUnitCode/edit'
+      path: '/master/business-units/$businessUnitCode/edit'
+      fullPath: '/master/business-units/$businessUnitCode/edit'
+      preLoaderRoute: typeof MasterBusinessUnitsBusinessUnitCodeEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-	IndexRoute: IndexRoute,
-	WorkloadIndexRoute: WorkloadIndexRoute,
-	MasterBusinessUnitsNewRoute: MasterBusinessUnitsNewRoute,
-	MasterProjectTypesNewRoute: MasterProjectTypesNewRoute,
-	MasterProjectsNewRoute: MasterProjectsNewRoute,
-	MasterWorkTypesNewRoute: MasterWorkTypesNewRoute,
-	MasterBusinessUnitsIndexRoute: MasterBusinessUnitsIndexRoute,
-	MasterIndirectCapacitySettingsIndexRoute:
-		MasterIndirectCapacitySettingsIndexRoute,
-	MasterProjectTypesIndexRoute: MasterProjectTypesIndexRoute,
-	MasterProjectsIndexRoute: MasterProjectsIndexRoute,
-	MasterWorkTypesIndexRoute: MasterWorkTypesIndexRoute,
-	MasterBusinessUnitsBusinessUnitCodeEditRoute:
-		MasterBusinessUnitsBusinessUnitCodeEditRoute,
-	MasterProjectTypesProjectTypeCodeEditRoute:
-		MasterProjectTypesProjectTypeCodeEditRoute,
-	MasterProjectsProjectIdEditRoute: MasterProjectsProjectIdEditRoute,
-	MasterWorkTypesWorkTypeCodeEditRoute: MasterWorkTypesWorkTypeCodeEditRoute,
-	MasterBusinessUnitsBusinessUnitCodeIndexRoute:
-		MasterBusinessUnitsBusinessUnitCodeIndexRoute,
-	MasterProjectTypesProjectTypeCodeIndexRoute:
-		MasterProjectTypesProjectTypeCodeIndexRoute,
-	MasterProjectsProjectIdIndexRoute: MasterProjectsProjectIdIndexRoute,
-	MasterWorkTypesWorkTypeCodeIndexRoute: MasterWorkTypesWorkTypeCodeIndexRoute,
-};
+  IndexRoute: IndexRoute,
+  WorkloadIndexRoute: WorkloadIndexRoute,
+  MasterBusinessUnitsNewRoute: MasterBusinessUnitsNewRoute,
+  MasterProjectTypesNewRoute: MasterProjectTypesNewRoute,
+  MasterProjectsNewRoute: MasterProjectsNewRoute,
+  MasterWorkTypesNewRoute: MasterWorkTypesNewRoute,
+  MasterBusinessUnitsIndexRoute: MasterBusinessUnitsIndexRoute,
+  MasterIndirectCapacitySettingsIndexRoute:
+    MasterIndirectCapacitySettingsIndexRoute,
+  MasterProjectTypesIndexRoute: MasterProjectTypesIndexRoute,
+  MasterProjectsIndexRoute: MasterProjectsIndexRoute,
+  MasterWorkTypesIndexRoute: MasterWorkTypesIndexRoute,
+  MasterBusinessUnitsBusinessUnitCodeEditRoute:
+    MasterBusinessUnitsBusinessUnitCodeEditRoute,
+  MasterProjectTypesProjectTypeCodeEditRoute:
+    MasterProjectTypesProjectTypeCodeEditRoute,
+  MasterProjectsProjectIdEditRoute: MasterProjectsProjectIdEditRoute,
+  MasterWorkTypesWorkTypeCodeEditRoute: MasterWorkTypesWorkTypeCodeEditRoute,
+  MasterBusinessUnitsBusinessUnitCodeIndexRoute:
+    MasterBusinessUnitsBusinessUnitCodeIndexRoute,
+  MasterProjectTypesProjectTypeCodeIndexRoute:
+    MasterProjectTypesProjectTypeCodeIndexRoute,
+  MasterProjectsProjectIdIndexRoute: MasterProjectsProjectIdIndexRoute,
+  MasterWorkTypesWorkTypeCodeIndexRoute: MasterWorkTypesWorkTypeCodeIndexRoute,
+}
 export const routeTree = rootRouteImport
-	._addFileChildren(rootRouteChildren)
-	._addFileTypes<FileRouteTypes>();
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()

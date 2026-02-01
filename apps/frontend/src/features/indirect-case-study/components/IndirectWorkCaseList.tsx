@@ -127,22 +127,16 @@ export function IndirectWorkCaseList({
 					const isDeleted = item.deletedAt !== null;
 					const isSelected = selectedId === item.indirectWorkCaseId;
 					return (
-						<div
+						<button
+							type="button"
 							key={item.indirectWorkCaseId}
-							role="button"
-							tabIndex={isDeleted ? -1 : 0}
-							className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors ${
+							disabled={isDeleted}
+							className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors bg-transparent text-left ${
 								isSelected
 									? "bg-primary/10 border border-primary/20"
 									: "hover:bg-muted/50 border border-transparent"
-							} ${isDeleted ? "opacity-60" : ""}`}
+							} ${isDeleted ? "opacity-60 cursor-default" : ""}`}
 							onClick={() => !isDeleted && onSelect(item.indirectWorkCaseId)}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									e.preventDefault();
-									!isDeleted && onSelect(item.indirectWorkCaseId);
-								}
-							}}
 						>
 							<input
 								type="radio"
@@ -199,7 +193,7 @@ export function IndirectWorkCaseList({
 									</Button>
 								</div>
 							)}
-						</div>
+						</button>
 					);
 				})}
 				{items.length === 0 && (
