@@ -1,11 +1,11 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
-import { Search, Check, ArrowUpDown, ExternalLink } from 'lucide-react'
+import { Search, Check, ArrowUpDown, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { projectsQueryOptions } from '@/features/workload/api/queries'
+import { ProjectEditSheet } from '@/features/workload/components/ProjectEditSheet'
 
 
 interface SidePanelProjectsProps {
@@ -25,6 +25,7 @@ export function SidePanelProjects({
 }: SidePanelProjectsProps) {
   const [searchText, setSearchText] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('name')
+  const [editingProjectId, setEditingProjectId] = useState<number | null>(null)
 
   const { data } = useQuery(projectsQueryOptions(businessUnitCodes))
   const projects = useMemo(() => data?.data ?? [], [data?.data])
@@ -164,14 +165,16 @@ export function SidePanelProjects({
                   </div>
                 </div>
               </button>
-              <Link
-                to="/master/projects/$projectId/edit"
-                params={{ projectId: String(project.projectId) }}
+              <button
+                type="button"
                 className="mt-0.5 shrink-0 rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setEditingProjectId(project.projectId)
+                }}
               >
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Link>
+                <Pencil className="h-3.5 w-3.5" />
+              </button>
             </div>
           )
         })}
@@ -181,6 +184,14 @@ export function SidePanelProjects({
           </p>
         )}
       </div>
+
+      <ProjectEditSheet
+        projectId={editingProjectId}
+        open={editingProjectId != null}
+        onOpenChange={(open) => {
+          if (!open) setEditingProjectId(null)
+        }}
+      />
     </div>
   )
 }

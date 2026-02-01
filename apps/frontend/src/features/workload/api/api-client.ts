@@ -16,6 +16,7 @@ import type {
   ChartStackOrderSetting,
   ChartStackOrderSettingInput,
   ChartView,
+  ChartViewProjectItem,
   CreateChartViewInput,
   UpdateChartViewInput,
 } from '@/features/workload/types'
@@ -202,4 +203,17 @@ export async function deleteChartView(id: number): Promise<void> {
     method: 'DELETE',
   })
   return handleResponse<void>(response)
+}
+
+// ============================================================
+// Chart View Project Items
+// ============================================================
+
+export async function fetchChartViewProjectItems(
+  chartViewId: number,
+): Promise<{ data: ChartViewProjectItem[] }> {
+  const response = await fetch(
+    `${API_BASE_URL}/chart-views/${chartViewId}/project-items`,
+  )
+  return handleResponse<{ data: ChartViewProjectItem[] }>(response)
 }

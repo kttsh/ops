@@ -28,6 +28,11 @@ interface SidePanelSettingsProps {
   businessUnitCodes: string[]
   onPeriodChange: (from: string | undefined, months: number) => void
   onProjectColorsChange?: (colors: Record<number, string>) => void
+  onProfileApply?: (profile: {
+    chartViewId: number
+    startYearMonth: string
+    endYearMonth: string
+  }) => void
 }
 
 export function SidePanelSettings({
@@ -36,6 +41,7 @@ export function SidePanelSettings({
   businessUnitCodes,
   onPeriodChange,
   onProjectColorsChange,
+  onProfileApply,
 }: SidePanelSettingsProps) {
   const { data: projData } = useQuery(projectsQueryOptions(businessUnitCodes))
   const { data: csData } = useQuery(capacityScenariosQueryOptions())
@@ -250,6 +256,7 @@ export function SidePanelSettings({
         chartType="stacked-area"
         startYearMonth={startYearMonth}
         endYearMonth={endYearMonth}
+        onApply={onProfileApply}
       />
     </div>
   )

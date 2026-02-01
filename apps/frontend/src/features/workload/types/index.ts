@@ -151,9 +151,31 @@ export type ChartStackOrderSettingInput = {
 export type ChartView = {
   chartViewId: number
   viewName: string
+  chartType: string
+  startYearMonth: string
+  endYearMonth: string
+  isDefault: boolean
   description: string | null
   createdAt: string
   updatedAt: string
+}
+
+export type ChartViewProjectItem = {
+  chartViewProjectItemId: number
+  chartViewId: number
+  projectId: number
+  projectCaseId: number | null
+  displayOrder: number
+  isVisible: boolean
+  createdAt: string
+  updatedAt: string
+  project: {
+    projectCode: string
+    projectName: string
+  }
+  projectCase: {
+    caseName: string
+  } | null
 }
 
 export type CreateChartViewInput = {
@@ -213,9 +235,9 @@ export type LegendMonthData = {
     name: string
     manhour: number
   }>
-  indirectWorks: Array<{
-    caseId: number
-    caseName: string
+  indirectWorkTypes: Array<{
+    workTypeCode: string
+    workTypeName: string
     manhour: number
   }>
   capacities: Array<{

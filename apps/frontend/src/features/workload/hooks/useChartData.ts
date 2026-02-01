@@ -70,23 +70,62 @@ export function useChartData(
     // 期間内の全月を生成
     const months = generateMonthRange(rawResponse.period.startYearMonth, rawResponse.period.endYearMonth)
 
+    // 全間接作業から workTypeCode を収集（重複排除・順序保持）
+    const workTypeMap = new Map<string, string>()
+    for (const iw of rawResponse.indirectWorkLoads) {
+      for (const m of iw.monthly) {
+        for (const bd of m.breakdown) {
+          if (!workTypeMap.has(bd.workTypeCode)) {
+            workTypeMap.set(bd.workTypeCode, bd.workTypeName)
+          }
+        }
+      }
+    }
+
+    // breakdownCoverage < 1.0 の月があるかチェック（未分類エリアが必要か判定）
+    let hasUnclassified = false
+    for (const iw of rawResponse.indirectWorkLoads) {
+      for (const m of iw.monthly) {
+        if (m.manhour > 0 && m.breakdownCoverage < 1.0) {
+          hasUnclassified = true
+          break
+        }
+      }
+      if (hasUnclassified) break
+    }
+
     // シリーズ設定を構築
     const areas: AreaSeriesConfig[] = []
     const lines: LineSeriesConfig[] = []
 
-    // 間接作業エリアシリーズ（下層）
-    rawResponse.indirectWorkLoads.forEach((iw, idx) => {
-      const key = `indirect_${iw.indirectWorkCaseId}`
+    // 間接作業エリアシリーズ（下層）— workType 単位
+    let wtIdx = 0
+    for (const [workTypeCode, workTypeName] of workTypeMap) {
+      const key = `indirect_wt_${workTypeCode}`
       areas.push({
         dataKey: key,
         stackId: 'workload',
-        fill: INDIRECT_COLORS[idx % INDIRECT_COLORS.length],
-        stroke: INDIRECT_COLORS[idx % INDIRECT_COLORS.length],
+        fill: INDIRECT_COLORS[wtIdx % INDIRECT_COLORS.length],
+        stroke: INDIRECT_COLORS[wtIdx % INDIRECT_COLORS.length],
         fillOpacity: 0.7,
-        name: iw.caseName,
+        name: workTypeName,
         type: 'indirect',
       })
-    })
+      wtIdx++
+    }
+
+    // 未分類エリア（breakdownCoverage < 1.0 の場合のみ）
+    if (hasUnclassified) {
+      areas.push({
+        dataKey: 'indirect_wt_unclassified',
+        stackId: 'workload',
+        fill: '#e5e7eb',
+        stroke: '#e5e7eb',
+        fillOpacity: 0.5,
+        name: '未分類',
+        type: 'indirect',
+      })
+    }
 
     // 案件エリアシリーズ（上層）
     rawResponse.projectLoads.forEach((pl, idx) => {
@@ -121,11 +160,29 @@ export function useChartData(
         yearMonth: ym,
       }
 
-      // 間接作業
+      // 間接作業 — workType 単位で合算
+      const wtTotals = new Map<string, number>()
+      let totalBreakdownManhour = 0
+      let totalIndirectManhour = 0
+
       for (const iw of rawResponse.indirectWorkLoads) {
-        const key = `indirect_${iw.indirectWorkCaseId}`
         const monthData = iw.monthly.find((m) => m.yearMonth === ym)
-        point[key] = monthData?.manhour ?? 0
+        if (!monthData) continue
+        totalIndirectManhour += monthData.manhour
+        for (const bd of monthData.breakdown) {
+          wtTotals.set(bd.workTypeCode, (wtTotals.get(bd.workTypeCode) ?? 0) + bd.manhour)
+          totalBreakdownManhour += bd.manhour
+        }
+      }
+
+      for (const workTypeCode of workTypeMap.keys()) {
+        point[`indirect_wt_${workTypeCode}`] = wtTotals.get(workTypeCode) ?? 0
+      }
+
+      // 未分類分
+      if (hasUnclassified) {
+        const unclassifiedManhour = Math.max(0, totalIndirectManhour - totalBreakdownManhour)
+        point['indirect_wt_unclassified'] = unclassifiedManhour
       }
 
       // 案件
@@ -157,14 +214,46 @@ export function useChartData(
         }
       })
 
-      const indirectWorks = rawResponse.indirectWorkLoads.map((iw) => {
+      // 間接作業 workType 別凡例データ
+      const wtLegendMap = new Map<string, { workTypeName: string; manhour: number }>()
+      let totalIndirectManhour = 0
+      let totalBreakdownManhour = 0
+
+      for (const iw of rawResponse.indirectWorkLoads) {
         const monthData = iw.monthly.find((m) => m.yearMonth === ym)
-        return {
-          caseId: iw.indirectWorkCaseId,
-          caseName: iw.caseName,
-          manhour: monthData?.manhour ?? 0,
+        if (!monthData) continue
+        totalIndirectManhour += monthData.manhour
+        for (const bd of monthData.breakdown) {
+          const existing = wtLegendMap.get(bd.workTypeCode)
+          if (existing) {
+            existing.manhour += bd.manhour
+          } else {
+            wtLegendMap.set(bd.workTypeCode, {
+              workTypeName: bd.workTypeName,
+              manhour: bd.manhour,
+            })
+          }
+          totalBreakdownManhour += bd.manhour
         }
-      })
+      }
+
+      const indirectWorkTypes = Array.from(wtLegendMap.entries()).map(([code, v]) => ({
+        workTypeCode: code,
+        workTypeName: v.workTypeName,
+        manhour: v.manhour,
+      }))
+
+      // 未分類分を追加
+      if (hasUnclassified) {
+        const unclassifiedManhour = Math.max(0, totalIndirectManhour - totalBreakdownManhour)
+        if (unclassifiedManhour > 0) {
+          indirectWorkTypes.push({
+            workTypeCode: 'unclassified',
+            workTypeName: '未分類',
+            manhour: unclassifiedManhour,
+          })
+        }
+      }
 
       const capacities = rawResponse.capacities.map((cap) => {
         const monthData = cap.monthly.find((m) => m.yearMonth === ym)
@@ -176,15 +265,14 @@ export function useChartData(
       })
 
       const totalManhour =
-        projects.reduce((sum, p) => sum + p.manhour, 0) +
-        indirectWorks.reduce((sum, iw) => sum + iw.manhour, 0)
+        projects.reduce((sum, p) => sum + p.manhour, 0) + totalIndirectManhour
       const totalCapacity = capacities.length > 0 ? Math.max(...capacities.map((c) => c.capacity)) : 0
 
       legendMap.set(ym, {
         yearMonth: ym,
         month: `${ym.slice(0, 4)}/${ym.slice(4, 6)}`,
         projects,
-        indirectWorks,
+        indirectWorkTypes,
         capacities,
         totalManhour,
         totalCapacity,

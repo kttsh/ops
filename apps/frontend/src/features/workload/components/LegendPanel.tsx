@@ -33,7 +33,7 @@ function LegendPanelInner({
 
   // シリーズの色を取得
   const getAreaColor = (type: 'project' | 'indirect', id: string | number) => {
-    const key = type === 'project' ? `project_${id}` : `indirect_${id}`
+    const key = type === 'project' ? `project_${id}` : `indirect_wt_${id}`
     const area = seriesConfig.areas.find((a) => a.dataKey === key)
     return area?.fill ?? '#6b7280'
   }
@@ -89,15 +89,15 @@ function LegendPanelInner({
         {/* 間接作業セクション */}
         <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">間接作業</p>
         <div className="space-y-1">
-          {data.indirectWorks.map((iw) => (
-            <div key={iw.caseId} className="flex items-center gap-2 px-1 py-1 text-sm">
+          {data.indirectWorkTypes.map((wt) => (
+            <div key={wt.workTypeCode} className="flex items-center gap-2 px-1 py-1 text-sm">
               <span
                 className="inline-block h-3 w-3 rounded-sm"
-                style={{ backgroundColor: getAreaColor('indirect', iw.caseId) }}
+                style={{ backgroundColor: getAreaColor('indirect', wt.workTypeCode) }}
               />
-              <span className="flex-1 truncate">{iw.caseName}</span>
+              <span className="flex-1 truncate">{wt.workTypeName}</span>
               <span className="tabular-nums text-muted-foreground">
-                {formatManhour(iw.manhour)}
+                {formatManhour(wt.manhour)}
               </span>
             </div>
           ))}

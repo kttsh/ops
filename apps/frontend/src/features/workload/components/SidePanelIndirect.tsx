@@ -4,7 +4,7 @@ import { ArrowUp, ArrowDown, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { indirectWorkCasesQueryOptions } from '@/features/workload/api/queries'
+import { workTypesQueryOptions } from '@/features/work-types/api/queries'
 import {
   useBulkUpsertColorSettings,
   useBulkUpsertStackOrderSettings,
@@ -15,35 +15,35 @@ const GREY_PALETTE = [
   '#374151', '#a3a3a3', '#737373', '#525252',
 ]
 
-interface IndirectSettingsItem {
-  caseId: number
-  caseName: string
+interface IndirectWorkTypeSettingsItem {
+  workTypeCode: string
+  workTypeName: string
   isVisible: boolean
   color: string
   displayOrder: number
 }
 
 export function SidePanelIndirect() {
-  const { data: casesData } = useQuery(indirectWorkCasesQueryOptions())
-  const cases = casesData?.data ?? []
+  const { data: workTypesData } = useQuery(workTypesQueryOptions({ includeDisabled: false }))
+  const workTypes = workTypesData?.data ?? []
 
-  const [items, setItems] = useState<IndirectSettingsItem[]>(() =>
-    cases.map((c, i) => ({
-      caseId: c.indirectWorkCaseId,
-      caseName: c.caseName,
+  const [items, setItems] = useState<IndirectWorkTypeSettingsItem[]>(() =>
+    workTypes.map((wt, i) => ({
+      workTypeCode: wt.workTypeCode,
+      workTypeName: wt.name,
       isVisible: true,
-      color: GREY_PALETTE[i % GREY_PALETTE.length],
+      color: wt.color ?? GREY_PALETTE[i % GREY_PALETTE.length],
       displayOrder: i,
     })),
   )
 
-  // cases が変わったら items を同期（初回 or データ再取得時）
-  if (cases.length > 0 && items.length === 0) {
-    const newItems = cases.map((c, i) => ({
-      caseId: c.indirectWorkCaseId,
-      caseName: c.caseName,
+  // workTypes が変わったら items を同期（初回 or データ再取得時）
+  if (workTypes.length > 0 && items.length === 0) {
+    const newItems = workTypes.map((wt, i) => ({
+      workTypeCode: wt.workTypeCode,
+      workTypeName: wt.name,
       isVisible: true,
-      color: GREY_PALETTE[i % GREY_PALETTE.length],
+      color: wt.color ?? GREY_PALETTE[i % GREY_PALETTE.length],
       displayOrder: i,
     }))
     setItems(newItems)
@@ -53,15 +53,15 @@ export function SidePanelIndirect() {
   const orderMutation = useBulkUpsertStackOrderSettings()
 
   const toggleVisibility = useCallback(
-    (caseId: number) => {
+    (workTypeCode: string) => {
       setItems((prev) => {
         const updated = prev.map((item) =>
-          item.caseId === caseId ? { ...item, isVisible: !item.isVisible } : item,
+          item.workTypeCode === workTypeCode ? { ...item, isVisible: !item.isVisible } : item,
         )
         orderMutation.mutate(
           updated.map((it) => ({
-            targetType: 'indirect_work_case',
-            targetCode: String(it.caseId),
+            targetType: 'indirect_work_type',
+            targetCode: it.workTypeCode,
             displayOrder: it.displayOrder,
             isVisible: it.isVisible,
           })),
@@ -83,8 +83,8 @@ export function SidePanelIndirect() {
         const reordered = next.map((it, i) => ({ ...it, displayOrder: i }))
         orderMutation.mutate(
           reordered.map((it) => ({
-            targetType: 'indirect_work_case',
-            targetCode: String(it.caseId),
+            targetType: 'indirect_work_type',
+            targetCode: it.workTypeCode,
             displayOrder: it.displayOrder,
             isVisible: it.isVisible,
           })),
@@ -106,8 +106,8 @@ export function SidePanelIndirect() {
         const reordered = next.map((it, i) => ({ ...it, displayOrder: i }))
         orderMutation.mutate(
           reordered.map((it) => ({
-            targetType: 'indirect_work_case',
-            targetCode: String(it.caseId),
+            targetType: 'indirect_work_type',
+            targetCode: it.workTypeCode,
             displayOrder: it.displayOrder,
             isVisible: it.isVisible,
           })),
@@ -119,15 +119,15 @@ export function SidePanelIndirect() {
   )
 
   const setColor = useCallback(
-    (caseId: number, color: string) => {
+    (workTypeCode: string, color: string) => {
       setItems((prev) => {
         const updated = prev.map((item) =>
-          item.caseId === caseId ? { ...item, color } : item,
+          item.workTypeCode === workTypeCode ? { ...item, color } : item,
         )
         colorMutation.mutate(
           updated.map((it) => ({
-            targetType: 'indirect_work_case',
-            targetCode: String(it.caseId),
+            targetType: 'indirect_work_type',
+            targetCode: it.workTypeCode,
             color: it.color,
           })),
         )
@@ -145,8 +145,8 @@ export function SidePanelIndirect() {
       }))
       colorMutation.mutate(
         updated.map((it) => ({
-          targetType: 'indirect_work_case',
-          targetCode: String(it.caseId),
+          targetType: 'indirect_work_type',
+          targetCode: it.workTypeCode,
           color: it.color,
         })),
       )
@@ -157,7 +157,7 @@ export function SidePanelIndirect() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">間接作業設定</h3>
+        <h3 className="text-sm font-semibold">間接作業種類設定</h3>
         <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={resetColors}>
           <RotateCcw className="h-3 w-3" />
           色リセット
@@ -167,13 +167,13 @@ export function SidePanelIndirect() {
       <div className="space-y-2">
         {items.map((item, index) => (
           <div
-            key={item.caseId}
+            key={item.workTypeCode}
             className="flex items-center gap-3 rounded-lg border border-border p-3"
           >
             {/* 表示/非表示 */}
             <Switch
               checked={item.isVisible}
-              onCheckedChange={() => toggleVisibility(item.caseId)}
+              onCheckedChange={() => toggleVisibility(item.workTypeCode)}
             />
 
             {/* 色 */}
@@ -186,13 +186,13 @@ export function SidePanelIndirect() {
                     item.color === color ? 'border-primary' : 'border-transparent'
                   }`}
                   style={{ backgroundColor: color }}
-                  onClick={() => setColor(item.caseId, color)}
+                  onClick={() => setColor(item.workTypeCode, color)}
                 />
               ))}
             </div>
 
             {/* 名称 */}
-            <Label className="flex-1 truncate text-sm">{item.caseName}</Label>
+            <Label className="flex-1 truncate text-sm">{item.workTypeName}</Label>
 
             {/* 上下移動 */}
             <div className="flex gap-0.5">
@@ -221,7 +221,7 @@ export function SidePanelIndirect() {
 
       {items.length === 0 && (
         <p className="py-4 text-center text-sm text-muted-foreground">
-          間接作業ケースがありません
+          間接作業種類がありません
         </p>
       )}
     </div>

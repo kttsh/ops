@@ -9,6 +9,7 @@ import {
   fetchChartColorSettings,
   fetchChartStackOrderSettings,
   fetchChartViews,
+  fetchChartViewProjectItems,
 } from './api-client'
 import type { ChartDataParams } from '@/features/workload/types'
 
@@ -31,6 +32,8 @@ export const workloadKeys = {
   stackOrderSettings: (targetType?: string) =>
     [...workloadKeys.all, 'stack-order-settings', targetType] as const,
   chartViews: () => [...workloadKeys.all, 'chart-views'] as const,
+  chartViewProjectItems: (chartViewId: number) =>
+    [...workloadKeys.all, 'chart-view-project-items', chartViewId] as const,
 }
 
 // ============================================================
@@ -114,6 +117,14 @@ export function chartViewsQueryOptions() {
   return queryOptions({
     queryKey: workloadKeys.chartViews(),
     queryFn: () => fetchChartViews(),
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function chartViewProjectItemsQueryOptions(chartViewId: number) {
+  return queryOptions({
+    queryKey: workloadKeys.chartViewProjectItems(chartViewId),
+    queryFn: () => fetchChartViewProjectItems(chartViewId),
     staleTime: 5 * 60 * 1000,
   })
 }

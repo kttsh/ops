@@ -8,17 +8,24 @@ import {
   useCreateChartView,
   useDeleteChartView,
 } from '@/features/workload/api/mutations'
+import type { ChartView } from '@/features/workload/types'
 
 interface ProfileManagerProps {
   chartType: string
   startYearMonth: string
   endYearMonth: string
+  onApply?: (profile: {
+    chartViewId: number
+    startYearMonth: string
+    endYearMonth: string
+  }) => void
 }
 
 export function ProfileManager({
   chartType,
   startYearMonth,
   endYearMonth,
+  onApply,
 }: ProfileManagerProps) {
   const { data: viewsData } = useQuery(chartViewsQueryOptions())
   const views = viewsData?.data ?? []
@@ -27,6 +34,7 @@ export function ProfileManager({
   const deleteMutation = useDeleteChartView()
 
   const [newName, setNewName] = useState('')
+  const [activeViewId, setActiveViewId] = useState<number | null>(null)
 
   const handleSave = useCallback(() => {
     if (!newName.trim()) return
@@ -44,8 +52,23 @@ export function ProfileManager({
   const handleDelete = useCallback(
     (id: number) => {
       deleteMutation.mutate(id)
+      if (activeViewId === id) {
+        setActiveViewId(null)
+      }
     },
-    [deleteMutation],
+    [deleteMutation, activeViewId],
+  )
+
+  const handleApply = useCallback(
+    (view: ChartView) => {
+      setActiveViewId(view.chartViewId)
+      onApply?.({
+        chartViewId: view.chartViewId,
+        startYearMonth: view.startYearMonth,
+        endYearMonth: view.endYearMonth,
+      })
+    },
+    [onApply],
   )
 
   return (
@@ -77,11 +100,16 @@ export function ProfileManager({
         {views.map((view) => (
           <div
             key={view.chartViewId}
-            className="flex items-center justify-between rounded-lg border border-border px-3 py-2"
+            className={`flex items-center justify-between rounded-lg border px-3 py-2 ${
+              activeViewId === view.chartViewId
+                ? 'border-primary bg-primary/5'
+                : 'border-border'
+            }`}
           >
             <button
               type="button"
               className="flex-1 text-left text-sm hover:text-primary"
+              onClick={() => handleApply(view)}
             >
               {view.viewName}
             </button>

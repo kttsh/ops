@@ -73,6 +73,24 @@ function WorkloadPage() {
     [],
   )
 
+  // プロファイル適用
+  const handleProfileApply = useCallback(
+    (profile: {
+      chartViewId: number
+      startYearMonth: string
+      endYearMonth: string
+    }) => {
+      // startYearMonth と endYearMonth から months を計算
+      const startY = parseInt(profile.startYearMonth.slice(0, 4), 10)
+      const startM = parseInt(profile.startYearMonth.slice(4, 6), 10)
+      const endY = parseInt(profile.endYearMonth.slice(0, 4), 10)
+      const endM = parseInt(profile.endYearMonth.slice(4, 6), 10)
+      const months = (endY - startY) * 12 + (endM - startM) + 1
+      setPeriod(profile.startYearMonth, months)
+    },
+    [setPeriod],
+  )
+
   // chartDataParams に selectedProjectIds を含める
   const chartDataParamsWithProjects = useMemo(() => {
     if (!chartDataParams) return null
@@ -145,6 +163,7 @@ function WorkloadPage() {
               businessUnitCodes={filters.bu}
               onPeriodChange={setPeriod}
               onProjectColorsChange={handleProjectColorsChange}
+              onProfileApply={handleProfileApply}
             />
           }
         >

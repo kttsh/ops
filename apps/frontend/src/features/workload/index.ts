@@ -16,6 +16,7 @@ export type {
   ChartStackOrderSetting,
   ChartStackOrderSettingInput,
   ChartView,
+  ChartViewProjectItem,
   CreateChartViewInput,
   UpdateChartViewInput,
   AreaSeriesConfig,
@@ -46,6 +47,7 @@ export {
   colorSettingsQueryOptions,
   stackOrderSettingsQueryOptions,
   chartViewsQueryOptions,
+  chartViewProjectItemsQueryOptions,
 } from './api/queries'
 
 // API - Mutations
