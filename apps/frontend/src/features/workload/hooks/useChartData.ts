@@ -40,13 +40,22 @@ export interface UseChartDataReturn {
   refetch: () => void
 }
 
-export function useChartData(params: ChartDataParams | null): UseChartDataReturn {
+interface UseChartDataOptions {
+  projectColors?: Record<number, string>
+}
+
+export function useChartData(
+  params: ChartDataParams | null,
+  options: UseChartDataOptions = {},
+): UseChartDataReturn {
   const query = useQuery({
     ...chartDataQueryOptions(params!),
     enabled: params !== null,
   })
 
   const rawResponse = query.data?.data
+
+  const { projectColors } = options
 
   const { chartData, seriesConfig, legendDataByMonth, latestMonth } = useMemo(() => {
     if (!rawResponse) {
@@ -82,11 +91,12 @@ export function useChartData(params: ChartDataParams | null): UseChartDataReturn
     // 案件エリアシリーズ（上層）
     rawResponse.projectLoads.forEach((pl, idx) => {
       const key = `project_${pl.projectId}`
+      const color = projectColors?.[pl.projectId] ?? PROJECT_TYPE_COLORS[idx % PROJECT_TYPE_COLORS.length]
       areas.push({
         dataKey: key,
         stackId: 'workload',
-        fill: PROJECT_TYPE_COLORS[idx % PROJECT_TYPE_COLORS.length],
-        stroke: PROJECT_TYPE_COLORS[idx % PROJECT_TYPE_COLORS.length],
+        fill: color,
+        stroke: color,
         fillOpacity: 0.8,
         name: pl.projectName,
         type: 'project',
@@ -189,7 +199,7 @@ export function useChartData(params: ChartDataParams | null): UseChartDataReturn
       legendDataByMonth: legendMap,
       latestMonth: latest,
     }
-  }, [rawResponse])
+  }, [rawResponse, projectColors])
 
   return {
     chartData,

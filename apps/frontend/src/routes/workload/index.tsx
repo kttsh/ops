@@ -63,6 +63,16 @@ function WorkloadPage() {
     setSelectedProjectIds(ids)
   }, [])
 
+  // 案件色設定（SidePanelSettings ↔ useChartData の橋渡し）
+  const [projectColors, setProjectColors] = useState<Record<number, string>>({})
+
+  const handleProjectColorsChange = useCallback(
+    (colors: Record<number, string>) => {
+      setProjectColors(colors)
+    },
+    [],
+  )
+
   // chartDataParams に selectedProjectIds を含める
   const chartDataParamsWithProjects = useMemo(() => {
     if (!chartDataParams) return null
@@ -85,7 +95,7 @@ function WorkloadPage() {
     isFetching,
     isError,
     refetch,
-  } = useChartData(chartDataParamsWithProjects)
+  } = useChartData(chartDataParamsWithProjects, { projectColors })
 
   const { dispatch: legendDispatch, activeMonth, isPinned } =
     useLegendState(latestMonth)
@@ -132,7 +142,9 @@ function WorkloadPage() {
             <SidePanelSettings
               from={filters.from}
               months={filters.months}
+              businessUnitCodes={filters.bu}
               onPeriodChange={setPeriod}
+              onProjectColorsChange={handleProjectColorsChange}
             />
           }
         >

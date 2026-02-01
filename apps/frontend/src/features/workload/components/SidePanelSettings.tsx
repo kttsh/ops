@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { PeriodSelector } from './PeriodSelector'
 import { ProfileManager } from './ProfileManager'
 import {
-  projectTypesQueryOptions,
+  projectsQueryOptions,
   capacityScenariosQueryOptions,
 } from '@/features/workload/api/queries'
 import { useBulkUpsertColorSettings } from '@/features/workload/api/mutations'
@@ -25,17 +25,21 @@ const CAPACITY_COLORS = [
 interface SidePanelSettingsProps {
   from: string | undefined
   months: number
+  businessUnitCodes: string[]
   onPeriodChange: (from: string | undefined, months: number) => void
+  onProjectColorsChange?: (colors: Record<number, string>) => void
 }
 
 export function SidePanelSettings({
   from,
   months,
+  businessUnitCodes,
   onPeriodChange,
+  onProjectColorsChange,
 }: SidePanelSettingsProps) {
-  const { data: ptData } = useQuery(projectTypesQueryOptions())
+  const { data: projData } = useQuery(projectsQueryOptions(businessUnitCodes))
   const { data: csData } = useQuery(capacityScenariosQueryOptions())
-  const projectTypes = ptData?.data ?? []
+  const projects = projData?.data ?? []
   const capacityScenarios = csData?.data ?? []
 
   const colorMutation = useBulkUpsertColorSettings()
@@ -63,19 +67,20 @@ export function SidePanelSettings({
     }
   }, [from, months])
 
-  // 案件タイプ色設定
-  const [ptColors, setPtColors] = useState<Record<string, string>>({})
-  const [ptOrder, setPtOrder] = useState<string[]>([])
+  // 案件色設定
+  const [projColors, setProjColors] = useState<Record<number, string>>({})
+  const [projOrder, setProjOrder] = useState<number[]>([])
 
   // 初期化
-  if (projectTypes.length > 0 && ptOrder.length === 0) {
-    const codes = projectTypes.map((pt) => pt.projectTypeCode)
-    setPtOrder(codes)
-    const colors: Record<string, string> = {}
-    codes.forEach((code, i) => {
-      colors[code] = PROJECT_TYPE_COLORS[i % PROJECT_TYPE_COLORS.length]
+  if (projects.length > 0 && projOrder.length === 0) {
+    const ids = projects.map((p) => p.projectId)
+    setProjOrder(ids)
+    const colors: Record<number, string> = {}
+    ids.forEach((id, i) => {
+      colors[id] = PROJECT_TYPE_COLORS[i % PROJECT_TYPE_COLORS.length]
     })
-    setPtColors(colors)
+    setProjColors(colors)
+    onProjectColorsChange?.(colors)
   }
 
   // キャパシティ表示設定
@@ -93,9 +98,9 @@ export function SidePanelSettings({
     setCapColors(cols)
   }
 
-  const movePtUp = (index: number) => {
+  const moveProjUp = (index: number) => {
     if (index === 0) return
-    setPtOrder((prev) => {
+    setProjOrder((prev) => {
       const next = [...prev]
       const temp = next[index - 1]
       next[index - 1] = next[index]
@@ -104,8 +109,8 @@ export function SidePanelSettings({
     })
   }
 
-  const movePtDown = (index: number) => {
-    setPtOrder((prev) => {
+  const moveProjDown = (index: number) => {
+    setProjOrder((prev) => {
       if (index >= prev.length - 1) return prev
       const next = [...prev]
       const temp = next[index + 1]
@@ -115,16 +120,17 @@ export function SidePanelSettings({
     })
   }
 
-  const setPtColor = (code: string, color: string) => {
-    setPtColors((prev) => {
-      const updated = { ...prev, [code]: color }
+  const setProjColor = (projectId: number, color: string) => {
+    setProjColors((prev) => {
+      const updated = { ...prev, [projectId]: color }
       colorMutation.mutate(
-        Object.entries(updated).map(([c, col]) => ({
-          targetType: 'project_type',
-          targetCode: c,
+        Object.entries(updated).map(([id, col]) => ({
+          targetType: 'project',
+          targetCode: id,
           color: col,
         })),
       )
+      onProjectColorsChange?.(updated)
       return updated
     })
   }
@@ -139,16 +145,16 @@ export function SidePanelSettings({
 
       <Separator />
 
-      {/* 案件タイプ表示設定 */}
+      {/* 案件表示設定 */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold">案件タイプ設定</h3>
-        <div className="space-y-2">
-          {ptOrder.map((code, index) => {
-            const pt = projectTypes.find((p) => p.projectTypeCode === code)
-            if (!pt) return null
+        <h3 className="mb-3 text-sm font-semibold">案件設定</h3>
+        <div className="max-h-80 space-y-2 overflow-y-auto">
+          {projOrder.map((id, index) => {
+            const proj = projects.find((p) => p.projectId === id)
+            if (!proj) return null
             return (
               <div
-                key={code}
+                key={id}
                 className="flex items-center gap-3 rounded-lg border border-border p-2"
               >
                 <div className="flex gap-1">
@@ -157,21 +163,21 @@ export function SidePanelSettings({
                       key={color}
                       type="button"
                       className={`h-4 w-4 rounded-sm border-2 ${
-                        ptColors[code] === color ? 'border-primary' : 'border-transparent'
+                        projColors[id] === color ? 'border-primary' : 'border-transparent'
                       }`}
                       style={{ backgroundColor: color }}
-                      onClick={() => setPtColor(code, color)}
+                      onClick={() => setProjColor(id, color)}
                     />
                   ))}
                 </div>
-                <Label className="flex-1 truncate text-sm">{pt.name}</Label>
+                <Label className="flex-1 truncate text-sm">{proj.name}</Label>
                 <div className="flex gap-0.5">
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-6 w-6"
                     disabled={index === 0}
-                    onClick={() => movePtUp(index)}
+                    onClick={() => moveProjUp(index)}
                   >
                     <ArrowUp className="h-3 w-3" />
                   </Button>
@@ -179,8 +185,8 @@ export function SidePanelSettings({
                     variant="ghost"
                     size="icon"
                     className="h-6 w-6"
-                    disabled={index === ptOrder.length - 1}
-                    onClick={() => movePtDown(index)}
+                    disabled={index === projOrder.length - 1}
+                    onClick={() => moveProjDown(index)}
                   >
                     <ArrowDown className="h-3 w-3" />
                   </Button>
