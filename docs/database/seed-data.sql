@@ -466,23 +466,23 @@ INSERT INTO chart_views (view_name, chart_type, start_year_month, end_year_month
 -- chart_view_project_items: チャートビュー案件項目
 -- chart_view_id = 1 (PLANT全体負荷)
 -- -----------------------------------------------------------------------------
-INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible) VALUES
-(1, 1, 1, 1, 1),  -- P-2025-001 ベースケース
-(1, 2, 3, 2, 1),  -- P-2025-002 ベースケース
-(1, 3, 4, 3, 1),  -- P-2025-003 ベースケース
-(1, 4, 5, 4, 1),  -- P-2026-001 ベースケース
-(1, 5, 6, 5, 1);  -- P-2026-002 ベースケース
+INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible, color_code) VALUES
+(1, 1, 1, 1, 1, '#3b82f6'),  -- P-2025-001 ベースケース
+(1, 2, 3, 2, 1, '#10b981'),  -- P-2025-002 ベースケース
+(1, 3, 4, 3, 1, '#f59e0b'),  -- P-2025-003 ベースケース
+(1, 4, 5, 4, 1, '#ef4444'),  -- P-2026-001 ベースケース
+(1, 5, 6, 5, 1, '#8b5cf6');  -- P-2026-002 ベースケース
 
 -- chart_view_id = 2 (TRANS全体負荷)
-INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible) VALUES
-(2, 6, 7, 1, 1),  -- T-2025-001 ベースケース
-(2, 7, 8, 2, 1),  -- T-2025-002 ベースケース
-(2, 8, 9, 3, 1);  -- T-2026-001 ベースケース
+INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible, color_code) VALUES
+(2, 6, 7, 1, 1, '#3b82f6'),  -- T-2025-001 ベースケース
+(2, 7, 8, 2, 1, '#10b981'),  -- T-2025-002 ベースケース
+(2, 8, 9, 3, 1, '#f59e0b');  -- T-2026-001 ベースケース
 
 -- chart_view_id = 3 (CO2全体負荷)
-INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible) VALUES
-(3, 9, 10, 1, 1),  -- C-2025-001 ベースケース
-(3, 10, 11, 2, 1); -- C-2025-002 ベースケース
+INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible, color_code) VALUES
+(3, 9, 10, 1, 1, '#3b82f6'),  -- C-2025-001 ベースケース
+(3, 10, 11, 2, 1, '#10b981'); -- C-2025-002 ベースケース
 
 -- -----------------------------------------------------------------------------
 -- chart_view_indirect_work_items: チャートビュー間接作業項目

@@ -1,66 +1,70 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { toast } from 'sonner'
-import { ChevronRight } from 'lucide-react'
-import {
-  useCreateProjectType,
-  ApiError,
-} from '@/features/project-types'
-import { ProjectTypeForm } from '@/features/project-types/components/ProjectTypeForm'
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
+import { toast } from "sonner";
+import { ApiError, useCreateProjectType } from "@/features/project-types";
+import { ProjectTypeForm } from "@/features/project-types/components/ProjectTypeForm";
 
-export const Route = createFileRoute('/master/project-types/new')({
-  component: ProjectTypeNewPage,
-})
+export const Route = createFileRoute("/master/project-types/new")({
+	component: ProjectTypeNewPage,
+});
 
 function ProjectTypeNewPage() {
-  const navigate = Route.useNavigate()
-  const createMutation = useCreateProjectType()
+	const navigate = Route.useNavigate();
+	const createMutation = useCreateProjectType();
 
-  const handleSubmit = async (values: {
-    projectTypeCode: string
-    name: string
-    displayOrder: number
-  }) => {
-    try {
-      await createMutation.mutateAsync(values)
-      toast.success('保存しました')
-      navigate({ to: '/master/project-types' })
-    } catch (err) {
-      if (err instanceof ApiError) {
-        if (err.problemDetails.status === 409) {
-          toast.error('同一コードの案件タイプが既に存在します', { duration: Infinity })
-        } else if (err.problemDetails.status === 422) {
-          toast.error('入力内容にエラーがあります', { duration: Infinity })
-        } else {
-          toast.error(err.message, { duration: Infinity })
-        }
-      }
-    }
-  }
+	const handleSubmit = async (values: {
+		projectTypeCode: string;
+		name: string;
+		displayOrder: number;
+	}) => {
+		try {
+			await createMutation.mutateAsync(values);
+			toast.success("保存しました");
+			navigate({ to: "/master/project-types" });
+		} catch (err) {
+			if (err instanceof ApiError) {
+				if (err.problemDetails.status === 409) {
+					toast.error("同一コードの案件タイプが既に存在します", {
+						duration: Infinity,
+					});
+				} else if (err.problemDetails.status === 422) {
+					toast.error("入力内容にエラーがあります", { duration: Infinity });
+				} else {
+					toast.error(err.message, { duration: Infinity });
+				}
+			}
+		}
+	};
 
-  return (
-    <div className="space-y-6">
-      <nav className="flex items-center gap-1 text-sm text-muted-foreground">
-        <Link to="/master/project-types" className="hover:text-foreground transition-colors">
-          案件タイプ一覧
-        </Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground font-medium">新規登録</span>
-      </nav>
+	return (
+		<div className="space-y-6">
+			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
+				<Link
+					to="/master/project-types"
+					className="hover:text-foreground transition-colors"
+				>
+					案件タイプ一覧
+				</Link>
+				<ChevronRight className="h-4 w-4" />
+				<span className="text-foreground font-medium">新規登録</span>
+			</nav>
 
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">案件タイプ 新規登録</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          新しい案件タイプを登録します
-        </p>
-      </div>
+			<div>
+				<h2 className="text-2xl font-bold tracking-tight">
+					案件タイプ 新規登録
+				</h2>
+				<p className="text-sm text-muted-foreground mt-1">
+					新しい案件タイプを登録します
+				</p>
+			</div>
 
-      <div className="rounded-2xl border shadow-sm p-6">
-        <ProjectTypeForm
-          mode="create"
-          onSubmit={handleSubmit}
-          isSubmitting={createMutation.isPending}
-        />
-      </div>
-    </div>
-  )
+			<div className="rounded-2xl border shadow-sm p-6">
+				<ProjectTypeForm
+					mode="create"
+					onSubmit={handleSubmit}
+					isSubmitting={createMutation.isPending}
+				/>
+			</div>
+		</div>
+	);
 }

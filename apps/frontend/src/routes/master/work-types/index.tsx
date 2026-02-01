@@ -1,99 +1,101 @@
-import { useState, useMemo } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { toast } from 'sonner'
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
+import type { WorkType } from "@/features/work-types";
 import {
-  workTypesQueryOptions,
-  workTypeSearchSchema,
-  useRestoreWorkType,
-  ApiError,
-} from '@/features/work-types'
-import type { WorkType } from '@/features/work-types'
-import { DataTable } from '@/features/work-types/components/DataTable'
-import { DataTableToolbar } from '@/features/work-types/components/DataTableToolbar'
-import { RestoreConfirmDialog } from '@/features/work-types/components/RestoreConfirmDialog'
-import { createColumns } from '@/features/work-types/components/columns'
+	ApiError,
+	useRestoreWorkType,
+	workTypeSearchSchema,
+	workTypesQueryOptions,
+} from "@/features/work-types";
+import { createColumns } from "@/features/work-types/components/columns";
+import { DataTable } from "@/features/work-types/components/DataTable";
+import { DataTableToolbar } from "@/features/work-types/components/DataTableToolbar";
+import { RestoreConfirmDialog } from "@/features/work-types/components/RestoreConfirmDialog";
 
-export const Route = createFileRoute('/master/work-types/')({
-  validateSearch: workTypeSearchSchema,
-  component: WorkTypeListPage,
-})
+export const Route = createFileRoute("/master/work-types/")({
+	validateSearch: workTypeSearchSchema,
+	component: WorkTypeListPage,
+});
 
 function WorkTypeListPage() {
-  const search = Route.useSearch()
-  const navigate = Route.useNavigate()
-  const [restoreTarget, setRestoreTarget] = useState<string | null>(null)
+	const search = Route.useSearch();
+	const navigate = Route.useNavigate();
+	const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
 
-  const { data, isLoading, isError, error } = useQuery(
-    workTypesQueryOptions({
-      includeDisabled: search.includeDisabled,
-    }),
-  )
+	const { data, isLoading, isError, error } = useQuery(
+		workTypesQueryOptions({
+			includeDisabled: search.includeDisabled,
+		}),
+	);
 
-  const restoreMutation = useRestoreWorkType()
+	const restoreMutation = useRestoreWorkType();
 
-  const columns = useMemo(
-    () =>
-      createColumns({
-        onRestore: search.includeDisabled ? (code) => setRestoreTarget(code) : undefined,
-      }),
-    [search.includeDisabled],
-  )
+	const columns = useMemo(
+		() =>
+			createColumns({
+				onRestore: search.includeDisabled
+					? (code) => setRestoreTarget(code)
+					: undefined,
+			}),
+		[search.includeDisabled],
+	);
 
-  const handleSearchChange = (value: string) => {
-    navigate({ search: (prev) => ({ ...prev, search: value }) })
-  }
+	const handleSearchChange = (value: string) => {
+		navigate({ search: (prev) => ({ ...prev, search: value }) });
+	};
 
-  const handleIncludeDisabledChange = (value: boolean) => {
-    navigate({ search: (prev) => ({ ...prev, includeDisabled: value }) })
-  }
+	const handleIncludeDisabledChange = (value: boolean) => {
+		navigate({ search: (prev) => ({ ...prev, includeDisabled: value }) });
+	};
 
-  const handleRestore = async () => {
-    if (!restoreTarget) return
-    try {
-      await restoreMutation.mutateAsync(restoreTarget)
-      toast.success('復元しました')
-      setRestoreTarget(null)
-    } catch (err) {
-      if (err instanceof ApiError) {
-        toast.error(err.message, { duration: Infinity })
-      }
-      setRestoreTarget(null)
-    }
-  }
+	const handleRestore = async () => {
+		if (!restoreTarget) return;
+		try {
+			await restoreMutation.mutateAsync(restoreTarget);
+			toast.success("復元しました");
+			setRestoreTarget(null);
+		} catch (err) {
+			if (err instanceof ApiError) {
+				toast.error(err.message, { duration: Infinity });
+			}
+			setRestoreTarget(null);
+		}
+	};
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">作業種類</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          作業種類の一覧を管理します
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			<div>
+				<h2 className="text-2xl font-bold tracking-tight">作業種類</h2>
+				<p className="text-sm text-muted-foreground mt-1">
+					作業種類の一覧を管理します
+				</p>
+			</div>
 
-      <DataTableToolbar
-        search={search.search}
-        onSearchChange={handleSearchChange}
-        includeDisabled={search.includeDisabled}
-        onIncludeDisabledChange={handleIncludeDisabledChange}
-      />
+			<DataTableToolbar
+				search={search.search}
+				onSearchChange={handleSearchChange}
+				includeDisabled={search.includeDisabled}
+				onIncludeDisabledChange={handleIncludeDisabledChange}
+			/>
 
-      <DataTable
-        columns={columns}
-        data={data?.data ?? []}
-        globalFilter={search.search}
-        isLoading={isLoading}
-        isError={isError}
-        errorMessage={error?.message}
-        rowClassName={(row: WorkType) => (row.deletedAt ? 'opacity-50' : '')}
-      />
+			<DataTable
+				columns={columns}
+				data={data?.data ?? []}
+				globalFilter={search.search}
+				isLoading={isLoading}
+				isError={isError}
+				errorMessage={error?.message}
+				rowClassName={(row: WorkType) => (row.deletedAt ? "opacity-50" : "")}
+			/>
 
-      <RestoreConfirmDialog
-        open={!!restoreTarget}
-        onOpenChange={(open) => !open && setRestoreTarget(null)}
-        onConfirm={handleRestore}
-        isLoading={restoreMutation.isPending}
-      />
-    </div>
-  )
+			<RestoreConfirmDialog
+				open={!!restoreTarget}
+				onOpenChange={(open) => !open && setRestoreTarget(null)}
+				onConfirm={handleRestore}
+				isLoading={restoreMutation.isPending}
+			/>
+		</div>
+	);
 }

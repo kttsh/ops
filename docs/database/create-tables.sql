@@ -382,6 +382,7 @@ CREATE TABLE chart_view_project_items (
     project_case_id INT NULL,
     display_order INT NOT NULL CONSTRAINT DF_chart_view_project_items_display_order DEFAULT 0,
     is_visible BIT NOT NULL CONSTRAINT DF_chart_view_project_items_is_visible DEFAULT 1,
+    color_code VARCHAR(7) NULL,
     created_at DATETIME2 NOT NULL CONSTRAINT DF_chart_view_project_items_created_at DEFAULT GETDATE(),
     updated_at DATETIME2 NOT NULL CONSTRAINT DF_chart_view_project_items_updated_at DEFAULT GETDATE(),
     CONSTRAINT PK_chart_view_project_items PRIMARY KEY (chart_view_project_item_id),

@@ -1,7 +1,7 @@
 // --- 共通型を共有レイヤーから re-export ---
 export type {
-  PaginatedResponse,
-  SingleResponse,
-  ProblemDetails,
-  SelectOption,
-} from '@/lib/api'
+	PaginatedResponse,
+	ProblemDetails,
+	SelectOption,
+	SingleResponse,
+} from "@/lib/api";

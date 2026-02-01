@@ -1,78 +1,81 @@
-import { z } from 'zod'
-import { paginationQuerySchema } from '@/types/pagination'
+import { z } from "zod";
+import { paginationQuerySchema } from "@/types/pagination";
 
 // --- YYYYMM バリデーション用ヘルパー ---
 
-const yearMonthSchema = z.string().length(6).regex(/^\d{6}$/, {
-  message: 'Must be a 6-digit string in YYYYMM format',
-})
+const yearMonthSchema = z
+	.string()
+	.length(6)
+	.regex(/^\d{6}$/, {
+		message: "Must be a 6-digit string in YYYYMM format",
+	});
 
 // --- Zod スキーマ ---
 
 /** 作成用スキーマ */
 export const createChartViewSchema = z
-  .object({
-    viewName: z.string().min(1).max(100),
-    chartType: z.string().min(1).max(50),
-    startYearMonth: yearMonthSchema,
-    endYearMonth: yearMonthSchema,
-    isDefault: z.boolean().default(false),
-    description: z.string().max(500).optional().nullable(),
-  })
-  .refine((data) => data.startYearMonth <= data.endYearMonth, {
-    path: ['endYearMonth'],
-    message: 'endYearMonth must be greater than or equal to startYearMonth',
-  })
+	.object({
+		viewName: z.string().min(1).max(100),
+		chartType: z.string().min(1).max(50),
+		startYearMonth: yearMonthSchema,
+		endYearMonth: yearMonthSchema,
+		isDefault: z.boolean().default(false),
+		description: z.string().max(500).optional().nullable(),
+	})
+	.refine((data) => data.startYearMonth <= data.endYearMonth, {
+		path: ["endYearMonth"],
+		message: "endYearMonth must be greater than or equal to startYearMonth",
+	});
 
 /** 更新用スキーマ */
 export const updateChartViewSchema = z.object({
-  viewName: z.string().min(1).max(100).optional(),
-  chartType: z.string().min(1).max(50).optional(),
-  startYearMonth: yearMonthSchema.optional(),
-  endYearMonth: yearMonthSchema.optional(),
-  isDefault: z.boolean().optional(),
-  description: z.string().max(500).optional().nullable(),
-})
+	viewName: z.string().min(1).max(100).optional(),
+	chartType: z.string().min(1).max(50).optional(),
+	startYearMonth: yearMonthSchema.optional(),
+	endYearMonth: yearMonthSchema.optional(),
+	isDefault: z.boolean().optional(),
+	description: z.string().max(500).optional().nullable(),
+});
 
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
 export const chartViewListQuerySchema = paginationQuerySchema.extend({
-  'filter[includeDisabled]': z.coerce.boolean().default(false),
-})
+	"filter[includeDisabled]": z.coerce.boolean().default(false),
+});
 
 // --- TypeScript 型 ---
 
 /** 作成リクエスト型 */
-export type CreateChartView = z.infer<typeof createChartViewSchema>
+export type CreateChartView = z.infer<typeof createChartViewSchema>;
 
 /** 更新リクエスト型 */
-export type UpdateChartView = z.infer<typeof updateChartViewSchema>
+export type UpdateChartView = z.infer<typeof updateChartViewSchema>;
 
 /** 一覧取得クエリ型 */
-export type ChartViewListQuery = z.infer<typeof chartViewListQuerySchema>
+export type ChartViewListQuery = z.infer<typeof chartViewListQuerySchema>;
 
 /** DB 行型（snake_case — DB のカラム名そのまま） */
 export type ChartViewRow = {
-  chart_view_id: number
-  view_name: string
-  chart_type: string
-  start_year_month: string
-  end_year_month: string
-  is_default: boolean
-  description: string | null
-  created_at: Date
-  updated_at: Date
-  deleted_at: Date | null
-}
+	chart_view_id: number;
+	view_name: string;
+	chart_type: string;
+	start_year_month: string;
+	end_year_month: string;
+	is_default: boolean;
+	description: string | null;
+	created_at: Date;
+	updated_at: Date;
+	deleted_at: Date | null;
+};
 
 /** API レスポンス型（camelCase） */
 export type ChartView = {
-  chartViewId: number
-  viewName: string
-  chartType: string
-  startYearMonth: string
-  endYearMonth: string
-  isDefault: boolean
-  description: string | null
-  createdAt: string
-  updatedAt: string
-}
+	chartViewId: number;
+	viewName: string;
+	chartType: string;
+	startYearMonth: string;
+	endYearMonth: string;
+	isDefault: boolean;
+	description: string | null;
+	createdAt: string;
+	updatedAt: string;
+};

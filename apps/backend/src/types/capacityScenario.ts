@@ -1,97 +1,104 @@
-import { z } from 'zod'
-import { paginationQuerySchema } from '@/types/pagination'
+import { z } from "zod";
+import { paginationQuerySchema } from "@/types/pagination";
 
 // --- 共通バリデーション ---
 
 /** hoursPerPerson バリデーション: 0 超 744 以下 */
-const hoursPerPersonField = z.number()
-  .gt(0, { message: 'hoursPerPerson must be greater than 0' })
-  .lte(744, { message: 'hoursPerPerson must be 744 or less' })
+const hoursPerPersonField = z
+	.number()
+	.gt(0, { message: "hoursPerPerson must be greater than 0" })
+	.lte(744, { message: "hoursPerPerson must be 744 or less" });
 
 /** 年月バリデーション: YYYYMM形式（6桁数字、月は01〜12の範囲） */
 const yearMonthSchema = z
-  .string()
-  .regex(/^\d{6}$/, 'yearMonth must be a 6-digit string in YYYYMM format')
-  .refine(
-    (val) => {
-      const month = parseInt(val.slice(4, 6), 10)
-      return month >= 1 && month <= 12
-    },
-    { message: 'Month part must be between 01 and 12' },
-  )
+	.string()
+	.regex(/^\d{6}$/, "yearMonth must be a 6-digit string in YYYYMM format")
+	.refine(
+		(val) => {
+			const month = parseInt(val.slice(4, 6), 10);
+			return month >= 1 && month <= 12;
+		},
+		{ message: "Month part must be between 01 and 12" },
+	);
 
 // --- Zod スキーマ ---
 
 /** 作成用スキーマ */
 export const createCapacityScenarioSchema = z.object({
-  scenarioName: z.string().min(1).max(100),
-  isPrimary: z.boolean().default(false),
-  description: z.string().max(500).nullish(),
-  hoursPerPerson: hoursPerPersonField.optional().default(160.00),
-})
+	scenarioName: z.string().min(1).max(100),
+	isPrimary: z.boolean().default(false),
+	description: z.string().max(500).nullish(),
+	hoursPerPerson: hoursPerPersonField.optional().default(160.0),
+});
 
 /** 更新用スキーマ */
 export const updateCapacityScenarioSchema = z.object({
-  scenarioName: z.string().min(1).max(100).optional(),
-  isPrimary: z.boolean().optional(),
-  description: z.string().max(500).nullish(),
-  hoursPerPerson: hoursPerPersonField.optional(),
-})
+	scenarioName: z.string().min(1).max(100).optional(),
+	isPrimary: z.boolean().optional(),
+	description: z.string().max(500).nullish(),
+	hoursPerPerson: hoursPerPersonField.optional(),
+});
 
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
 export const capacityScenarioListQuerySchema = paginationQuerySchema.extend({
-  'filter[includeDisabled]': z.coerce.boolean().default(false),
-})
+	"filter[includeDisabled]": z.coerce.boolean().default(false),
+});
 
 /** 自動計算リクエストスキーマ */
 export const calculateCapacitySchema = z.object({
-  headcountPlanCaseId: z.number().int().positive(),
-  businessUnitCodes: z.array(z.string().min(1).max(20)).optional(),
-  yearMonthFrom: yearMonthSchema.optional(),
-  yearMonthTo: yearMonthSchema.optional(),
-})
+	headcountPlanCaseId: z.number().int().positive(),
+	businessUnitCodes: z.array(z.string().min(1).max(20)).optional(),
+	yearMonthFrom: yearMonthSchema.optional(),
+	yearMonthTo: yearMonthSchema.optional(),
+});
 
 // --- TypeScript 型 ---
 
 /** 作成リクエスト型 */
-export type CreateCapacityScenario = z.infer<typeof createCapacityScenarioSchema>
+export type CreateCapacityScenario = z.infer<
+	typeof createCapacityScenarioSchema
+>;
 
 /** 更新リクエスト型 */
-export type UpdateCapacityScenario = z.infer<typeof updateCapacityScenarioSchema>
+export type UpdateCapacityScenario = z.infer<
+	typeof updateCapacityScenarioSchema
+>;
 
 /** 一覧取得クエリ型 */
-export type CapacityScenarioListQuery = z.infer<typeof capacityScenarioListQuerySchema>
+export type CapacityScenarioListQuery = z.infer<
+	typeof capacityScenarioListQuerySchema
+>;
 
 /** 自動計算リクエスト型 */
-export type CalculateCapacity = z.infer<typeof calculateCapacitySchema>
+export type CalculateCapacity = z.infer<typeof calculateCapacitySchema>;
 
 /** DB 行型（snake_case — DB のカラム名そのまま） */
 export type CapacityScenarioRow = {
-  capacity_scenario_id: number
-  scenario_name: string
-  is_primary: boolean
-  description: string | null
-  hours_per_person: number
-  created_at: Date
-  updated_at: Date
-  deleted_at: Date | null
-}
+	capacity_scenario_id: number;
+	scenario_name: string;
+	is_primary: boolean;
+	description: string | null;
+	hours_per_person: number;
+	created_at: Date;
+	updated_at: Date;
+	deleted_at: Date | null;
+};
 
 /** API レスポンス型（camelCase） */
 export type CapacityScenario = {
-  capacityScenarioId: number
-  scenarioName: string
-  isPrimary: boolean
-  description: string | null
-  hoursPerPerson: number
-  createdAt: string
-  updatedAt: string
-  deletedAt: string | null
-}
+	capacityScenarioId: number;
+	scenarioName: string;
+	isPrimary: boolean;
+	description: string | null;
+	hoursPerPerson: number;
+	createdAt: string;
+	updatedAt: string;
+	deletedAt: string | null;
+};
 
 /** 計算結果レスポンス型 */
 export type CalculateCapacityResult = {
-  calculated: number
-  hoursPerPerson: number
-  items: import('@/types/monthlyCapacity').MonthlyCapacity[]
-}
+	calculated: number;
+	hoursPerPerson: number;
+	items: import("@/types/monthlyCapacity").MonthlyCapacity[];
+};

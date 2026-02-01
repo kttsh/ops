@@ -1,81 +1,97 @@
-import { z } from 'zod'
-import { paginationQuerySchema } from '@/types/pagination'
+import { z } from "zod";
+import { paginationQuerySchema } from "@/types/pagination";
 
 // --- Zod Schemas ---
 
 /** Weight item schema */
 export const weightItemSchema = z.object({
-  progressRate: z.number().int().min(0).max(100),
-  weight: z.number().int().min(0),
-})
+	progressRate: z.number().int().min(0).max(100),
+	weight: z.number().int().min(0),
+});
 
 /** Create schema */
 export const createStandardEffortMasterSchema = z.object({
-  businessUnitCode: z.string().min(1).max(20).regex(/^[a-zA-Z0-9_-]+$/),
-  projectTypeCode: z.string().min(1).max(20).regex(/^[a-zA-Z0-9_-]+$/),
-  name: z.string().min(1).max(100),
-  weights: z.array(weightItemSchema).optional(),
-})
+	businessUnitCode: z
+		.string()
+		.min(1)
+		.max(20)
+		.regex(/^[a-zA-Z0-9_-]+$/),
+	projectTypeCode: z
+		.string()
+		.min(1)
+		.max(20)
+		.regex(/^[a-zA-Z0-9_-]+$/),
+	name: z.string().min(1).max(100),
+	weights: z.array(weightItemSchema).optional(),
+});
 
 /** Update schema */
 export const updateStandardEffortMasterSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  weights: z.array(weightItemSchema).optional(),
-})
+	name: z.string().min(1).max(100).optional(),
+	weights: z.array(weightItemSchema).optional(),
+});
 
 /** List query schema */
-export const standardEffortMasterListQuerySchema = paginationQuerySchema.extend({
-  'filter[includeDisabled]': z.coerce.boolean().default(false),
-  'filter[businessUnitCode]': z.string().optional(),
-  'filter[projectTypeCode]': z.string().optional(),
-})
+export const standardEffortMasterListQuerySchema = paginationQuerySchema.extend(
+	{
+		"filter[includeDisabled]": z.coerce.boolean().default(false),
+		"filter[businessUnitCode]": z.string().optional(),
+		"filter[projectTypeCode]": z.string().optional(),
+	},
+);
 
 // --- TypeScript Types ---
 
-export type WeightItem = z.infer<typeof weightItemSchema>
-export type CreateStandardEffortMaster = z.infer<typeof createStandardEffortMasterSchema>
-export type UpdateStandardEffortMaster = z.infer<typeof updateStandardEffortMasterSchema>
-export type StandardEffortMasterListQuery = z.infer<typeof standardEffortMasterListQuerySchema>
+export type WeightItem = z.infer<typeof weightItemSchema>;
+export type CreateStandardEffortMaster = z.infer<
+	typeof createStandardEffortMasterSchema
+>;
+export type UpdateStandardEffortMaster = z.infer<
+	typeof updateStandardEffortMasterSchema
+>;
+export type StandardEffortMasterListQuery = z.infer<
+	typeof standardEffortMasterListQuerySchema
+>;
 
 /** DB row type - master (snake_case) */
 export type StandardEffortMasterRow = {
-  standard_effort_id: number
-  business_unit_code: string
-  project_type_code: string
-  name: string
-  created_at: Date
-  updated_at: Date
-  deleted_at: Date | null
-}
+	standard_effort_id: number;
+	business_unit_code: string;
+	project_type_code: string;
+	name: string;
+	created_at: Date;
+	updated_at: Date;
+	deleted_at: Date | null;
+};
 
 /** DB row type - weight (snake_case) */
 export type StandardEffortWeightRow = {
-  standard_effort_weight_id: number
-  standard_effort_id: number
-  progress_rate: number
-  weight: number
-  created_at: Date
-  updated_at: Date
-}
+	standard_effort_weight_id: number;
+	standard_effort_id: number;
+	progress_rate: number;
+	weight: number;
+	created_at: Date;
+	updated_at: Date;
+};
 
 /** API response type - master summary (camelCase, for list) */
 export type StandardEffortMasterSummary = {
-  standardEffortId: number
-  businessUnitCode: string
-  projectTypeCode: string
-  name: string
-  createdAt: string
-  updatedAt: string
-}
+	standardEffortId: number;
+	businessUnitCode: string;
+	projectTypeCode: string;
+	name: string;
+	createdAt: string;
+	updatedAt: string;
+};
 
 /** API response type - weight (camelCase) */
 export type StandardEffortWeight = {
-  standardEffortWeightId: number
-  progressRate: number
-  weight: number
-}
+	standardEffortWeightId: number;
+	progressRate: number;
+	weight: number;
+};
 
 /** API response type - master detail (camelCase, with weights) */
 export type StandardEffortMasterDetail = StandardEffortMasterSummary & {
-  weights: StandardEffortWeight[]
-}
+	weights: StandardEffortWeight[];
+};

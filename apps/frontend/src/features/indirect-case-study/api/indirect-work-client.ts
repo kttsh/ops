@@ -1,76 +1,78 @@
-import { API_BASE_URL, handleResponse } from '@/lib/api'
 import type {
-  IndirectWorkCase,
-  IndirectWorkTypeRatio,
-  MonthlyIndirectWorkLoad,
-  IndirectWorkCaseListParams,
-  CreateIndirectWorkCaseInput,
-  UpdateIndirectWorkCaseInput,
-  BulkIndirectWorkRatioInput,
-  BulkMonthlyIndirectWorkLoadInput,
-  PaginatedResponse,
-  SingleResponse,
-} from '@/features/indirect-case-study/types'
+	BulkIndirectWorkRatioInput,
+	BulkMonthlyIndirectWorkLoadInput,
+	CreateIndirectWorkCaseInput,
+	IndirectWorkCase,
+	IndirectWorkCaseListParams,
+	IndirectWorkTypeRatio,
+	MonthlyIndirectWorkLoad,
+	PaginatedResponse,
+	SingleResponse,
+	UpdateIndirectWorkCaseInput,
+} from "@/features/indirect-case-study/types";
+import { API_BASE_URL, handleResponse } from "@/lib/api";
 
 // ============================================================
 // Indirect Work Cases
 // ============================================================
 
 export async function fetchIndirectWorkCases(
-  params: IndirectWorkCaseListParams,
+	params: IndirectWorkCaseListParams,
 ): Promise<PaginatedResponse<IndirectWorkCase>> {
-  const searchParams = new URLSearchParams({
-    'page[number]': '1',
-    'page[size]': '1000',
-  })
-  if (params.businessUnitCode) {
-    searchParams.set('filter[businessUnitCode]', params.businessUnitCode)
-  }
-  if (params.includeDisabled) {
-    searchParams.set('filter[includeDisabled]', 'true')
-  }
-  const response = await fetch(`${API_BASE_URL}/indirect-work-cases?${searchParams}`)
-  return handleResponse<PaginatedResponse<IndirectWorkCase>>(response)
+	const searchParams = new URLSearchParams({
+		"page[number]": "1",
+		"page[size]": "1000",
+	});
+	if (params.businessUnitCode) {
+		searchParams.set("filter[businessUnitCode]", params.businessUnitCode);
+	}
+	if (params.includeDisabled) {
+		searchParams.set("filter[includeDisabled]", "true");
+	}
+	const response = await fetch(
+		`${API_BASE_URL}/indirect-work-cases?${searchParams}`,
+	);
+	return handleResponse<PaginatedResponse<IndirectWorkCase>>(response);
 }
 
 export async function createIndirectWorkCase(
-  input: CreateIndirectWorkCaseInput,
+	input: CreateIndirectWorkCaseInput,
 ): Promise<SingleResponse<IndirectWorkCase>> {
-  const response = await fetch(`${API_BASE_URL}/indirect-work-cases`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  })
-  return handleResponse<SingleResponse<IndirectWorkCase>>(response)
+	const response = await fetch(`${API_BASE_URL}/indirect-work-cases`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(input),
+	});
+	return handleResponse<SingleResponse<IndirectWorkCase>>(response);
 }
 
 export async function updateIndirectWorkCase(
-  id: number,
-  input: UpdateIndirectWorkCaseInput,
+	id: number,
+	input: UpdateIndirectWorkCaseInput,
 ): Promise<SingleResponse<IndirectWorkCase>> {
-  const response = await fetch(`${API_BASE_URL}/indirect-work-cases/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  })
-  return handleResponse<SingleResponse<IndirectWorkCase>>(response)
+	const response = await fetch(`${API_BASE_URL}/indirect-work-cases/${id}`, {
+		method: "PUT",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(input),
+	});
+	return handleResponse<SingleResponse<IndirectWorkCase>>(response);
 }
 
 export async function deleteIndirectWorkCase(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/indirect-work-cases/${id}`, {
-    method: 'DELETE',
-  })
-  return handleResponse<void>(response)
+	const response = await fetch(`${API_BASE_URL}/indirect-work-cases/${id}`, {
+		method: "DELETE",
+	});
+	return handleResponse<void>(response);
 }
 
 export async function restoreIndirectWorkCase(
-  id: number,
+	id: number,
 ): Promise<SingleResponse<IndirectWorkCase>> {
-  const response = await fetch(
-    `${API_BASE_URL}/indirect-work-cases/${id}/actions/restore`,
-    { method: 'POST' },
-  )
-  return handleResponse<SingleResponse<IndirectWorkCase>>(response)
+	const response = await fetch(
+		`${API_BASE_URL}/indirect-work-cases/${id}/actions/restore`,
+		{ method: "POST" },
+	);
+	return handleResponse<SingleResponse<IndirectWorkCase>>(response);
 }
 
 // ============================================================
@@ -78,31 +80,31 @@ export async function restoreIndirectWorkCase(
 // ============================================================
 
 export async function fetchIndirectWorkTypeRatios(
-  caseId: number,
+	caseId: number,
 ): Promise<PaginatedResponse<IndirectWorkTypeRatio>> {
-  const searchParams = new URLSearchParams({
-    'page[number]': '1',
-    'page[size]': '1000',
-  })
-  const response = await fetch(
-    `${API_BASE_URL}/indirect-work-cases/${caseId}/indirect-work-type-ratios?${searchParams}`,
-  )
-  return handleResponse<PaginatedResponse<IndirectWorkTypeRatio>>(response)
+	const searchParams = new URLSearchParams({
+		"page[number]": "1",
+		"page[size]": "1000",
+	});
+	const response = await fetch(
+		`${API_BASE_URL}/indirect-work-cases/${caseId}/indirect-work-type-ratios?${searchParams}`,
+	);
+	return handleResponse<PaginatedResponse<IndirectWorkTypeRatio>>(response);
 }
 
 export async function bulkUpdateIndirectWorkTypeRatios(
-  caseId: number,
-  input: BulkIndirectWorkRatioInput,
+	caseId: number,
+	input: BulkIndirectWorkRatioInput,
 ): Promise<{ data: IndirectWorkTypeRatio[] }> {
-  const response = await fetch(
-    `${API_BASE_URL}/indirect-work-cases/${caseId}/indirect-work-type-ratios/bulk`,
-    {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(input),
-    },
-  )
-  return handleResponse<{ data: IndirectWorkTypeRatio[] }>(response)
+	const response = await fetch(
+		`${API_BASE_URL}/indirect-work-cases/${caseId}/indirect-work-type-ratios/bulk`,
+		{
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(input),
+		},
+	);
+	return handleResponse<{ data: IndirectWorkTypeRatio[] }>(response);
 }
 
 // ============================================================
@@ -110,33 +112,33 @@ export async function bulkUpdateIndirectWorkTypeRatios(
 // ============================================================
 
 export async function fetchMonthlyIndirectWorkLoads(
-  caseId: number,
-  businessUnitCode?: string,
+	caseId: number,
+	businessUnitCode?: string,
 ): Promise<PaginatedResponse<MonthlyIndirectWorkLoad>> {
-  const searchParams = new URLSearchParams({
-    'page[number]': '1',
-    'page[size]': '1000',
-  })
-  if (businessUnitCode) {
-    searchParams.set('businessUnitCode', businessUnitCode)
-  }
-  const response = await fetch(
-    `${API_BASE_URL}/indirect-work-cases/${caseId}/monthly-indirect-work-loads?${searchParams}`,
-  )
-  return handleResponse<PaginatedResponse<MonthlyIndirectWorkLoad>>(response)
+	const searchParams = new URLSearchParams({
+		"page[number]": "1",
+		"page[size]": "1000",
+	});
+	if (businessUnitCode) {
+		searchParams.set("businessUnitCode", businessUnitCode);
+	}
+	const response = await fetch(
+		`${API_BASE_URL}/indirect-work-cases/${caseId}/monthly-indirect-work-loads?${searchParams}`,
+	);
+	return handleResponse<PaginatedResponse<MonthlyIndirectWorkLoad>>(response);
 }
 
 export async function bulkSaveMonthlyIndirectWorkLoads(
-  caseId: number,
-  input: BulkMonthlyIndirectWorkLoadInput,
+	caseId: number,
+	input: BulkMonthlyIndirectWorkLoadInput,
 ): Promise<{ data: MonthlyIndirectWorkLoad[] }> {
-  const response = await fetch(
-    `${API_BASE_URL}/indirect-work-cases/${caseId}/monthly-indirect-work-loads/bulk`,
-    {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(input),
-    },
-  )
-  return handleResponse<{ data: MonthlyIndirectWorkLoad[] }>(response)
+	const response = await fetch(
+		`${API_BASE_URL}/indirect-work-cases/${caseId}/monthly-indirect-work-loads/bulk`,
+		{
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(input),
+		},
+	);
+	return handleResponse<{ data: MonthlyIndirectWorkLoad[] }>(response);
 }
