@@ -144,7 +144,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 					    <LayoutDashboard className="h-5 w-5" />
                     </div>
 					<h1 className="text-lg font-bold tracking-tight text-sidebar-foreground">
-						Sequence
+						操業管理システム
 					</h1>
 				</div>
 				
@@ -167,12 +167,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 						</SheetTrigger>
 						<SheetContent side="left" className="w-72 p-0">
 							<SheetHeader className="p-6 pb-0">
-								<SheetTitle>Sequence</SheetTitle>
+								<SheetTitle>操業管理システム</SheetTitle>
 							</SheetHeader>
 							<SidebarNav />
 						</SheetContent>
 					</Sheet>
-					<h1 className="text-lg font-bold">Sequence</h1>
+					<h1 className="text-lg font-bold">操業管理システム</h1>
 				</header>
 
 				{/* Page content */}
