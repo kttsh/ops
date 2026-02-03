@@ -40,7 +40,7 @@ export function SidePanel({
 				{isOpen && (
 					<>
 						{/* パネルヘッダー */}
-						<div className="flex h-10 items-center justify-between border-b border-border px-3">
+						<div className="flex h-10 items-center justify-between border-b border-border bg-muted px-3">
 							<div className="flex gap-1">
 								{tabs.map((t) => (
 									<Button
@@ -81,7 +81,7 @@ export function SidePanel({
 			<div className="flex flex-1 flex-col overflow-hidden">
 				{/* パネル開くボタン */}
 				{!isOpen && (
-					<div className="flex h-10 items-center px-2 border-b border-border">
+					<div className="flex h-10 items-center px-2 border-b border-border bg-muted">
 						<Button
 							variant="ghost"
 							size="icon"

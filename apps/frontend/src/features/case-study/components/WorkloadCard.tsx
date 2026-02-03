@@ -181,7 +181,7 @@ export function WorkloadCard({
 	};
 
 	return (
-		<div className="rounded-2xl border shadow-sm">
+		<div className="rounded-2xl border shadow-sm bg-card">
 			<div className="flex items-center justify-between border-b px-4 py-3">
 				<div>
 					<h3 className="text-sm font-semibold">工数</h3>

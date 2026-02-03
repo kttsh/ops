@@ -15,7 +15,7 @@ const options = [
 
 export function ViewToggle({ value, onChange }: ViewToggleProps) {
 	return (
-		<div className="inline-flex rounded-lg border border-input bg-background p-0.5">
+		<div className="inline-flex rounded-lg border border-input bg-input-bg p-0.5">
 			{options.map((opt) => (
 				<Button
 					key={opt.value}

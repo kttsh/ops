@@ -32,7 +32,7 @@ export function StandardEffortPreview({
 	if (!detail) return null;
 
 	return (
-		<div className="rounded-lg border p-3">
+		<div className="rounded-lg border bg-card p-3">
 			<h4 className="mb-2 text-xs font-semibold">
 				{detail.name} - 工数配分プレビュー
 			</h4>

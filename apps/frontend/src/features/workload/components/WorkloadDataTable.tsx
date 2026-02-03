@@ -305,7 +305,7 @@ export function WorkloadDataTable({
 			{/* テーブル */}
 			<div
 				ref={parentRef}
-				className="overflow-auto rounded-lg border border-border"
+				className="overflow-auto rounded-lg border border-border bg-card"
 				style={{ height: "calc(100vh - 320px)", minHeight: 300 }}
 			>
 				<div style={{ width: table.getTotalSize() }}>
@@ -363,8 +363,8 @@ export function WorkloadDataTable({
 										"absolute left-0 flex w-full border-b border-border",
 										rowType === "capacity" && "bg-blue-50 font-semibold",
 										rowType === "indirect" && "bg-gray-50",
-										rowType === "project" && "bg-white",
-										rowType === "projectDetail" && "bg-muted/30",
+										rowType === "project" && "bg-card",
+										rowType === "projectDetail" && "bg-muted",
 									)}
 									style={{
 										height: ROW_HEIGHT,
@@ -381,10 +381,10 @@ export function WorkloadDataTable({
 													isPinned && "sticky z-10",
 													rowType === "capacity" && isPinned && "bg-blue-50",
 													rowType === "indirect" && isPinned && "bg-gray-50",
-													rowType === "project" && isPinned && "bg-white",
+													rowType === "project" && isPinned && "bg-card",
 													rowType === "projectDetail" &&
 														isPinned &&
-														"bg-muted/30",
+														"bg-muted",
 												)}
 												style={{
 													width: cell.column.getSize(),

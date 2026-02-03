@@ -87,7 +87,7 @@ export function DataTable<TData>({
 
 	return (
 		<div className="space-y-4">
-			<div className="rounded-2xl border shadow-sm overflow-hidden">
+			<div className="rounded-2xl border shadow-sm overflow-hidden bg-card">
 				<Table>
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
@@ -145,7 +145,7 @@ export function DataTable<TData>({
 							<select
 								value={pagination.pageSize}
 								onChange={(e) => onPageSizeChange(Number(e.target.value))}
-								className="rounded-lg border border-input bg-background px-2 py-1 text-sm"
+								className="rounded-lg border border-input bg-input-bg px-2 py-1 text-sm"
 							>
 								{PAGE_SIZES.map((size) => (
 									<option key={size} value={size}>

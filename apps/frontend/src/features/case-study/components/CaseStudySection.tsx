@@ -118,7 +118,7 @@ export function CaseStudySection({
 
 	return (
 		<>
-			<div className="rounded-2xl border shadow-sm overflow-hidden">
+			<div className="rounded-2xl border shadow-sm overflow-hidden bg-card">
 				<div className="flex" style={{ minHeight: "400px" }}>
 					{/* サイドバー */}
 					<div className="w-64 shrink-0 border-r border-border overflow-y-auto p-3">

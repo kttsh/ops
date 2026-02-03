@@ -22,6 +22,7 @@ import { useChartData } from "@/features/workload/hooks/useChartData";
 import { useLegendState } from "@/features/workload/hooks/useLegendState";
 import { useTableData } from "@/features/workload/hooks/useTableData";
 import { useWorkloadFilters } from "@/features/workload/hooks/useWorkloadFilters";
+import { Card } from "@/components/ui/card"; // Assuming Card component exists or use div
 
 export const Route = createFileRoute("/workload/")({
 	validateSearch: workloadSearchSchema,
@@ -152,111 +153,119 @@ function WorkloadPage() {
 		: undefined;
 
 	return (
-		<div className="flex h-full flex-col">
-			{/* ヘッダーバー */}
-			<div className="flex items-center justify-between border-b border-border px-4 py-2">
-				<h1 className="text-lg font-semibold">山積ダッシュボード</h1>
+		<div className="flex h-full flex-col gap-6">
+			{/* ヘッダーセクション */}
+			<div className="flex items-center justify-between">
+				<div>
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">山積ダッシュボード</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Workload visualization and analysis</p>
+                </div>
 				<ViewToggle value={filters.view} onChange={setViewMode} />
 			</div>
 
-			{/* BU選択 */}
-			<div className="border-b border-border px-4 py-3">
-				<BusinessUnitSelector
-					selectedCodes={filters.bu}
-					onChange={setBusinessUnits}
-				/>
-			</div>
+            {/* メインカード */}
+			<div className="flex-1 overflow-hidden rounded-3xl border border-border bg-card shadow-sm flex flex-col">
+                 {/* フィルターエリア */}
+			    <div className="border-b border-border bg-muted px-6 py-4">
+				    <BusinessUnitSelector
+					    selectedCodes={filters.bu}
+					    onChange={setBusinessUnits}
+				    />
+			    </div>
 
-			{/* メインコンテンツ */}
-			<div className="flex-1 overflow-hidden">
-				<SidePanel
-					tab={filters.tab}
-					onTabChange={setSidePanelTab}
-					projectsContent={
-						<SidePanelProjects
-							businessUnitCodes={filters.bu}
-							selectedProjectIds={selectedProjectIds}
-							onSelectionChange={handleProjectSelectionChange}
-						/>
-					}
-					indirectContent={<SidePanelIndirect />}
-					settingsContent={
-						<SidePanelSettings
-							from={filters.from}
-							months={filters.months}
-							businessUnitCodes={filters.bu}
-							selectedProjectIds={selectedProjectIds}
-							onPeriodChange={setPeriod}
-							onProjectColorsChange={handleProjectColorsChange}
-							onProfileApply={handleProfileApply}
-						/>
-					}
-				>
-					{/* BU未選択 */}
-					{!hasBusinessUnits && (
-						<div className="p-6">
-							<BuEmptyState />
-						</div>
-					)}
+			    {/* コンテンツエリア */}
+			    <div className="flex-1 overflow-hidden relative bg-card">
+				    <SidePanel
+					    tab={filters.tab}
+					    onTabChange={setSidePanelTab}
+					    projectsContent={
+						    <SidePanelProjects
+							    businessUnitCodes={filters.bu}
+							    selectedProjectIds={selectedProjectIds}
+							    onSelectionChange={handleProjectSelectionChange}
+						    />
+					    }
+					    indirectContent={<SidePanelIndirect />}
+					    settingsContent={
+						    <SidePanelSettings
+							    from={filters.from}
+							    months={filters.months}
+							    businessUnitCodes={filters.bu}
+							    selectedProjectIds={selectedProjectIds}
+							    onPeriodChange={setPeriod}
+							    onProjectColorsChange={handleProjectColorsChange}
+							    onProfileApply={handleProfileApply}
+						    />
+					    }
+				    >
+					    {/* BU未選択 */}
+					    {!hasBusinessUnits && (
+						    <div className="p-8 flex items-center justify-center h-full">
+							    <BuEmptyState />
+						    </div>
+					    )}
 
-					{/* エラー状態 */}
-					{hasBusinessUnits && isError && (
-						<div className="p-6">
-							<ErrorState onRetry={refetch} />
-						</div>
-					)}
+					    {/* エラー状態 */}
+					    {hasBusinessUnits && isError && (
+						    <div className="p-8 flex items-center justify-center h-full">
+							    <ErrorState onRetry={refetch} />
+						    </div>
+					    )}
 
-					{/* ローディング状態 */}
-					{hasBusinessUnits && !isError && isLoading && (
-						<div className="space-y-6 p-6">
-							{showChart && <SkeletonChart />}
-							{showTable && <SkeletonTable />}
-						</div>
-					)}
+					    {/* ローディング状態 */}
+					    {hasBusinessUnits && !isError && isLoading && (
+						    <div className="space-y-6 p-8">
+							    {showChart && <SkeletonChart />}
+							    {showTable && <SkeletonTable />}
+						    </div>
+					    )}
 
-					{/* データ表示 */}
-					{hasBusinessUnits && !isError && !isLoading && (
-						<div className="flex h-full flex-col">
-							{/* チャート + 凡例 */}
-							{showChart && (
-								<div className="flex border-b border-border">
-									<div className="flex-1 p-4">
-										<WorkloadChart
-											data={chartData}
-											seriesConfig={seriesConfig}
-											activeMonth={activeMonth}
-											dispatch={legendDispatch}
-											isFetching={isFetching}
-										/>
-									</div>
-									<LegendPanel
-										data={currentLegendData}
-										isPinned={isPinned}
-										dispatch={legendDispatch}
-										seriesConfig={seriesConfig}
-									/>
-								</div>
-							)}
+					    {/* データ表示 */}
+					    {hasBusinessUnits && !isError && !isLoading && (
+						    <div className="flex h-full flex-col bg-card">
+							    {/* チャート + 凡例 */}
+							    {showChart && (
+								    <div className="flex flex-col border-b border-border lg:flex-row h-[60%] lg:h-[55%]">
+									    <div className="flex-1 p-6 overflow-hidden bg-card">
+										    <WorkloadChart
+											    data={chartData}
+											    seriesConfig={seriesConfig}
+											    activeMonth={activeMonth}
+											    dispatch={legendDispatch}
+											    isFetching={isFetching}
+										    />
+									    </div>
+                                        <div className="border-t lg:border-t-0 lg:border-l border-border bg-card w-full lg:w-80 overflow-y-auto">
+									        <LegendPanel
+										        data={currentLegendData}
+										        isPinned={isPinned}
+										        dispatch={legendDispatch}
+										        seriesConfig={seriesConfig}
+									        />
+                                        </div>
+								    </div>
+							    )}
 
-							{/* テーブル */}
-							{showTable && (
-								<div className="flex-1 overflow-hidden p-4">
-									<WorkloadDataTable
-										rows={tableData.rows}
-										filteredRows={tableData.filteredRows}
-										selectedYear={tableData.selectedYear}
-										availableYears={tableData.availableYears}
-										onYearChange={tableData.setSelectedYear}
-										searchText={tableData.searchText}
-										onSearchChange={tableData.setSearchText}
-										rowTypeFilter={tableData.rowTypeFilter}
-										onRowTypeFilterChange={tableData.setRowTypeFilter}
-									/>
-								</div>
-							)}
-						</div>
-					)}
-				</SidePanel>
+							    {/* テーブル */}
+							    {showTable && (
+								    <div className="flex-1 overflow-hidden p-6 bg-card">
+									    <WorkloadDataTable
+										    rows={tableData.rows}
+										    filteredRows={tableData.filteredRows}
+										    selectedYear={tableData.selectedYear}
+										    availableYears={tableData.availableYears}
+										    onYearChange={tableData.setSelectedYear}
+										    searchText={tableData.searchText}
+										    onSearchChange={tableData.setSearchText}
+										    rowTypeFilter={tableData.rowTypeFilter}
+										    onRowTypeFilterChange={tableData.setRowTypeFilter}
+									    />
+								    </div>
+							    )}
+						    </div>
+					    )}
+				    </SidePanel>
+                </div>
 			</div>
 		</div>
 	);

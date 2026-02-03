@@ -206,7 +206,7 @@ export function CalculationResultTable({
 				<table className="w-full text-sm border-collapse">
 					<thead>
 						<tr className="border-b-2">
-							<th className="text-left py-2 pr-3 font-medium text-muted-foreground sticky left-0 bg-background">
+							<th className="text-left py-2 pr-3 font-medium text-muted-foreground sticky left-0 bg-card">
 								項目
 							</th>
 							{MONTH_LABELS.map((label) => (
@@ -225,7 +225,7 @@ export function CalculationResultTable({
 					<tbody>
 						{/* 人員数 */}
 						<tr className="border-b hover:bg-muted/30">
-							<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-background">
+							<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-card">
 								{rowData.headcountRow.label}
 							</td>
 							{rowData.headcountRow.values.map((v, i) => (
@@ -240,7 +240,7 @@ export function CalculationResultTable({
 
 						{/* キャパシティ */}
 						<tr className="border-b hover:bg-muted/30">
-							<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-background">
+							<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-card">
 								{rowData.capacityRow.label}
 							</td>
 							{rowData.capacityRow.values.map((v, i) => (
@@ -282,7 +282,7 @@ export function CalculationResultTable({
 									key={row.workTypeCode}
 									className="border-b hover:bg-muted/30"
 								>
-									<td className="py-1.5 pr-3 whitespace-nowrap text-muted-foreground sticky left-0 bg-background">
+									<td className="py-1.5 pr-3 whitespace-nowrap text-muted-foreground sticky left-0 bg-card">
 										{row.label}
 									</td>
 									{row.values.map((v, i) => (
@@ -298,7 +298,7 @@ export function CalculationResultTable({
 
 						{/* 間接合計 */}
 						<tr className="border-b-2 hover:bg-muted/30 font-semibold">
-							<td className="py-1.5 pr-3 whitespace-nowrap sticky left-0 bg-background">
+							<td className="py-1.5 pr-3 whitespace-nowrap sticky left-0 bg-card">
 								{rowData.indirectTotalRow.label}
 							</td>
 							{rowData.indirectTotalRow.values.map((v, i) => (
