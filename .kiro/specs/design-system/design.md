@@ -97,7 +97,7 @@ graph TB
 | 5.1-5.8 | フォーム系 feature ストーリー | FormStories | MSW Handlers + QueryClient |
 | 6.1-6.7 | テーブル系 feature ストーリー | TableStories | Mock Column Defs + Data |
 | 7.1-7.4 | チャート系 feature ストーリー | ChartStories | Mock Chart Data |
-| 8.1-8.10 | ダイアログ・パネル系ストーリー | InteractionStories | CSF3 Args + Actions |
+| 8.1-8.11 | ダイアログ・パネル・フィードバック状態系ストーリー | InteractionStories | CSF3 Args + Actions |
 | 9.1-9.6 | 間接工数管理系ストーリー | IndirectStories | Mock Grid/Matrix Data |
 | 10.1-10.6 | モック・デコレータ基盤 | StorybookInfra | GlobalDecorators + MSWSetup |
 | 11.1-11.2 | アクセシビリティ検証 | addon-a11y 設定 | axe-core |
@@ -187,7 +187,7 @@ const preview: Preview = {
 ```
 
 **Implementation Notes**
-- CSS インポートパスは実際のプロジェクト構成に合わせて調整が必要（`@/styles/` エイリアスは Storybook のビルドでは解決できない可能性があるため相対パスを使用）
+- `@storybook/react-vite` は Vite の `resolve.alias` 設定を自動継承するため、`@/` パスエイリアスは Storybook のビルドでもそのまま使用可能である。CSS インポートは `.storybook/preview.ts` からの相対パス（`../src/styles/globals.css`）で記述する（preview.ts は `src/` の外にあるため）
 - `QueryClient` の `staleTime: Infinity` により、ストーリー描画時に不要なリフェッチを防止
 - Router デコレータは AppShell・DataTableToolbar 等のルーター依存コンポーネントのストーリーでのみ使用（per-story decorator）
 
@@ -354,6 +354,8 @@ export const Destructive: Story = {
 **Dependencies**
 - External: `@tanstack/react-router` — Link, useRouterState（P1）
 - Inbound: `features/business-units/components/DebouncedSearchInput` — DataTableToolbar 内で使用（P2）
+
+**UI インベントリ注記**: `DataTableToolbar`（共有コンポーネント）が `features/business-units/components/DebouncedSearchInput` を直接インポートしており、steering で規定された「features 間の依存禁止」に違反している。この依存関係は UI インベントリレポート（Req 13）において共通化候補として明示的に記録する。`DebouncedSearchInput` を `components/shared/` に移動するか、共有コンポーネント化を検討すべき項目として優先的に報告する。
 
 **Contracts**: State [x]
 
@@ -532,8 +534,8 @@ export const Default: Story = {
 
 | Field | Detail |
 |-------|--------|
-| Intent | ダイアログ・パネル・セレクター等のインタラクションコンポーネントのストーリーを提供する |
-| Requirements | 8.1-8.10, 2.1-2.4 |
+| Intent | ダイアログ・パネル・セレクター・フィードバック状態等のインタラクションコンポーネントのストーリーを提供する |
+| Requirements | 8.1-8.11, 2.1-2.4 |
 
 **Responsibilities & Constraints**
 - ダイアログ系（DeleteConfirmDialog, RestoreConfirmDialog 等）は `open` prop で制御し、デフォルトで開いた状態のストーリーを提供する
@@ -550,6 +552,7 @@ export const Default: Story = {
 - 複数 feature に存在する DeleteConfirmDialog と RestoreConfirmDialog は、共有の `DeleteConfirmDialog`（`components/shared/`）と feature 固有のものを区別してストーリー化する
 - ダイアログのストーリーでは `args.open: true` をデフォルトにし、閉じた状態は別ストーリーで提供する
 - Storybook の `fn()` で `onConfirm`、`onOpenChange` 等のコールバックをモックする
+- `FeedbackStates.tsx` は8つのコンポーネント（SkeletonChart, SkeletonTable, EmptyState, BuEmptyState, NoDataState, NoSearchResults, ErrorState, OverlaySpinner）をエクスポートしており、すべてを個別ストーリーとして作成する。依存は Button のみで、フィードバック状態はアプリ全体のUX一貫性に直結するため、インベントリにおける重要な評価対象である
 
 #### FeatureIndirectStories
 
