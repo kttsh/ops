@@ -12,6 +12,7 @@ import {
 import { createColumns } from "@/features/project-types/components/columns";
 import { DataTable } from "@/components/shared/DataTable";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 
 export const Route = createFileRoute("/master/project-types/")({
@@ -66,12 +67,7 @@ function ProjectTypeListPage() {
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">案件タイプ</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					案件タイプの一覧を管理します
-				</p>
-			</div>
+			<PageHeader title="案件タイプ" description="案件タイプの一覧を管理します" />
 
 			<DataTableToolbar
 				search={search.search}
@@ -85,6 +81,12 @@ function ProjectTypeListPage() {
 				columns={columns}
 				data={data?.data ?? []}
 				globalFilter={search.search}
+				onRowClick={(row: ProjectType) =>
+					navigate({
+						to: "/master/project-types/$projectTypeCode",
+						params: { projectTypeCode: row.projectTypeCode },
+					})
+				}
 				isLoading={isLoading}
 				isError={isError}
 				errorMessage={error?.message}

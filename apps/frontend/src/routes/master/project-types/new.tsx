@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { ApiError, useCreateProjectType } from "@/features/project-types";
 import { ProjectTypeForm } from "@/features/project-types/components/ProjectTypeForm";
 
@@ -38,25 +38,14 @@ function ProjectTypeNewPage() {
 
 	return (
 		<div className="space-y-6">
-			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
-				<Link
-					to="/master/project-types"
-					className="hover:text-foreground transition-colors"
-				>
-					案件タイプ一覧
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<span className="text-foreground font-medium">新規登録</span>
-			</nav>
-
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">
-					案件タイプ 新規登録
-				</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					新しい案件タイプを登録します
-				</p>
-			</div>
+			<PageHeader
+				breadcrumbs={[
+					{ label: "案件タイプ一覧", href: "/master/project-types" },
+					{ label: "新規登録" },
+				]}
+				title="案件タイプ 新規登録"
+				description="新しい案件タイプを登録します"
+			/>
 
 			<div className="rounded-2xl border shadow-sm p-6">
 				<ProjectTypeForm

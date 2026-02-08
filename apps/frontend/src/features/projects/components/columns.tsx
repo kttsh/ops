@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SortableHeader } from "@/components/shared/SortableHeader";
 import type { Project } from "@/features/projects/types";
 import { PROJECT_STATUSES } from "@/features/projects/types";
 
@@ -34,17 +34,7 @@ export function createColumns(options: {
 		{
 			accessorKey: "name",
 			minSize: 320,
-			header: ({ column }) => (
-				<Button
-					variant="ghost"
-					size="sm"
-					className="-ml-3 h-8"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					名称
-					<ArrowUpDown className="ml-1 h-3 w-3" />
-				</Button>
-			),
+			header: ({ column }) => <SortableHeader column={column} label="名称" />,
 			cell: ({ row }) => (
 				<Link
 					to="/master/projects/$projectId"
@@ -57,61 +47,23 @@ export function createColumns(options: {
 		},
 		{
 			accessorKey: "businessUnitName",
-			header: ({ column }) => (
-				<Button
-					variant="ghost"
-					size="sm"
-					className="-ml-3 h-8"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					事業部
-					<ArrowUpDown className="ml-1 h-3 w-3" />
-				</Button>
-			),
+			header: ({ column }) => <SortableHeader column={column} label="事業部" />,
 		},
 		{
 			accessorKey: "projectTypeName",
-			header: ({ column }) => (
-				<Button
-					variant="ghost"
-					size="sm"
-					className="-ml-3 h-8"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					種別
-					<ArrowUpDown className="ml-1 h-3 w-3" />
-				</Button>
-			),
+			header: ({ column }) => <SortableHeader column={column} label="種別" />,
 			cell: ({ row }) => row.original.projectTypeName ?? "—",
 		},
 		{
 			accessorKey: "startYearMonth",
-			header: ({ column }) => (
-				<Button
-					variant="ghost"
-					size="sm"
-					className="-ml-3 h-8"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					開始年月
-					<ArrowUpDown className="ml-1 h-3 w-3" />
-				</Button>
-			),
+			header: ({ column }) => <SortableHeader column={column} label="開始年月" />,
 			cell: ({ row }) => formatYearMonth(row.original.startYearMonth),
 		},
 		{
 			accessorKey: "totalManhour",
 			header: ({ column }) => (
 				<div className="flex justify-end">
-					<Button
-						variant="ghost"
-						size="sm"
-						className="h-8"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						総工数
-						<ArrowUpDown className="ml-1 h-3 w-3" />
-					</Button>
+					<SortableHeader column={column} label="総工数" className="h-8" />
 				</div>
 			),
 			cell: ({ row }) => (
@@ -138,17 +90,7 @@ export function createColumns(options: {
 		},
 		{
 			accessorKey: "updatedAt",
-			header: ({ column }) => (
-				<Button
-					variant="ghost"
-					size="sm"
-					className="-ml-3 h-8"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					更新日時
-					<ArrowUpDown className="ml-1 h-3 w-3" />
-				</Button>
-			),
+			header: ({ column }) => <SortableHeader column={column} label="更新日時" />,
 			cell: ({ row }) => formatDateTime(row.original.updatedAt),
 		},
 		{

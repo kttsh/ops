@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/PageHeader";
 import {
 	ApiError,
 	projectQueryOptions,
@@ -89,31 +89,19 @@ function ProjectEditPage() {
 
 	return (
 		<div className="space-y-6">
-			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
-				<Link
-					to="/master/projects"
-					className="hover:text-foreground transition-colors"
-				>
-					案件一覧
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<Link
-					to="/master/projects/$projectId"
-					params={{ projectId }}
-					className="hover:text-foreground transition-colors"
-				>
-					{project.name}
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<span className="text-foreground font-medium">編集</span>
-			</nav>
-
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">案件 編集</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					案件情報を編集します
-				</p>
-			</div>
+			<PageHeader
+				breadcrumbs={[
+					{ label: "案件一覧", href: "/master/projects" },
+					{
+						label: project.name,
+						href: "/master/projects/$projectId",
+						params: { projectId },
+					},
+					{ label: "編集" },
+				]}
+				title="案件 編集"
+				description="案件情報を編集します"
+			/>
 
 			<div className="rounded-2xl border shadow-sm p-6">
 				<ProjectForm

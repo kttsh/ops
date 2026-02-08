@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/PageHeader";
 import {
 	ApiError,
 	useUpdateWorkType,
@@ -76,31 +76,19 @@ function WorkTypeEditPage() {
 
 	return (
 		<div className="space-y-6">
-			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
-				<Link
-					to="/master/work-types"
-					className="hover:text-foreground transition-colors"
-				>
-					作業種類一覧
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<Link
-					to="/master/work-types/$workTypeCode"
-					params={{ workTypeCode }}
-					className="hover:text-foreground transition-colors"
-				>
-					{wt.name}
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<span className="text-foreground font-medium">編集</span>
-			</nav>
-
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">作業種類 編集</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					作業種類情報を編集します
-				</p>
-			</div>
+			<PageHeader
+				breadcrumbs={[
+					{ label: "作業種類一覧", href: "/master/work-types" },
+					{
+						label: wt.name,
+						href: "/master/work-types/$workTypeCode",
+						params: { workTypeCode },
+					},
+					{ label: "編集" },
+				]}
+				title="作業種類 編集"
+				description="作業種類情報を編集します"
+			/>
 
 			<div className="rounded-2xl border shadow-sm p-6">
 				<WorkTypeForm

@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { ApiError, useCreateBusinessUnit } from "@/features/business-units";
 import { BusinessUnitForm } from "@/features/business-units/components/BusinessUnitForm";
 
@@ -38,25 +38,14 @@ function BusinessUnitNewPage() {
 
 	return (
 		<div className="space-y-6">
-			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
-				<Link
-					to="/master/business-units"
-					className="hover:text-foreground transition-colors"
-				>
-					ビジネスユニット一覧
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<span className="text-foreground font-medium">新規登録</span>
-			</nav>
-
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">
-					ビジネスユニット 新規登録
-				</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					新しいビジネスユニットを登録します
-				</p>
-			</div>
+			<PageHeader
+				breadcrumbs={[
+					{ label: "ビジネスユニット一覧", href: "/master/business-units" },
+					{ label: "新規登録" },
+				]}
+				title="ビジネスユニット 新規登録"
+				description="新しいビジネスユニットを登録します"
+			/>
 
 			<div className="rounded-2xl border shadow-sm p-6">
 				<BusinessUnitForm

@@ -10,24 +10,10 @@ import {
 	capacityScenariosQueryOptions,
 	projectsQueryOptions,
 } from "@/features/workload/api/queries";
+import { CAPACITY_COLORS, PROJECT_TYPE_COLORS } from "@/lib/chart-colors";
 import type { BulkUpsertProjectItemInput } from "@/features/workload/types";
 import { PeriodSelector } from "./PeriodSelector";
 import { ProfileManager } from "./ProfileManager";
-
-const PROJECT_TYPE_COLORS = [
-	"#3b82f6",
-	"#10b981",
-	"#f59e0b",
-	"#ef4444",
-	"#8b5cf6",
-	"#ec4899",
-	"#14b8a6",
-	"#f97316",
-	"#6366f1",
-	"#84cc16",
-];
-
-const CAPACITY_COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#93c5fd"];
 
 interface SidePanelSettingsProps {
 	from: string | undefined;

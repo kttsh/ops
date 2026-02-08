@@ -12,6 +12,7 @@ import {
 import { createColumns } from "@/features/business-units/components/columns";
 import { DataTable } from "@/components/shared/DataTable";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 export const Route = createFileRoute("/master/business-units/")({
 	validateSearch: businessUnitSearchSchema,
@@ -77,12 +78,7 @@ function BusinessUnitListPage() {
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">ビジネスユニット</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					ビジネスユニットの一覧を管理します
-				</p>
-			</div>
+			<PageHeader title="ビジネスユニット" description="ビジネスユニットの一覧を管理します" />
 
 			<DataTableToolbar
 				search={search.search}
@@ -104,6 +100,12 @@ function BusinessUnitListPage() {
 				}}
 				onPageChange={handlePageChange}
 				onPageSizeChange={handlePageSizeChange}
+				onRowClick={(row: BusinessUnit) =>
+					navigate({
+						to: "/master/business-units/$businessUnitCode",
+						params: { businessUnitCode: row.businessUnitCode },
+					})
+				}
 				isLoading={isLoading}
 				isError={isError}
 				errorMessage={error?.message}

@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SortableHeader } from "@/components/shared/SortableHeader";
 import type { WorkType } from "@/features/work-types/types";
 
 function formatDateTime(dateStr: string) {
@@ -21,17 +21,7 @@ export function createColumns(options: {
 	return [
 		{
 			accessorKey: "workTypeCode",
-			header: ({ column }) => (
-				<Button
-					variant="ghost"
-					size="sm"
-					className="-ml-3 h-8"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					コード
-					<ArrowUpDown className="ml-1 h-3 w-3" />
-				</Button>
-			),
+			header: ({ column }) => <SortableHeader column={column} label="コード" />,
 			cell: ({ row }) => (
 				<Link
 					to="/master/work-types/$workTypeCode"
@@ -44,17 +34,7 @@ export function createColumns(options: {
 		},
 		{
 			accessorKey: "name",
-			header: ({ column }) => (
-				<Button
-					variant="ghost"
-					size="sm"
-					className="-ml-3 h-8"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					名称
-					<ArrowUpDown className="ml-1 h-3 w-3" />
-				</Button>
-			),
+			header: ({ column }) => <SortableHeader column={column} label="名称" />,
 		},
 		{
 			accessorKey: "color",
@@ -75,17 +55,7 @@ export function createColumns(options: {
 		},
 		{
 			accessorKey: "displayOrder",
-			header: ({ column }) => (
-				<Button
-					variant="ghost"
-					size="sm"
-					className="-ml-3 h-8"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					表示順
-					<ArrowUpDown className="ml-1 h-3 w-3" />
-				</Button>
-			),
+			header: ({ column }) => <SortableHeader column={column} label="表示順" />,
 		},
 		{
 			id: "status",
@@ -101,17 +71,7 @@ export function createColumns(options: {
 		},
 		{
 			accessorKey: "updatedAt",
-			header: ({ column }) => (
-				<Button
-					variant="ghost"
-					size="sm"
-					className="-ml-3 h-8"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					更新日時
-					<ArrowUpDown className="ml-1 h-3 w-3" />
-				</Button>
-			),
+			header: ({ column }) => <SortableHeader column={column} label="更新日時" />,
 			cell: ({ row }) => formatDateTime(row.original.updatedAt),
 		},
 		{

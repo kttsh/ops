@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/PageHeader";
 import {
 	ApiError,
 	projectTypeQueryOptions,
@@ -78,31 +78,19 @@ function ProjectTypeEditPage() {
 
 	return (
 		<div className="space-y-6">
-			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
-				<Link
-					to="/master/project-types"
-					className="hover:text-foreground transition-colors"
-				>
-					案件タイプ一覧
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<Link
-					to="/master/project-types/$projectTypeCode"
-					params={{ projectTypeCode }}
-					className="hover:text-foreground transition-colors"
-				>
-					{pt.name}
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<span className="text-foreground font-medium">編集</span>
-			</nav>
-
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">案件タイプ 編集</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					案件タイプ情報を編集します
-				</p>
-			</div>
+			<PageHeader
+				breadcrumbs={[
+					{ label: "案件タイプ一覧", href: "/master/project-types" },
+					{
+						label: pt.name,
+						href: "/master/project-types/$projectTypeCode",
+						params: { projectTypeCode },
+					},
+					{ label: "編集" },
+				]}
+				title="案件タイプ 編集"
+				description="案件タイプ情報を編集します"
+			/>
 
 			<div className="rounded-2xl border shadow-sm p-6">
 				<ProjectTypeForm

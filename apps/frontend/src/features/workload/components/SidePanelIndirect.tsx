@@ -5,21 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { workTypesQueryOptions } from "@/features/work-types/api/queries";
+import { INDIRECT_COLORS } from "@/lib/chart-colors";
 import {
 	useBulkUpsertColorSettings,
 	useBulkUpsertStackOrderSettings,
 } from "@/features/workload/api/mutations";
-
-const GREY_PALETTE = [
-	"#6b7280",
-	"#9ca3af",
-	"#4b5563",
-	"#d1d5db",
-	"#374151",
-	"#a3a3a3",
-	"#737373",
-	"#525252",
-];
 
 interface IndirectWorkTypeSettingsItem {
 	workTypeCode: string;
@@ -40,7 +30,7 @@ export function SidePanelIndirect() {
 			workTypeCode: wt.workTypeCode,
 			workTypeName: wt.name,
 			isVisible: true,
-			color: wt.color ?? GREY_PALETTE[i % GREY_PALETTE.length],
+			color: wt.color ?? INDIRECT_COLORS[i % INDIRECT_COLORS.length],
 			displayOrder: i,
 		})),
 	);
@@ -51,7 +41,7 @@ export function SidePanelIndirect() {
 			workTypeCode: wt.workTypeCode,
 			workTypeName: wt.name,
 			isVisible: true,
-			color: wt.color ?? GREY_PALETTE[i % GREY_PALETTE.length],
+			color: wt.color ?? INDIRECT_COLORS[i % INDIRECT_COLORS.length],
 			displayOrder: i,
 		}));
 		setItems(newItems);
@@ -148,7 +138,7 @@ export function SidePanelIndirect() {
 		setItems((prev) => {
 			const updated = prev.map((item, i) => ({
 				...item,
-				color: GREY_PALETTE[i % GREY_PALETTE.length],
+				color: INDIRECT_COLORS[i % INDIRECT_COLORS.length],
 			}));
 			colorMutation.mutate(
 				updated.map((it) => ({
@@ -190,7 +180,7 @@ export function SidePanelIndirect() {
 
 						{/* 色 */}
 						<div className="flex gap-1">
-							{GREY_PALETTE.map((color) => (
+							{INDIRECT_COLORS.map((color) => (
 								<button
 									key={color}
 									type="button"

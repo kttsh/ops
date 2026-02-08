@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CaseStudySection } from "@/features/case-study/components/CaseStudySection";
@@ -100,35 +101,30 @@ function ProjectDetailPage() {
 
 	return (
 		<div className="space-y-6">
-			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
-				<Link
-					to="/master/projects"
-					className="hover:text-foreground transition-colors"
-				>
-					案件一覧
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<span className="text-foreground font-medium">{project.name}</span>
-			</nav>
-
-			<div className="flex items-center justify-between">
-				<h2 className="text-2xl font-bold tracking-tight">{project.name}</h2>
-				<div className="flex items-center gap-2">
-					<Link to="/master/projects/$projectId/edit" params={{ projectId }}>
-						<Button variant="outline">
-							<Pencil className="h-4 w-4" />
-							編集
+			<PageHeader
+				breadcrumbs={[
+					{ label: "案件一覧", href: "/master/projects" },
+					{ label: project.name },
+				]}
+				title={project.name}
+				actions={
+					<>
+						<Link to="/master/projects/$projectId/edit" params={{ projectId }}>
+							<Button variant="outline">
+								<Pencil className="h-4 w-4" />
+								編集
+							</Button>
+						</Link>
+						<Button
+							variant="destructive"
+							onClick={() => setDeleteDialogOpen(true)}
+						>
+							<Trash2 className="h-4 w-4" />
+							削除
 						</Button>
-					</Link>
-					<Button
-						variant="destructive"
-						onClick={() => setDeleteDialogOpen(true)}
-					>
-						<Trash2 className="h-4 w-4" />
-						削除
-					</Button>
-				</div>
-			</div>
+					</>
+				}
+			/>
 
 			<ProjectDetailCard project={project} statusLabel={statusLabel} />
 

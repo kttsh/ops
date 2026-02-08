@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { chartDataQueryOptions } from "@/features/workload/api/queries";
+import {
+	CAPACITY_COLORS,
+	INDIRECT_COLORS,
+	PROJECT_TYPE_COLORS,
+	UNCLASSIFIED_COLOR,
+} from "@/lib/chart-colors";
 import type {
 	AreaSeriesConfig,
 	ChartDataParams,
@@ -10,34 +16,6 @@ import type {
 	LineSeriesConfig,
 	MonthlyDataPoint,
 } from "@/features/workload/types";
-
-// --- デフォルトカラーパレット ---
-
-const PROJECT_TYPE_COLORS = [
-	"#3b82f6",
-	"#10b981",
-	"#f59e0b",
-	"#ef4444",
-	"#8b5cf6",
-	"#ec4899",
-	"#14b8a6",
-	"#f97316",
-	"#6366f1",
-	"#84cc16",
-];
-
-const INDIRECT_COLORS = [
-	"#6b7280",
-	"#9ca3af",
-	"#4b5563",
-	"#d1d5db",
-	"#374151",
-	"#a3a3a3",
-	"#737373",
-	"#525252",
-];
-
-const CAPACITY_COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#93c5fd"];
 
 export interface UseChartDataReturn {
 	chartData: MonthlyDataPoint[];
@@ -135,8 +113,8 @@ export function useChartData(
 				areas.push({
 					dataKey: "indirect_wt_unclassified",
 					stackId: "workload",
-					fill: "#e5e7eb",
-					stroke: "#e5e7eb",
+					fill: UNCLASSIFIED_COLOR,
+					stroke: UNCLASSIFIED_COLOR,
 					fillOpacity: 0.5,
 					name: "未分類",
 					type: "indirect",

@@ -39,7 +39,6 @@ export { useExcelExport } from "./hooks/useExcelExport";
 // Hooks
 export { useIndirectCaseStudyPage } from "./hooks/useIndirectCaseStudyPage";
 export { useIndirectWorkCalculation } from "./hooks/useIndirectWorkCalculation";
-export { useUnsavedChanges } from "./hooks/useUnsavedChanges";
 export type {
 	CalculateCapacityResult,
 	CalculationTableData,

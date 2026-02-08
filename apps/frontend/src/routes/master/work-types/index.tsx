@@ -12,6 +12,7 @@ import {
 import { createColumns } from "@/features/work-types/components/columns";
 import { DataTable } from "@/components/shared/DataTable";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 
 export const Route = createFileRoute("/master/work-types/")({
@@ -66,12 +67,7 @@ function WorkTypeListPage() {
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">作業種類</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					作業種類の一覧を管理します
-				</p>
-			</div>
+			<PageHeader title="作業種類" description="作業種類の一覧を管理します" />
 
 			<DataTableToolbar
 				search={search.search}
@@ -85,6 +81,12 @@ function WorkTypeListPage() {
 				columns={columns}
 				data={data?.data ?? []}
 				globalFilter={search.search}
+				onRowClick={(row: WorkType) =>
+					navigate({
+						to: "/master/work-types/$workTypeCode",
+						params: { workTypeCode: row.workTypeCode },
+					})
+				}
 				isLoading={isLoading}
 				isError={isError}
 				errorMessage={error?.message}

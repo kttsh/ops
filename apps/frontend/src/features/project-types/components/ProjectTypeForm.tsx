@@ -55,6 +55,10 @@ export function ProjectTypeForm({
 						mode === "create"
 							? createProjectTypeSchema.shape.projectTypeCode
 							: undefined,
+					onBlur:
+						mode === "create"
+							? createProjectTypeSchema.shape.projectTypeCode
+							: undefined,
 				}}
 			>
 				{(field) => (
@@ -89,6 +93,10 @@ export function ProjectTypeForm({
 						mode === "create"
 							? createProjectTypeSchema.shape.name
 							: updateProjectTypeSchema.shape.name,
+					onBlur:
+						mode === "create"
+							? createProjectTypeSchema.shape.name
+							: updateProjectTypeSchema.shape.name,
 				}}
 			>
 				{(field) => (
@@ -117,6 +125,12 @@ export function ProjectTypeForm({
 				name="displayOrder"
 				validators={{
 					onChange: ({ value }) => {
+						if (typeof value !== "number" || !Number.isInteger(value))
+							return "表示順は整数で入力してください";
+						if (value < 0) return "表示順は0以上で入力してください";
+						return undefined;
+					},
+					onBlur: ({ value }) => {
 						if (typeof value !== "number" || !Number.isInteger(value))
 							return "表示順は整数で入力してください";
 						if (value < 0) return "表示順は0以上で入力してください";

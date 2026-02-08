@@ -55,6 +55,10 @@ export function BusinessUnitForm({
 						mode === "create"
 							? createBusinessUnitSchema.shape.businessUnitCode
 							: undefined,
+					onBlur:
+						mode === "create"
+							? createBusinessUnitSchema.shape.businessUnitCode
+							: undefined,
 				}}
 			>
 				{(field) => (
@@ -89,6 +93,10 @@ export function BusinessUnitForm({
 						mode === "create"
 							? createBusinessUnitSchema.shape.name
 							: updateBusinessUnitSchema.shape.name,
+					onBlur:
+						mode === "create"
+							? createBusinessUnitSchema.shape.name
+							: updateBusinessUnitSchema.shape.name,
 				}}
 			>
 				{(field) => (
@@ -117,6 +125,12 @@ export function BusinessUnitForm({
 				name="displayOrder"
 				validators={{
 					onChange: ({ value }) => {
+						if (typeof value !== "number" || !Number.isInteger(value))
+							return "表示順は整数で入力してください";
+						if (value < 0) return "表示順は0以上で入力してください";
+						return undefined;
+					},
+					onBlur: ({ value }) => {
 						if (typeof value !== "number" || !Number.isInteger(value))
 							return "表示順は整数で入力してください";
 						if (value < 0) return "表示順は0以上で入力してください";

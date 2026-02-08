@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/select";
 import { ResultPanel } from "@/features/indirect-case-study/components/ResultPanel";
 import { SettingsPanel } from "@/features/indirect-case-study/components/SettingsPanel";
-import { UnsavedChangesDialog } from "@/features/indirect-case-study/components/UnsavedChangesDialog";
+import { UnsavedChangesDialog } from "@/components/shared/UnsavedChangesDialog";
 import { useIndirectCaseStudyPage } from "@/features/indirect-case-study/hooks/useIndirectCaseStudyPage";
-import { useUnsavedChanges } from "@/features/indirect-case-study/hooks/useUnsavedChanges";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 import { workTypesQueryOptions } from "@/features/work-types/api/queries";
 import { businessUnitsQueryOptions } from "@/features/workload/api/queries";
 

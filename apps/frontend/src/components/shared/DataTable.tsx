@@ -39,6 +39,7 @@ interface DataTableProps<TData> {
 	pagination?: PaginationConfig;
 	onPageChange?: (page: number) => void;
 	onPageSizeChange?: (size: number) => void;
+	onRowClick?: (row: TData) => void;
 	rowClassName?: (row: TData) => string;
 }
 
@@ -52,6 +53,7 @@ export function DataTable<TData>({
 	pagination,
 	onPageChange,
 	onPageSizeChange,
+	onRowClick,
 	rowClassName,
 }: DataTableProps<TData>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -113,9 +115,16 @@ export function DataTable<TData>({
 								<TableRow
 									key={row.id}
 									className={cn(
-										"cursor-pointer transition-colors",
+										onRowClick && "cursor-pointer",
+										"transition-colors",
 										rowClassName?.(row.original),
 									)}
+									onClick={(e) => {
+										if (!onRowClick) return;
+										const target = e.target as HTMLElement;
+										if (target.closest("a, button")) return;
+										onRowClick(row.original);
+									}}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>

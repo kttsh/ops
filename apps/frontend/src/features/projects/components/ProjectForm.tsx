@@ -81,6 +81,10 @@ export function ProjectForm({
 						mode === "create"
 							? createProjectSchema.shape.projectCode
 							: undefined,
+					onBlur:
+						mode === "create"
+							? createProjectSchema.shape.projectCode
+							: undefined,
 				}}
 			>
 				{(field) => (
@@ -113,6 +117,7 @@ export function ProjectForm({
 				name="name"
 				validators={{
 					onChange: createProjectSchema.shape.name,
+					onBlur: createProjectSchema.shape.name,
 				}}
 			>
 				{(field) => (
@@ -142,6 +147,7 @@ export function ProjectForm({
 				name="businessUnitCode"
 				validators={{
 					onChange: createProjectSchema.shape.businessUnitCode,
+					onBlur: createProjectSchema.shape.businessUnitCode,
 				}}
 			>
 				{(field) => (
@@ -248,6 +254,7 @@ export function ProjectForm({
 				name="startYearMonth"
 				validators={{
 					onChange: createProjectSchema.shape.startYearMonth,
+					onBlur: createProjectSchema.shape.startYearMonth,
 				}}
 			>
 				{(field) => (
@@ -278,6 +285,12 @@ export function ProjectForm({
 				name="totalManhour"
 				validators={{
 					onChange: ({ value }) => {
+						if (typeof value !== "number" || Number.isNaN(value))
+							return "総工数は数値で入力してください";
+						if (value <= 0) return "総工数は正の数で入力してください";
+						return undefined;
+					},
+					onBlur: ({ value }) => {
 						if (typeof value !== "number" || Number.isNaN(value))
 							return "総工数は数値で入力してください";
 						if (value <= 0) return "総工数は正の数で入力してください";
@@ -315,6 +328,7 @@ export function ProjectForm({
 				name="status"
 				validators={{
 					onChange: createProjectSchema.shape.status,
+					onBlur: createProjectSchema.shape.status,
 				}}
 			>
 				{(field) => (
@@ -352,6 +366,15 @@ export function ProjectForm({
 				name="durationMonths"
 				validators={{
 					onChange: ({ value }) => {
+						if (value === null || value === undefined) return undefined;
+						if (typeof value !== "number" || Number.isNaN(value))
+							return "期間月数は数値で入力してください";
+						if (!Number.isInteger(value))
+							return "期間月数は整数で入力してください";
+						if (value <= 0) return "期間月数は正の整数で入力してください";
+						return undefined;
+					},
+					onBlur: ({ value }) => {
 						if (value === null || value === undefined) return undefined;
 						if (typeof value !== "number" || Number.isNaN(value))
 							return "期間月数は数値で入力してください";

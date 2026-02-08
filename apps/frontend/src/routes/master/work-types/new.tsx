@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { ApiError, useCreateWorkType } from "@/features/work-types";
 import { WorkTypeForm } from "@/features/work-types/components/WorkTypeForm";
 
@@ -39,23 +39,14 @@ function WorkTypeNewPage() {
 
 	return (
 		<div className="space-y-6">
-			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
-				<Link
-					to="/master/work-types"
-					className="hover:text-foreground transition-colors"
-				>
-					作業種類一覧
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<span className="text-foreground font-medium">新規登録</span>
-			</nav>
-
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">作業種類 新規登録</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					新しい作業種類を登録します
-				</p>
-			</div>
+			<PageHeader
+				breadcrumbs={[
+					{ label: "作業種類一覧", href: "/master/work-types" },
+					{ label: "新規登録" },
+				]}
+				title="作業種類 新規登録"
+				description="新しい作業種類を登録します"
+			/>
 
 			<div className="rounded-2xl border shadow-sm p-6">
 				<WorkTypeForm

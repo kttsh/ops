@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/PageHeader";
 import {
 	ApiError,
 	businessUnitQueryOptions,
@@ -80,33 +80,19 @@ function BusinessUnitEditPage() {
 
 	return (
 		<div className="space-y-6">
-			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
-				<Link
-					to="/master/business-units"
-					className="hover:text-foreground transition-colors"
-				>
-					ビジネスユニット一覧
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<Link
-					to="/master/business-units/$businessUnitCode"
-					params={{ businessUnitCode }}
-					className="hover:text-foreground transition-colors"
-				>
-					{bu.name}
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<span className="text-foreground font-medium">編集</span>
-			</nav>
-
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">
-					ビジネスユニット 編集
-				</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					ビジネスユニット情報を編集します
-				</p>
-			</div>
+			<PageHeader
+				breadcrumbs={[
+					{ label: "ビジネスユニット一覧", href: "/master/business-units" },
+					{
+						label: bu.name,
+						href: "/master/business-units/$businessUnitCode",
+						params: { businessUnitCode },
+					},
+					{ label: "編集" },
+				]}
+				title="ビジネスユニット 編集"
+				description="ビジネスユニット情報を編集します"
+			/>
 
 			<div className="rounded-2xl border shadow-sm p-6">
 				<BusinessUnitForm

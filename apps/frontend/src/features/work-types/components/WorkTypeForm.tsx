@@ -57,6 +57,10 @@ export function WorkTypeForm({
 						mode === "create"
 							? createWorkTypeSchema.shape.workTypeCode
 							: undefined,
+					onBlur:
+						mode === "create"
+							? createWorkTypeSchema.shape.workTypeCode
+							: undefined,
 				}}
 			>
 				{(field) => (
@@ -88,6 +92,10 @@ export function WorkTypeForm({
 				name="name"
 				validators={{
 					onChange:
+						mode === "create"
+							? createWorkTypeSchema.shape.name
+							: updateWorkTypeSchema.shape.name,
+					onBlur:
 						mode === "create"
 							? createWorkTypeSchema.shape.name
 							: updateWorkTypeSchema.shape.name,
@@ -124,6 +132,12 @@ export function WorkTypeForm({
 						if (value < 0) return "表示順は0以上で入力してください";
 						return undefined;
 					},
+					onBlur: ({ value }) => {
+						if (typeof value !== "number" || !Number.isInteger(value))
+							return "表示順は整数で入力してください";
+						if (value < 0) return "表示順は0以上で入力してください";
+						return undefined;
+					},
 				}}
 			>
 				{(field) => (
@@ -150,6 +164,12 @@ export function WorkTypeForm({
 				name="color"
 				validators={{
 					onChange: ({ value }) => {
+						if (value === null || value === undefined) return undefined;
+						if (!/^#[0-9A-Fa-f]{6}$/.test(value))
+							return "カラーコードは #RRGGBB 形式で入力してください";
+						return undefined;
+					},
+					onBlur: ({ value }) => {
 						if (value === null || value === undefined) return undefined;
 						if (!/^#[0-9A-Fa-f]{6}$/.test(value))
 							return "カラーコードは #RRGGBB 形式で入力してください";

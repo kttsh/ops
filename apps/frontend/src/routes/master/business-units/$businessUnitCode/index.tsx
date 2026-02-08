@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
 	ApiError,
@@ -91,40 +92,33 @@ function BusinessUnitDetailPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Breadcrumb */}
-			<nav className="flex items-center gap-1 text-sm text-muted-foreground">
-				<Link
-					to="/master/business-units"
-					className="hover:text-foreground transition-colors"
-				>
-					ビジネスユニット一覧
-				</Link>
-				<ChevronRight className="h-4 w-4" />
-				<span className="text-foreground font-medium">{bu.name}</span>
-			</nav>
-
-			{/* Header */}
-			<div className="flex items-center justify-between">
-				<h2 className="text-2xl font-bold tracking-tight">{bu.name}</h2>
-				<div className="flex items-center gap-2">
-					<Link
-						to="/master/business-units/$businessUnitCode/edit"
-						params={{ businessUnitCode }}
-					>
-						<Button variant="outline">
-							<Pencil className="h-4 w-4" />
-							編集
+			<PageHeader
+				breadcrumbs={[
+					{ label: "ビジネスユニット一覧", href: "/master/business-units" },
+					{ label: bu.name },
+				]}
+				title={bu.name}
+				actions={
+					<>
+						<Link
+							to="/master/business-units/$businessUnitCode/edit"
+							params={{ businessUnitCode }}
+						>
+							<Button variant="outline">
+								<Pencil className="h-4 w-4" />
+								編集
+							</Button>
+						</Link>
+						<Button
+							variant="destructive"
+							onClick={() => setDeleteDialogOpen(true)}
+						>
+							<Trash2 className="h-4 w-4" />
+							削除
 						</Button>
-					</Link>
-					<Button
-						variant="destructive"
-						onClick={() => setDeleteDialogOpen(true)}
-					>
-						<Trash2 className="h-4 w-4" />
-						削除
-					</Button>
-				</div>
-			</div>
+					</>
+				}
+			/>
 
 			{/* Detail card */}
 			<div className="rounded-2xl border shadow-sm p-6 space-y-4">

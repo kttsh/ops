@@ -12,6 +12,7 @@ import {
 	useRestoreProject,
 } from "@/features/projects";
 import { createColumns } from "@/features/projects/components/columns";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 
 export const Route = createFileRoute("/master/projects/")({
@@ -78,12 +79,7 @@ function ProjectListPage() {
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">案件</h2>
-				<p className="text-sm text-muted-foreground mt-1">
-					案件の一覧を管理します
-				</p>
-			</div>
+			<PageHeader title="案件" description="案件の一覧を管理します" />
 
 			<DataTableToolbar
 				search={search.search}
@@ -105,6 +101,12 @@ function ProjectListPage() {
 				}}
 				onPageChange={handlePageChange}
 				onPageSizeChange={handlePageSizeChange}
+				onRowClick={(row: Project) =>
+					navigate({
+						to: "/master/projects/$projectId",
+						params: { projectId: String(row.projectId) },
+					})
+				}
 				isLoading={isLoading}
 				isError={isError}
 				errorMessage={error?.message}
