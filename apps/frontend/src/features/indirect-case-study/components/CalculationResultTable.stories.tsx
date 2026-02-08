@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fn } from 'storybook/test'
 import { CalculationResultTable } from './CalculationResultTable'
 import {
-  mockCapacityScenarios,
   mockMonthlyHeadcounts,
   mockIndirectWorkRatios,
 } from './__mocks__/data'

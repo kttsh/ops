@@ -22,6 +22,13 @@ import { cn } from "@/lib/utils";
 
 const PAGE_SIZES = [10, 20, 50, 100] as const;
 
+interface PaginationConfig {
+	currentPage: number;
+	pageSize: number;
+	totalItems: number;
+	totalPages: number;
+}
+
 interface DataTableProps<TData> {
 	columns: ColumnDef<TData, unknown>[];
 	data: TData[];
@@ -29,14 +36,9 @@ interface DataTableProps<TData> {
 	isLoading?: boolean;
 	isError?: boolean;
 	errorMessage?: string;
-	pagination: {
-		currentPage: number;
-		pageSize: number;
-		totalItems: number;
-		totalPages: number;
-	};
-	onPageChange: (page: number) => void;
-	onPageSizeChange: (size: number) => void;
+	pagination?: PaginationConfig;
+	onPageChange?: (page: number) => void;
+	onPageSizeChange?: (size: number) => void;
 	rowClassName?: (row: TData) => string;
 }
 
@@ -110,7 +112,10 @@ export function DataTable<TData>({
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									className={cn("cursor-pointer", rowClassName?.(row.original))}
+									className={cn(
+										"cursor-pointer transition-colors",
+										rowClassName?.(row.original),
+									)}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
@@ -136,53 +141,58 @@ export function DataTable<TData>({
 				</Table>
 			</div>
 
-			{/* Pagination */}
-			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-2 text-sm text-muted-foreground">
-					{pagination.totalItems > PAGE_SIZES[0] ? (
-						<>
-							<span>表示件数</span>
-							<select
-								value={pagination.pageSize}
-								onChange={(e) => onPageSizeChange(Number(e.target.value))}
-								className="rounded-lg border border-input bg-background px-2 py-1 text-sm"
+			{pagination && onPageChange && onPageSizeChange ? (
+				<div className="flex items-center justify-between">
+					<div className="flex items-center gap-2 text-sm text-muted-foreground">
+						{pagination.totalItems > PAGE_SIZES[0] ? (
+							<>
+								<span>表示件数</span>
+								<select
+									value={pagination.pageSize}
+									onChange={(e) => onPageSizeChange(Number(e.target.value))}
+									className="rounded-lg border border-input bg-background px-2 py-1 text-sm"
+								>
+									{PAGE_SIZES.map((size) => (
+										<option key={size} value={size}>
+											{size}
+										</option>
+									))}
+								</select>
+								<span>/ 全 {pagination.totalItems} 件</span>
+							</>
+						) : (
+							<span>全 {pagination.totalItems} 件</span>
+						)}
+					</div>
+					{pagination.totalPages > 1 && (
+						<div className="flex items-center gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => onPageChange(pagination.currentPage - 1)}
+								disabled={pagination.currentPage <= 1}
 							>
-								{PAGE_SIZES.map((size) => (
-									<option key={size} value={size}>
-										{size}
-									</option>
-								))}
-							</select>
-							<span>/ 全 {pagination.totalItems} 件</span>
-						</>
-					) : (
-						<span>全 {pagination.totalItems} 件</span>
+								<ChevronLeft className="h-4 w-4" />
+							</Button>
+							<span className="text-sm text-muted-foreground">
+								{pagination.currentPage} / {pagination.totalPages}
+							</span>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => onPageChange(pagination.currentPage + 1)}
+								disabled={pagination.currentPage >= pagination.totalPages}
+							>
+								<ChevronRight className="h-4 w-4" />
+							</Button>
+						</div>
 					)}
 				</div>
-				{pagination.totalPages > 1 && (
-					<div className="flex items-center gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => onPageChange(pagination.currentPage - 1)}
-							disabled={pagination.currentPage <= 1}
-						>
-							<ChevronLeft className="h-4 w-4" />
-						</Button>
-						<span className="text-sm text-muted-foreground">
-							{pagination.currentPage} / {pagination.totalPages}
-						</span>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => onPageChange(pagination.currentPage + 1)}
-							disabled={pagination.currentPage >= pagination.totalPages}
-						>
-							<ChevronRight className="h-4 w-4" />
-						</Button>
-					</div>
-				)}
-			</div>
+			) : (
+				<div className="flex items-center text-sm text-muted-foreground">
+					<span>全 {data.length} 件</span>
+				</div>
+			)}
 		</div>
 	);
 }

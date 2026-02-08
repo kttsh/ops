@@ -9,7 +9,7 @@ import {
 	projectTypeQueryOptions,
 	useDeleteProjectType,
 } from "@/features/project-types";
-import { DeleteConfirmDialog } from "@/features/project-types/components/DeleteConfirmDialog";
+import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
 
 export const Route = createFileRoute("/master/project-types/$projectTypeCode/")(
 	{
@@ -137,7 +137,8 @@ function ProjectTypeDetailPage() {
 				onOpenChange={setDeleteDialogOpen}
 				onConfirm={handleDelete}
 				isDeleting={deleteMutation.isPending}
-				projectTypeName={pt.name}
+				entityLabel="案件タイプ"
+				entityName={pt.name}
 			/>
 		</div>
 	);

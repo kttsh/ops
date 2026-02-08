@@ -14,10 +14,8 @@ export {
 	projectTypeQueryOptions,
 	projectTypesQueryOptions,
 } from "./api/queries";
-export { DeleteConfirmDialog } from "./components/DeleteConfirmDialog";
 // Components
 export { ProjectTypeForm } from "./components/ProjectTypeForm";
-export { RestoreConfirmDialog } from "./components/RestoreConfirmDialog";
 export type {
 	CreateProjectTypeInput,
 	PaginatedResponse,

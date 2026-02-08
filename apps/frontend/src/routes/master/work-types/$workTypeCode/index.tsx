@@ -9,7 +9,7 @@ import {
 	useDeleteWorkType,
 	workTypeQueryOptions,
 } from "@/features/work-types";
-import { DeleteConfirmDialog } from "@/features/work-types/components/DeleteConfirmDialog";
+import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
 
 export const Route = createFileRoute("/master/work-types/$workTypeCode/")({
 	component: WorkTypeDetailPage,
@@ -154,7 +154,8 @@ function WorkTypeDetailPage() {
 				onOpenChange={setDeleteDialogOpen}
 				onConfirm={handleDelete}
 				isDeleting={deleteMutation.isPending}
-				workTypeName={wt.name}
+				entityLabel="作業種類"
+				entityName={wt.name}
 			/>
 		</div>
 	);

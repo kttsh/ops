@@ -14,9 +14,6 @@ export {
 	workTypeQueryOptions,
 	workTypesQueryOptions,
 } from "./api/queries";
-export { DeleteConfirmDialog } from "./components/DeleteConfirmDialog";
-export { RestoreConfirmDialog } from "./components/RestoreConfirmDialog";
-
 // Components
 export { WorkTypeForm } from "./components/WorkTypeForm";
 export type {

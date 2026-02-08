@@ -10,9 +10,9 @@ import {
 	workTypesQueryOptions,
 } from "@/features/work-types";
 import { createColumns } from "@/features/work-types/components/columns";
-import { DataTable } from "@/features/work-types/components/DataTable";
-import { DataTableToolbar } from "@/features/work-types/components/DataTableToolbar";
-import { RestoreConfirmDialog } from "@/features/work-types/components/RestoreConfirmDialog";
+import { DataTable } from "@/components/shared/DataTable";
+import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 
 export const Route = createFileRoute("/master/work-types/")({
 	validateSearch: workTypeSearchSchema,
@@ -78,6 +78,7 @@ function WorkTypeListPage() {
 				onSearchChange={handleSearchChange}
 				includeDisabled={search.includeDisabled}
 				onIncludeDisabledChange={handleIncludeDisabledChange}
+				newItemHref="/master/work-types/new"
 			/>
 
 			<DataTable
@@ -94,6 +95,7 @@ function WorkTypeListPage() {
 				open={!!restoreTarget}
 				onOpenChange={(open) => !open && setRestoreTarget(null)}
 				onConfirm={handleRestore}
+				entityLabel="作業種類"
 				isLoading={restoreMutation.isPending}
 			/>
 		</div>

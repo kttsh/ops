@@ -7,6 +7,7 @@ import {
 	createBusinessUnitSchema,
 	updateBusinessUnitSchema,
 } from "@/features/business-units/types";
+import { getErrorMessage } from "@/lib/form-utils";
 
 type BusinessUnitFormValues = {
 	businessUnitCode: string;
@@ -19,16 +20,6 @@ interface BusinessUnitFormProps {
 	defaultValues?: BusinessUnitFormValues;
 	onSubmit: (values: BusinessUnitFormValues) => Promise<void>;
 	isSubmitting: boolean;
-}
-
-function getErrorMessage(errors: unknown[]): string | undefined {
-	if (errors.length === 0) return undefined;
-	const first = errors[0];
-	if (typeof first === "string") return first;
-	if (first && typeof first === "object" && "message" in first) {
-		return String((first as { message: string }).message);
-	}
-	return String(first);
 }
 
 export function BusinessUnitForm({

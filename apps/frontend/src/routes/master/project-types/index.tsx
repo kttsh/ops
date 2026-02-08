@@ -10,9 +10,9 @@ import {
 	useRestoreProjectType,
 } from "@/features/project-types";
 import { createColumns } from "@/features/project-types/components/columns";
-import { DataTable } from "@/features/project-types/components/DataTable";
-import { DataTableToolbar } from "@/features/project-types/components/DataTableToolbar";
-import { RestoreConfirmDialog } from "@/features/project-types/components/RestoreConfirmDialog";
+import { DataTable } from "@/components/shared/DataTable";
+import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 
 export const Route = createFileRoute("/master/project-types/")({
 	validateSearch: projectTypeSearchSchema,
@@ -78,6 +78,7 @@ function ProjectTypeListPage() {
 				onSearchChange={handleSearchChange}
 				includeDisabled={search.includeDisabled}
 				onIncludeDisabledChange={handleIncludeDisabledChange}
+				newItemHref="/master/project-types/new"
 			/>
 
 			<DataTable
@@ -94,6 +95,7 @@ function ProjectTypeListPage() {
 				open={!!restoreTarget}
 				onOpenChange={(open) => !open && setRestoreTarget(null)}
 				onConfirm={handleRestore}
+				entityLabel="案件タイプ"
 				isLoading={restoreMutation.isPending}
 			/>
 		</div>

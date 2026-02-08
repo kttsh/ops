@@ -11,6 +11,7 @@ import {
 	SheetTitle,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
+import { getErrorMessage } from "@/lib/form-utils";
 
 type CaseFormValues = {
 	caseName: string;
@@ -26,16 +27,6 @@ interface CaseFormSheetProps {
 	defaultValues?: CaseFormValues;
 	onSubmit: (values: CaseFormValues) => Promise<void>;
 	isSubmitting: boolean;
-}
-
-function getErrorMessage(errors: unknown[]): string | undefined {
-	if (errors.length === 0) return undefined;
-	const first = errors[0];
-	if (typeof first === "string") return first;
-	if (first && typeof first === "object" && "message" in first) {
-		return String((first as { message: string }).message);
-	}
-	return String(first);
 }
 
 const CASE_TYPE_LABELS = {

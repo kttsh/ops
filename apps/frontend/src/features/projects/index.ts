@@ -18,7 +18,6 @@ export {
 } from "./api/queries";
 // Components
 export { ProjectForm } from "./components/ProjectForm";
-export { RestoreConfirmDialog } from "./components/RestoreConfirmDialog";
 export type {
 	CreateProjectInput,
 	PaginatedResponse,

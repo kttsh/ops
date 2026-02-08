@@ -13,6 +13,7 @@ interface RestoreConfirmDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onConfirm: () => void;
+	entityLabel: string;
 	isLoading: boolean;
 }
 
@@ -20,15 +21,17 @@ export function RestoreConfirmDialog({
 	open,
 	onOpenChange,
 	onConfirm,
+	entityLabel,
 	isLoading,
 }: RestoreConfirmDialogProps) {
 	return (
 		<AlertDialog open={open} onOpenChange={onOpenChange}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>案件タイプを復元しますか？</AlertDialogTitle>
+					<AlertDialogTitle>{entityLabel}を復元しますか？</AlertDialogTitle>
 					<AlertDialogDescription>
-						削除済みの案件タイプを復元します。復元後は再びアクティブな状態になります。
+						削除済みの{entityLabel}
+						を復元します。復元後は再びアクティブな状態になります。
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>

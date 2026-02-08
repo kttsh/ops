@@ -16,8 +16,6 @@ export {
 } from "./api/queries";
 // Components
 export { BusinessUnitForm } from "./components/BusinessUnitForm";
-export { DeleteConfirmDialog } from "./components/DeleteConfirmDialog";
-export { RestoreConfirmDialog } from "./components/RestoreConfirmDialog";
 export type {
 	BusinessUnit,
 	BusinessUnitListParams,

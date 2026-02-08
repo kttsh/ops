@@ -10,9 +10,9 @@ import {
 	useRestoreBusinessUnit,
 } from "@/features/business-units";
 import { createColumns } from "@/features/business-units/components/columns";
-import { DataTable } from "@/features/business-units/components/DataTable";
-import { DataTableToolbar } from "@/features/business-units/components/DataTableToolbar";
-import { RestoreConfirmDialog } from "@/features/business-units/components/RestoreConfirmDialog";
+import { DataTable } from "@/components/shared/DataTable";
+import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 export const Route = createFileRoute("/master/business-units/")({
 	validateSearch: businessUnitSearchSchema,
 	component: BusinessUnitListPage,
@@ -116,6 +116,7 @@ function BusinessUnitListPage() {
 				open={!!restoreTarget}
 				onOpenChange={(open) => !open && setRestoreTarget(null)}
 				onConfirm={handleRestore}
+				entityLabel="ビジネスユニット"
 				isLoading={restoreMutation.isPending}
 			/>
 		</div>

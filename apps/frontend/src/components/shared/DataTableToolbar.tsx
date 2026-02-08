@@ -3,7 +3,7 @@ import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { DebouncedSearchInput } from "@/features/business-units/components/DebouncedSearchInput";
+import { DebouncedSearchInput } from "@/components/shared/DebouncedSearchInput";
 
 interface DataTableToolbarProps {
 	search: string;

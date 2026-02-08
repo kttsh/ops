@@ -112,8 +112,6 @@ export const mockIndirectWorkRatios: IndirectWorkTypeRatio[] = [
   { indirectWorkTypeRatioId: 3, indirectWorkCaseId: 1, workTypeCode: 'WT003', fiscalYear: 2025, ratio: 0.05, createdAt: '2025-01-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z' },
 ]
 
-const monthLabels = months.map((m) => `${m.slice(0, 4)}/${m.slice(4)}`)
-
 const makeMonthly = (base: number) =>
   Object.fromEntries(months.map((m) => [m, base + Math.round(Math.random() * 20)]))
 

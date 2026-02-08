@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
-import { DataTable } from "@/features/business-units/components/DataTable";
+import { DataTable } from "@/components/shared/DataTable";
 import type { Project } from "@/features/projects";
 import {
 	ApiError,
@@ -12,7 +12,7 @@ import {
 	useRestoreProject,
 } from "@/features/projects";
 import { createColumns } from "@/features/projects/components/columns";
-import { RestoreConfirmDialog } from "@/features/projects/components/RestoreConfirmDialog";
+import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 
 export const Route = createFileRoute("/master/projects/")({
 	validateSearch: projectSearchSchema,
@@ -115,6 +115,7 @@ function ProjectListPage() {
 				open={restoreTarget !== null}
 				onOpenChange={(open) => !open && setRestoreTarget(null)}
 				onConfirm={handleRestore}
+				entityLabel="案件"
 				isLoading={restoreMutation.isPending}
 			/>
 		</div>
