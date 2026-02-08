@@ -15,6 +15,7 @@ export function workTypesQueryOptions(params: WorkTypeListParams) {
 	return queryOptions({
 		queryKey: workTypeKeys.list(params),
 		queryFn: () => fetchWorkTypes(params),
+		staleTime: 2 * 60 * 1000,
 	});
 }
 
@@ -22,5 +23,6 @@ export function workTypeQueryOptions(code: string) {
 	return queryOptions({
 		queryKey: workTypeKeys.detail(code),
 		queryFn: () => fetchWorkType(code),
+		staleTime: 2 * 60 * 1000,
 	});
 }

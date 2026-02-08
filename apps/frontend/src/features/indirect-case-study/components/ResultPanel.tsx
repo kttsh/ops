@@ -1,4 +1,5 @@
 import { Download, Loader2 } from "lucide-react";
+import { memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { useExcelExport } from "@/features/indirect-case-study/hooks/useExcelExport";
 import { getFiscalYear } from "@/features/indirect-case-study/hooks/useIndirectWorkCalculation";
@@ -49,7 +50,7 @@ function getYearMonth(fiscalYear: number, monthStr: string): string {
 	return `${year}${monthStr}`;
 }
 
-export function ResultPanel({
+export const ResultPanel = memo(function ResultPanel({
 	capacityResult,
 	indirectWorkResult,
 	monthlyHeadcountPlans,
@@ -68,7 +69,7 @@ export function ResultPanel({
 
 	const hasResults = capacityResult !== null;
 
-	const handleExport = async () => {
+	const handleExport = useCallback(async () => {
 		if (!capacityResult) return;
 
 		const yearMonths = MONTHS.map((m) => getYearMonth(fiscalYear, m));
@@ -148,7 +149,7 @@ export function ResultPanel({
 			fiscalYear,
 			tableData: { rows, months: yearMonths },
 		});
-	};
+	}, [capacityResult, indirectWorkResult, monthlyHeadcountPlans, ratios, workTypes, fiscalYear, headcountPlanCaseName, scenarioName, indirectWorkCaseName, exportToExcel]);
 
 	if (!hasResults) {
 		return (
@@ -207,4 +208,4 @@ export function ResultPanel({
 			/>
 		</div>
 	);
-}
+});

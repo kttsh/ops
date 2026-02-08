@@ -15,6 +15,7 @@ export function businessUnitsQueryOptions(params: BusinessUnitListParams) {
 	return queryOptions({
 		queryKey: businessUnitKeys.list(params),
 		queryFn: () => fetchBusinessUnits(params),
+		staleTime: 2 * 60 * 1000,
 	});
 }
 
@@ -22,5 +23,6 @@ export function businessUnitQueryOptions(code: string) {
 	return queryOptions({
 		queryKey: businessUnitKeys.detail(code),
 		queryFn: () => fetchBusinessUnit(code),
+		staleTime: 2 * 60 * 1000,
 	});
 }

@@ -23,6 +23,7 @@ export function projectsQueryOptions(params: ProjectListParams) {
 	return queryOptions({
 		queryKey: projectKeys.list(params),
 		queryFn: () => fetchProjects(params),
+		staleTime: 60 * 1000,
 	});
 }
 
@@ -30,6 +31,7 @@ export function projectQueryOptions(id: number) {
 	return queryOptions({
 		queryKey: projectKeys.detail(id),
 		queryFn: () => fetchProject(id),
+		staleTime: 60 * 1000,
 	});
 }
 

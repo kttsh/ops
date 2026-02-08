@@ -40,6 +40,7 @@ interface DataTableProps<TData> {
 	onPageChange?: (page: number) => void;
 	onPageSizeChange?: (size: number) => void;
 	onRowClick?: (row: TData) => void;
+	onRowHover?: (row: TData) => void;
 	rowClassName?: (row: TData) => string;
 }
 
@@ -54,6 +55,7 @@ export function DataTable<TData>({
 	onPageChange,
 	onPageSizeChange,
 	onRowClick,
+	onRowHover,
 	rowClassName,
 }: DataTableProps<TData>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -125,6 +127,7 @@ export function DataTable<TData>({
 										if (target.closest("a, button")) return;
 										onRowClick(row.original);
 									}}
+									onMouseEnter={() => onRowHover?.(row.original)}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>

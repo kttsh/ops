@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { BusinessUnit } from "@/features/business-units";
 import {
 	ApiError,
+	businessUnitQueryOptions,
 	businessUnitSearchSchema,
 	businessUnitsQueryOptions,
 	useRestoreBusinessUnit,
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/master/business-units/")({
 function BusinessUnitListPage() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
+	const queryClient = useQueryClient();
 	const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
 
 	const { data, isLoading, isError, error } = useQuery(
@@ -61,6 +63,13 @@ function BusinessUnitListPage() {
 	const handlePageSizeChange = (pageSize: number) => {
 		navigate({ search: (prev) => ({ ...prev, pageSize, page: 1 }) });
 	};
+
+	const handleRowHover = useCallback(
+		(row: BusinessUnit) => {
+			queryClient.ensureQueryData(businessUnitQueryOptions(row.businessUnitCode));
+		},
+		[queryClient],
+	);
 
 	const handleRestore = async () => {
 		if (!restoreTarget) return;
@@ -106,6 +115,7 @@ function BusinessUnitListPage() {
 						params: { businessUnitCode: row.businessUnitCode },
 					})
 				}
+				onRowHover={handleRowHover}
 				isLoading={isLoading}
 				isError={isError}
 				errorMessage={error?.message}

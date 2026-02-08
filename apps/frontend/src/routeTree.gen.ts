@@ -38,7 +38,9 @@ const WorkloadIndexRoute = WorkloadIndexRouteImport.update({
   id: '/workload/',
   path: '/workload/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/workload/index.lazy').then((d) => d.Route),
+)
 const MasterWorkTypesIndexRoute = MasterWorkTypesIndexRouteImport.update({
   id: '/master/work-types/',
   path: '/master/work-types/',
@@ -59,7 +61,11 @@ const MasterIndirectCapacitySettingsIndexRoute =
     id: '/master/indirect-capacity-settings/',
     path: '/master/indirect-capacity-settings/',
     getParentRoute: () => rootRouteImport,
-  } as any)
+  } as any).lazy(() =>
+    import('./routes/master/indirect-capacity-settings/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const MasterBusinessUnitsIndexRoute =
   MasterBusinessUnitsIndexRouteImport.update({
     id: '/master/business-units/',

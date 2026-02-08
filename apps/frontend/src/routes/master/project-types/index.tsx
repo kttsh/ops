@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { ProjectType } from "@/features/project-types";
 import {
 	ApiError,
+	projectTypeQueryOptions,
 	projectTypeSearchSchema,
 	projectTypesQueryOptions,
 	useRestoreProjectType,
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/master/project-types/")({
 function ProjectTypeListPage() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
+	const queryClient = useQueryClient();
 	const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
 
 	const { data, isLoading, isError, error } = useQuery(
@@ -50,6 +52,13 @@ function ProjectTypeListPage() {
 	const handleIncludeDisabledChange = (value: boolean) => {
 		navigate({ search: (prev) => ({ ...prev, includeDisabled: value }) });
 	};
+
+	const handleRowHover = useCallback(
+		(row: ProjectType) => {
+			queryClient.ensureQueryData(projectTypeQueryOptions(row.projectTypeCode));
+		},
+		[queryClient],
+	);
 
 	const handleRestore = async () => {
 		if (!restoreTarget) return;
@@ -87,6 +96,7 @@ function ProjectTypeListPage() {
 						params: { projectTypeCode: row.projectTypeCode },
 					})
 				}
+				onRowHover={handleRowHover}
 				isLoading={isLoading}
 				isError={isError}
 				errorMessage={error?.message}

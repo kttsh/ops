@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Select,
@@ -75,7 +75,7 @@ function generateFiscalYearOptions(): number[] {
 	return years;
 }
 
-export function CalculationResultTable({
+export const CalculationResultTable = memo(function CalculationResultTable({
 	capacityResult,
 	indirectWorkResult,
 	monthlyHeadcountPlans,
@@ -317,4 +317,4 @@ export function CalculationResultTable({
 			</div>
 		</div>
 	);
-}
+});

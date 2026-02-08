@@ -1,11 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { WorkType } from "@/features/work-types";
 import {
 	ApiError,
 	useRestoreWorkType,
+	workTypeQueryOptions,
 	workTypeSearchSchema,
 	workTypesQueryOptions,
 } from "@/features/work-types";
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/master/work-types/")({
 function WorkTypeListPage() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
+	const queryClient = useQueryClient();
 	const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
 
 	const { data, isLoading, isError, error } = useQuery(
@@ -50,6 +52,13 @@ function WorkTypeListPage() {
 	const handleIncludeDisabledChange = (value: boolean) => {
 		navigate({ search: (prev) => ({ ...prev, includeDisabled: value }) });
 	};
+
+	const handleRowHover = useCallback(
+		(row: WorkType) => {
+			queryClient.ensureQueryData(workTypeQueryOptions(row.workTypeCode));
+		},
+		[queryClient],
+	);
 
 	const handleRestore = async () => {
 		if (!restoreTarget) return;
@@ -87,6 +96,7 @@ function WorkTypeListPage() {
 						params: { workTypeCode: row.workTypeCode },
 					})
 				}
+				onRowHover={handleRowHover}
 				isLoading={isLoading}
 				isError={isError}
 				errorMessage={error?.message}

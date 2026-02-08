@@ -1,12 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
 import { DataTable } from "@/components/shared/DataTable";
 import type { Project } from "@/features/projects";
 import {
 	ApiError,
+	projectQueryOptions,
 	projectSearchSchema,
 	projectsQueryOptions,
 	useRestoreProject,
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/master/projects/")({
 function ProjectListPage() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
+	const queryClient = useQueryClient();
 	const [restoreTarget, setRestoreTarget] = useState<number | null>(null);
 
 	const { data, isLoading, isError, error } = useQuery(
@@ -62,6 +64,13 @@ function ProjectListPage() {
 	const handlePageSizeChange = (pageSize: number) => {
 		navigate({ search: (prev) => ({ ...prev, pageSize, page: 1 }) });
 	};
+
+	const handleRowHover = useCallback(
+		(row: Project) => {
+			queryClient.ensureQueryData(projectQueryOptions(row.projectId));
+		},
+		[queryClient],
+	);
 
 	const handleRestore = async () => {
 		if (restoreTarget === null) return;
@@ -107,6 +116,7 @@ function ProjectListPage() {
 						params: { projectId: String(row.projectId) },
 					})
 				}
+				onRowHover={handleRowHover}
 				isLoading={isLoading}
 				isError={isError}
 				errorMessage={error?.message}

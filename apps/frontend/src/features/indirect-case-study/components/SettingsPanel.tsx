@@ -1,5 +1,5 @@
 import { Calculator, Loader2 } from "lucide-react";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type {
@@ -68,7 +68,7 @@ interface SettingsPanelProps {
 	onIwcIncludeDisabledChange: (value: boolean) => void;
 }
 
-export function SettingsPanel({
+export const SettingsPanel = memo(function SettingsPanel({
 	businessUnitCode,
 	headcountCases,
 	capacityScenarios,
@@ -229,4 +229,4 @@ export function SettingsPanel({
 			</section>
 		</div>
 	);
-}
+});

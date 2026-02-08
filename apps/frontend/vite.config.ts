@@ -15,6 +15,29 @@ export default defineConfig(({ mode }) => {
 				"@": path.resolve(__dirname, "./src"),
 			},
 		},
+		build: {
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						"vendor-router": ["@tanstack/react-router"],
+						"vendor-query": ["@tanstack/react-query"],
+						"vendor-table": ["@tanstack/react-table"],
+						"vendor-form": ["@tanstack/react-form"],
+						"vendor-radix": [
+							"@radix-ui/react-alert-dialog",
+							"@radix-ui/react-collapsible",
+							"@radix-ui/react-dialog",
+							"@radix-ui/react-label",
+							"@radix-ui/react-select",
+							"@radix-ui/react-separator",
+							"@radix-ui/react-slot",
+							"@radix-ui/react-switch",
+							"@radix-ui/react-tooltip",
+						],
+					},
+				},
+			},
+		},
 		server: {
 			proxy: {
 				"/api": {
