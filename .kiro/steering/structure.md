@@ -26,10 +26,12 @@
 **Example**: `businessUnits` エンティティ →
 `routes/businessUnits.ts` → `services/businessUnitService.ts` → `data/businessUnitData.ts` + `transform/businessUnitTransform.ts` + `types/businessUnit.ts`
 
+**Build**: `scripts/build-exe.ts` で esbuild を使用し、`bin/backend.cjs` にスタンドアロン実行形式をバンドル
+
 ### Frontend Features (apps/frontend/src/)
 **Purpose**: 機能単位でコードを凝集し、機能間の依存を最小化
 **Pattern**:
-- `features/[feature]/` → api, components, hooks, stores, types を内包
+- `features/[feature]/` → api, components, hooks, types を内包（stores は必要に応じて追加）
 - `features/[feature]/index.ts` → パブリック API のエクスポート
 - `components/ui/` → shadcn/ui 等のデザインシステムプリミティブ
 - `routes/` → TanStack Router のファイルベースルーティング（`routeTree.gen.ts` 自動生成）

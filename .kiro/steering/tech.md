@@ -13,7 +13,7 @@ Turborepo + pnpm によるモノレポ構成。バックエンドは Hono によ
 - **Frontend Framework**: React 19 + Vite 7 + TanStack Router + TanStack Query + TanStack Table + TanStack Form + shadcn/ui
 - **Styling**: Tailwind CSS v4
 - **Database**: Microsoft SQL Server（mssql ライブラリ、ORM なし・直接 SQL）
-- **Validation**: Zod（バックエンド Zod v4 / フロントエンド Zod v3）
+- **Validation**: Zod v4（フロントエンド・バックエンド共に統一済み）
 
 ## Key Libraries
 
@@ -25,7 +25,11 @@ Turborepo + pnpm によるモノレポ構成。バックエンドは Hono によ
 | テスト | `vitest` v4 | ユニットテスト |
 | スタイリング | `tailwindcss` v4, `@tailwindcss/vite` | ユーティリティ CSS |
 | UI プリミティブ | `@radix-ui/*`, `lucide-react` | shadcn/ui の基盤コンポーネント |
+| チャート | `recharts` v3 | 積み上げ面グラフ・キャパシティライン等の可視化 |
+| 仮想スクロール | `@tanstack/react-virtual` | 大量行の仮想化レンダリング |
+| Excel | `xlsx` | Excel ファイルのエクスポート |
 | 通知 | `sonner` | トースト通知 |
+| ビルド | `esbuild` | バックエンドのスタンドアロン実行形式ビルド |
 | 開発 | `tsx` | TypeScript の実行・ホットリロード |
 
 ## Development Standards
@@ -39,7 +43,7 @@ Turborepo + pnpm によるモノレポ構成。バックエンドは Hono によ
 
 ### Code Quality
 
-- ESLint 9 導入済み（フロントエンド）、バックエンドは今後導入予定
+- Biome 2.x をルートレベルで導入（リント＋フォーマット統合、ESLint から移行済み）
 - `docs/rules/` 配下の規約ドキュメントがコード品質の基準
 - API レスポンスは RFC 9457 Problem Details 形式に準拠
 
@@ -76,7 +80,8 @@ Turborepo + pnpm によるモノレポ構成。バックエンドは Hono によ
 | Hono 採用 | Hono v4 | 軽量・型推論が強力・Edge 対応の将来性 |
 | TanStack エコシステム | Router/Query/Table/Form | 型安全・ファイルベースルーティング・統一的な開発体験 |
 | モノレポ | Turborepo + pnpm | フロントエンド・バックエンド・共有パッケージの統合管理 |
-| Zod 統一 | Zod v4（backend）/ v3（frontend） | バリデーションと型定義の一元化（バージョン統一は今後の課題） |
+| Zod v4 統一 | Zod v4（全ワークスペース） | バリデーションと型定義の一元化 |
+| Biome 採用 | Biome 2.x | ESLint + Prettier を統合し、リント・フォーマットを単一ツールに集約 |
 
 ---
 _Document standards and patterns, not every dependency_
