@@ -1,0 +1,24 @@
+localhost {
+	handle /api/ops/* {
+		header Access-Control-Allow-Origin "*"
+		header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+		header Access-Control-Allow-Headers "Content-Type, Authorization"
+
+		@options method OPTIONS
+		respond @options 204
+
+		reverse_proxy localhost:3007
+	}
+
+	handle /health {
+		reverse_proxy localhost:3007
+	}
+
+	handle /ops/* {
+		reverse_proxy localhost:5173
+	}
+
+	handle {
+		redir /ops/ permanent
+	}
+}
