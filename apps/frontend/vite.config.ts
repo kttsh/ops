@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
 	const apiPort = env.VITE_API_PORT || "3009";
 
 	return {
+		base: "/ops/",
 		plugins: [TanStackRouterVite(), react(), tailwindcss()],
 		resolve: {
 			alias: {

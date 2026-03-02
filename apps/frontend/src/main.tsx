@@ -15,6 +15,7 @@ const queryClient = new QueryClient({
 
 const router = createRouter({
 	routeTree,
+	basepath: "/ops",
 	context: { queryClient },
 	defaultPreload: "intent",
 });
