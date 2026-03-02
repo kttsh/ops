@@ -6,7 +6,7 @@ import { defineConfig, loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), "");
-	const apiPort = env.VITE_API_PORT || "3000";
+	const apiPort = env.VITE_API_PORT || "3009";
 
 	return {
 		plugins: [TanStackRouterVite(), react(), tailwindcss()],
@@ -40,10 +40,9 @@ export default defineConfig(({ mode }) => {
 		},
 		server: {
 			proxy: {
-				"/api": {
+				"/api/ops": {
 					target: `http://localhost:${apiPort}`,
 					changeOrigin: true,
-					rewrite: (path) => path.replace(/^\/api/, ""),
 				},
 			},
 		},

@@ -1,4 +1,4 @@
-localhost {
+:8001 {
 	handle /api/ops/* {
 		header Access-Control-Allow-Origin "*"
 		header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
@@ -7,15 +7,15 @@ localhost {
 		@options method OPTIONS
 		respond @options 204
 
-		reverse_proxy localhost:3007
+		reverse_proxy localhost:3009
 	}
 
 	handle /health {
-		reverse_proxy localhost:3007
+		reverse_proxy localhost:3009
 	}
 
 	handle /ops/* {
-		reverse_proxy localhost:5173
+		reverse_proxy localhost:5192
 	}
 
 	handle {

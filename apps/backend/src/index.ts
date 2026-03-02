@@ -35,7 +35,7 @@ import {
 	problemResponse,
 } from "@/utils/errorHelper";
 
-const app = new Hono();
+const app = new Hono().basePath("/api/ops");
 
 // 共通ミドルウェア
 app.use("*", logger());
