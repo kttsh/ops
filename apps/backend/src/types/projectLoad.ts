@@ -1,18 +1,7 @@
 import { z } from "zod";
+import { yearMonthSchema } from "@/types/common";
 
 // --- 共通バリデーション ---
-
-/** 年月バリデーション: YYYYMM形式（6桁数字、月は01〜12の範囲） */
-const yearMonthSchema = z
-	.string()
-	.regex(/^\d{6}$/, "yearMonth must be a 6-digit string in YYYYMM format")
-	.refine(
-		(val) => {
-			const month = parseInt(val.slice(4, 6), 10);
-			return month >= 1 && month <= 12;
-		},
-		{ message: "Month part must be between 01 and 12" },
-	);
 
 /** 工数バリデーション: 0以上の整数 */
 const manhourSchema = z.number().int().min(0).max(99999999);

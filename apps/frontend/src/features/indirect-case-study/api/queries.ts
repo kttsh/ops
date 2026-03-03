@@ -4,6 +4,7 @@ import type {
 	HeadcountPlanCaseListParams,
 	IndirectWorkCaseListParams,
 } from "@/features/indirect-case-study/types";
+import { STALE_TIMES } from "@/lib/api";
 import {
 	fetchCapacityScenarios,
 	fetchMonthlyCapacities,
@@ -81,7 +82,7 @@ export function headcountPlanCasesQueryOptions(
 	return queryOptions({
 		queryKey: indirectCaseStudyKeys.headcountPlanCaseList(params),
 		queryFn: () => fetchHeadcountPlanCases(params),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -95,7 +96,7 @@ export function monthlyHeadcountPlansQueryOptions(
 			businessUnitCode,
 		),
 		queryFn: () => fetchMonthlyHeadcountPlans(caseId, businessUnitCode),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 		enabled: caseId > 0 && businessUnitCode.length > 0,
 	});
 }
@@ -110,7 +111,7 @@ export function capacityScenariosQueryOptions(
 	return queryOptions({
 		queryKey: indirectCaseStudyKeys.capacityScenarioList(params),
 		queryFn: () => fetchCapacityScenarios(params),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -124,7 +125,7 @@ export function monthlyCapacitiesQueryOptions(
 			businessUnitCode,
 		),
 		queryFn: () => fetchMonthlyCapacities(scenarioId, businessUnitCode),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 		enabled: scenarioId > 0,
 	});
 }
@@ -139,7 +140,7 @@ export function indirectWorkCasesQueryOptions(
 	return queryOptions({
 		queryKey: indirectCaseStudyKeys.indirectWorkCaseList(params),
 		queryFn: () => fetchIndirectWorkCases(params),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -147,7 +148,7 @@ export function indirectWorkTypeRatiosQueryOptions(caseId: number) {
 	return queryOptions({
 		queryKey: indirectCaseStudyKeys.indirectWorkTypeRatios(caseId),
 		queryFn: () => fetchIndirectWorkTypeRatios(caseId),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 		enabled: caseId > 0,
 	});
 }
@@ -162,7 +163,7 @@ export function monthlyIndirectWorkLoadsQueryOptions(
 			businessUnitCode,
 		),
 		queryFn: () => fetchMonthlyIndirectWorkLoads(caseId, businessUnitCode),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 		enabled: caseId > 0,
 	});
 }

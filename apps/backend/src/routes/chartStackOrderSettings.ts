@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
 import { chartStackOrderSettingService } from "@/services/chartStackOrderSettingService";
 import {
 	bulkUpsertChartStackOrderSettingSchema,
@@ -7,17 +6,9 @@ import {
 	createChartStackOrderSettingSchema,
 	updateChartStackOrderSettingSchema,
 } from "@/types/chartStackOrderSetting";
+import { parseIntParam } from "@/utils/parseParams";
+import { buildPaginatedResponse } from "@/utils/responseHelper";
 import { validate } from "@/utils/validate";
-
-function parseIntParam(value: string, name: string): number {
-	const parsed = parseInt(value, 10);
-	if (Number.isNaN(parsed) || parsed <= 0) {
-		throw new HTTPException(422, {
-			message: `Invalid ${name}: must be a positive integer`,
-		});
-	}
-	return parsed;
-}
 
 const app = new Hono()
 	// PUT /bulk - 一括 Upsert（/:id より前に定義）
@@ -45,17 +36,10 @@ const app = new Hono()
 			});
 
 			return c.json(
-				{
-					data: result.items,
-					meta: {
-						pagination: {
-							currentPage: query["page[number]"],
-							pageSize: query["page[size]"],
-							totalItems: result.totalCount,
-							totalPages: Math.ceil(result.totalCount / query["page[size]"]),
-						},
-					},
-				},
+				buildPaginatedResponse(result, {
+					page: query["page[number]"],
+					pageSize: query["page[size]"],
+				}),
 				200,
 			);
 		},

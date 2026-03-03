@@ -1,4 +1,10 @@
 import { z } from "zod";
+import type { MasterEntity } from "@/lib/types/base-entity";
+import {
+	codeSchema,
+	displayOrderSchema,
+	nameSchema,
+} from "@/lib/schemas/master-entity-schema";
 
 // --- 共通型を共有レイヤーから re-export ---
 export type {
@@ -10,47 +16,21 @@ export type {
 
 // --- API レスポンス型 ---
 
-export type BusinessUnit = {
+export interface BusinessUnit extends MasterEntity {
 	businessUnitCode: string;
-	name: string;
-	displayOrder: number;
-	createdAt: string;
-	updatedAt: string;
-	deletedAt?: string | null;
-};
+}
 
 // --- Zod スキーマ ---
 
 export const createBusinessUnitSchema = z.object({
-	businessUnitCode: z
-		.string()
-		.min(1, "ビジネスユニットコードは必須です")
-		.max(20, "ビジネスユニットコードは20文字以内で入力してください")
-		.regex(
-			/^[a-zA-Z0-9_-]+$/,
-			"英数字・ハイフン・アンダースコアのみ使用できます",
-		),
-	name: z
-		.string()
-		.min(1, "名称は必須です")
-		.max(100, "名称は100文字以内で入力してください"),
-	displayOrder: z
-		.number()
-		.int("表示順は整数で入力してください")
-		.min(0, "表示順は0以上で入力してください")
-		.default(0),
+	businessUnitCode: codeSchema,
+	name: nameSchema,
+	displayOrder: displayOrderSchema.default(0),
 });
 
 export const updateBusinessUnitSchema = z.object({
-	name: z
-		.string()
-		.min(1, "名称は必須です")
-		.max(100, "名称は100文字以内で入力してください"),
-	displayOrder: z
-		.number()
-		.int("表示順は整数で入力してください")
-		.min(0, "表示順は0以上で入力してください")
-		.optional(),
+	name: nameSchema,
+	displayOrder: displayOrderSchema.optional(),
 });
 
 export const businessUnitSearchSchema = z.object({

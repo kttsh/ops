@@ -1,4 +1,6 @@
 import { z } from "zod";
+import type { SoftDeletableEntity } from "@/lib/types/base-entity";
+import { codeSchema } from "@/lib/schemas/master-entity-schema";
 
 // --- 共通型を共有レイヤーから re-export ---
 export type {
@@ -10,7 +12,7 @@ export type {
 
 // --- API レスポンス型 ---
 
-export type Project = {
+export interface Project extends SoftDeletableEntity {
 	projectId: number;
 	projectCode: string;
 	name: string;
@@ -22,10 +24,7 @@ export type Project = {
 	totalManhour: number;
 	status: string;
 	durationMonths: number | null;
-	createdAt: string;
-	updatedAt: string;
-	deletedAt?: string | null;
-};
+}
 
 // --- ステータス定数 ---
 
@@ -37,14 +36,7 @@ export const PROJECT_STATUSES = [
 // --- Zod スキーマ ---
 
 export const createProjectSchema = z.object({
-	projectCode: z
-		.string()
-		.min(1, "案件コードは必須です")
-		.max(20, "案件コードは20文字以内で入力してください")
-		.regex(
-			/^[a-zA-Z0-9_-]+$/,
-			"英数字・ハイフン・アンダースコアのみ使用できます",
-		),
+	projectCode: codeSchema,
 	name: z
 		.string()
 		.min(1, "名称は必須です")
@@ -69,15 +61,7 @@ export const createProjectSchema = z.object({
 
 export const updateProjectSchema = z
 	.object({
-		projectCode: z
-			.string()
-			.min(1, "案件コードは必須です")
-			.max(20, "案件コードは20文字以内で入力してください")
-			.regex(
-				/^[a-zA-Z0-9_-]+$/,
-				"英数字・ハイフン・アンダースコアのみ使用できます",
-			)
-			.optional(),
+		projectCode: codeSchema.optional(),
 		name: z
 			.string()
 			.min(1, "名称は必須です")

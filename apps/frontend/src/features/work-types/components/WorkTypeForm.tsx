@@ -1,13 +1,14 @@
 import { useForm } from "@tanstack/react-form";
 import { Loader2, X } from "lucide-react";
+import { FieldWrapper } from "@/components/shared/FieldWrapper";
+import { FormTextField } from "@/components/shared/FormTextField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
 	createWorkTypeSchema,
 	updateWorkTypeSchema,
 } from "@/features/work-types/types";
-import { getErrorMessage } from "@/lib/form-utils";
+import { displayOrderValidators } from "@/lib/validators";
 
 type WorkTypeFormValues = {
 	workTypeCode: string;
@@ -64,27 +65,13 @@ export function WorkTypeForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							作業種類コード
-							{mode === "create" && (
-								<span className="text-destructive ml-1">*</span>
-							)}
-						</Label>
-						<Input
-							id={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-							onBlur={field.handleBlur}
-							disabled={mode === "edit"}
-							placeholder="例: WT001"
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="作業種類コード"
+						required={mode === "create"}
+						disabled={mode === "edit"}
+						placeholder="例: WT001"
+					/>
 				)}
 			</form.Field>
 
@@ -102,61 +89,26 @@ export function WorkTypeForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							名称
-							<span className="text-destructive ml-1">*</span>
-						</Label>
-						<Input
-							id={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-							onBlur={field.handleBlur}
-							placeholder="例: 設計作業"
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="名称"
+						required
+						placeholder="例: 設計作業"
+					/>
 				)}
 			</form.Field>
 
 			<form.Field
 				name="displayOrder"
-				validators={{
-					onChange: ({ value }) => {
-						if (typeof value !== "number" || !Number.isInteger(value))
-							return "表示順は整数で入力してください";
-						if (value < 0) return "表示順は0以上で入力してください";
-						return undefined;
-					},
-					onBlur: ({ value }) => {
-						if (typeof value !== "number" || !Number.isInteger(value))
-							return "表示順は整数で入力してください";
-						if (value < 0) return "表示順は0以上で入力してください";
-						return undefined;
-					},
-				}}
+				validators={displayOrderValidators}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>表示順</Label>
-						<Input
-							id={field.name}
-							type="number"
-							value={field.state.value}
-							onChange={(e) => field.handleChange(Number(e.target.value))}
-							onBlur={field.handleBlur}
-							min={0}
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="表示順"
+						type="number"
+						inputProps={{ min: 0 }}
+					/>
 				)}
 			</form.Field>
 
@@ -178,16 +130,19 @@ export function WorkTypeForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							カラー
-							{field.state.value && (
+					<FieldWrapper
+						label="カラー"
+						htmlFor={field.name}
+						errors={field.state.meta.errors}
+						labelSuffix={
+							field.state.value ? (
 								<span
 									className="inline-block w-3 h-3 rounded-full border border-border ml-2 align-middle"
 									style={{ backgroundColor: field.state.value }}
 								/>
-							)}
-						</Label>
+							) : undefined
+						}
+					>
 						<div className="flex items-center gap-2">
 							<input
 								type="color"
@@ -218,12 +173,7 @@ export function WorkTypeForm({
 								</Button>
 							)}
 						</div>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					</FieldWrapper>
 				)}
 			</form.Field>
 

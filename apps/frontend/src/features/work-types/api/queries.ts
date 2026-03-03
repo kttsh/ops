@@ -1,28 +1,22 @@
-import { queryOptions } from "@tanstack/react-query";
-import type { WorkTypeListParams } from "@/features/work-types/types";
+import type { WorkType, WorkTypeListParams } from "@/features/work-types/types";
+import {
+	createQueryKeys,
+	createListQueryOptions,
+	createDetailQueryOptions,
+	STALE_TIMES,
+} from "@/lib/api";
 import { fetchWorkType, fetchWorkTypes } from "./api-client";
 
-export const workTypeKeys = {
-	all: ["work-types"] as const,
-	lists: () => [...workTypeKeys.all, "list"] as const,
-	list: (params: WorkTypeListParams) =>
-		[...workTypeKeys.lists(), params] as const,
-	details: () => [...workTypeKeys.all, "detail"] as const,
-	detail: (code: string) => [...workTypeKeys.details(), code] as const,
-};
+export const workTypeKeys = createQueryKeys<string, WorkTypeListParams>("work-types");
 
-export function workTypesQueryOptions(params: WorkTypeListParams) {
-	return queryOptions({
-		queryKey: workTypeKeys.list(params),
-		queryFn: () => fetchWorkTypes(params),
-		staleTime: 2 * 60 * 1000,
-	});
-}
+export const workTypesQueryOptions = createListQueryOptions<WorkType, WorkTypeListParams>({
+	queryKeys: workTypeKeys,
+	fetchList: fetchWorkTypes,
+	staleTime: STALE_TIMES.STANDARD,
+});
 
-export function workTypeQueryOptions(code: string) {
-	return queryOptions({
-		queryKey: workTypeKeys.detail(code),
-		queryFn: () => fetchWorkType(code),
-		staleTime: 2 * 60 * 1000,
-	});
-}
+export const workTypeQueryOptions = createDetailQueryOptions<WorkType, string>({
+	queryKeys: workTypeKeys,
+	fetchDetail: fetchWorkType,
+	staleTime: STALE_TIMES.STANDARD,
+});

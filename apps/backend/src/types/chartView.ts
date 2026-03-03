@@ -1,14 +1,9 @@
 import { z } from "zod";
 import { paginationQuerySchema } from "@/types/pagination";
-
-// --- YYYYMM バリデーション用ヘルパー ---
-
-const yearMonthSchema = z
-	.string()
-	.length(6)
-	.regex(/^\d{6}$/, {
-		message: "Must be a 6-digit string in YYYYMM format",
-	});
+import {
+	yearMonthSchema,
+	includeDisabledFilterSchema,
+} from "@/types/common";
 
 // --- Zod スキーマ ---
 
@@ -41,7 +36,7 @@ export const updateChartViewSchema = z.object({
 
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
 export const chartViewListQuerySchema = paginationQuerySchema.extend({
-	"filter[includeDisabled]": z.coerce.boolean().default(false),
+	"filter[includeDisabled]": includeDisabledFilterSchema,
 });
 
 // --- TypeScript 型 ---

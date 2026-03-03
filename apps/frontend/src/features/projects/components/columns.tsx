@@ -1,20 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { SortableHeader } from "@/components/shared/SortableHeader";
+import {
+	createDateTimeColumn,
+	createRestoreActionColumn,
+} from "@/components/shared/column-helpers";
 import type { Project } from "@/features/projects/types";
 import { PROJECT_STATUSES } from "@/features/projects/types";
-
-function formatDateTime(dateStr: string) {
-	return new Date(dateStr).toLocaleString("ja-JP", {
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-		hour: "2-digit",
-		minute: "2-digit",
-	});
-}
 
 function formatYearMonth(ym: string) {
 	if (ym.length !== 6) return ym;
@@ -88,29 +81,10 @@ export function createColumns(options: {
 				return <Badge variant={variant}>{label}</Badge>;
 			},
 		},
-		{
-			accessorKey: "updatedAt",
-			header: ({ column }) => <SortableHeader column={column} label="更新日時" />,
-			cell: ({ row }) => formatDateTime(row.original.updatedAt),
-		},
-		{
-			id: "actions",
-			cell: ({ row }) => {
-				const isDeleted = !!row.original.deletedAt;
-				if (!isDeleted || !options.onRestore) return null;
-				return (
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={(e) => {
-							e.stopPropagation();
-							options.onRestore!(row.original.projectId);
-						}}
-					>
-						復元
-					</Button>
-				);
-			},
-		},
+		createDateTimeColumn<Project>({ accessorKey: "updatedAt", label: "更新日時" }),
+		createRestoreActionColumn<Project, number>({
+			idKey: "projectId",
+			onRestore: options.onRestore,
+		}),
 	];
 }

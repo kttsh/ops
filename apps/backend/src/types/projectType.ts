@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { includeDisabledFilterSchema } from "@/types/common";
 import { paginationQuerySchema } from "@/types/pagination";
 
 // --- Zod スキーマ ---
@@ -22,7 +23,7 @@ export const updateProjectTypeSchema = z.object({
 
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
 export const projectTypeListQuerySchema = paginationQuerySchema.extend({
-	"filter[includeDisabled]": z.coerce.boolean().default(false),
+	"filter[includeDisabled]": includeDisabledFilterSchema,
 });
 
 // --- TypeScript 型 ---

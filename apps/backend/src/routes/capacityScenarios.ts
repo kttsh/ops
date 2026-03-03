@@ -6,6 +6,10 @@ import {
 	createCapacityScenarioSchema,
 	updateCapacityScenarioSchema,
 } from "@/types/capacityScenario";
+import {
+	buildPaginatedResponse,
+	setLocationHeader,
+} from "@/utils/responseHelper";
 import { validate } from "@/utils/validate";
 
 const app = new Hono()
@@ -19,17 +23,10 @@ const app = new Hono()
 		});
 
 		return c.json(
-			{
-				data: result.items,
-				meta: {
-					pagination: {
-						currentPage: query["page[number]"],
-						pageSize: query["page[size]"],
-						totalItems: result.totalCount,
-						totalPages: Math.ceil(result.totalCount / query["page[size]"]),
-					},
-				},
-			},
+			buildPaginatedResponse(result, {
+				page: query["page[number]"],
+				pageSize: query["page[size]"],
+			}),
 			200,
 		);
 	})
@@ -43,7 +40,7 @@ const app = new Hono()
 	.post("/", validate("json", createCapacityScenarioSchema), async (c) => {
 		const body = c.req.valid("json");
 		const created = await capacityScenarioService.create(body);
-		c.header("Location", `/capacity-scenarios/${created.capacityScenarioId}`);
+		setLocationHeader(c, "/capacity-scenarios", created.capacityScenarioId);
 		return c.json({ data: created }, 201);
 	})
 	// PUT /:id - 更新

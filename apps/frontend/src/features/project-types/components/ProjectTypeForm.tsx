@@ -1,13 +1,12 @@
 import { useForm } from "@tanstack/react-form";
 import { Loader2 } from "lucide-react";
+import { FormTextField } from "@/components/shared/FormTextField";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
 	createProjectTypeSchema,
 	updateProjectTypeSchema,
 } from "@/features/project-types/types";
-import { getErrorMessage } from "@/lib/form-utils";
+import { displayOrderValidators } from "@/lib/validators";
 
 type ProjectTypeFormValues = {
 	projectTypeCode: string;
@@ -62,27 +61,13 @@ export function ProjectTypeForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							案件タイプコード
-							{mode === "create" && (
-								<span className="text-destructive ml-1">*</span>
-							)}
-						</Label>
-						<Input
-							id={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-							onBlur={field.handleBlur}
-							disabled={mode === "edit"}
-							placeholder="例: TYPE001"
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="案件タイプコード"
+						required={mode === "create"}
+						disabled={mode === "edit"}
+						placeholder="例: TYPE001"
+					/>
 				)}
 			</form.Field>
 
@@ -100,61 +85,26 @@ export function ProjectTypeForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							名称
-							<span className="text-destructive ml-1">*</span>
-						</Label>
-						<Input
-							id={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-							onBlur={field.handleBlur}
-							placeholder="例: 新規開発"
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="名称"
+						required
+						placeholder="例: 新規開発"
+					/>
 				)}
 			</form.Field>
 
 			<form.Field
 				name="displayOrder"
-				validators={{
-					onChange: ({ value }) => {
-						if (typeof value !== "number" || !Number.isInteger(value))
-							return "表示順は整数で入力してください";
-						if (value < 0) return "表示順は0以上で入力してください";
-						return undefined;
-					},
-					onBlur: ({ value }) => {
-						if (typeof value !== "number" || !Number.isInteger(value))
-							return "表示順は整数で入力してください";
-						if (value < 0) return "表示順は0以上で入力してください";
-						return undefined;
-					},
-				}}
+				validators={displayOrderValidators}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>表示順</Label>
-						<Input
-							id={field.name}
-							type="number"
-							value={field.state.value}
-							onChange={(e) => field.handleChange(Number(e.target.value))}
-							onBlur={field.handleBlur}
-							min={0}
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="表示順"
+						type="number"
+						inputProps={{ min: 0 }}
+					/>
 				)}
 			</form.Field>
 

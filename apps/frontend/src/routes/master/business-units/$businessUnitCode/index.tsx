@@ -4,6 +4,8 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
+import { DetailRow } from "@/components/shared/DetailRow";
+import { NotFoundState } from "@/components/shared/NotFoundState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,21 +13,17 @@ import {
 	businessUnitQueryOptions,
 	useDeleteBusinessUnit,
 } from "@/features/business-units";
+import { formatDateTime } from "@/lib/format-utils";
 
 export const Route = createFileRoute(
 	"/master/business-units/$businessUnitCode/",
 )({
 	component: BusinessUnitDetailPage,
 	notFoundComponent: () => (
-		<div className="flex flex-col items-center justify-center py-16 space-y-4">
-			<p className="text-lg font-medium">ビジネスユニットが見つかりません</p>
-			<Link
-				to="/master/business-units"
-				className="text-sm text-primary hover:underline"
-			>
-				一覧に戻る
-			</Link>
-		</div>
+		<NotFoundState
+			entityName="ビジネスユニット"
+			backTo="/master/business-units"
+		/>
 	),
 });
 
@@ -76,15 +74,10 @@ function BusinessUnitDetailPage() {
 
 	if (isError || !data) {
 		return (
-			<div className="flex flex-col items-center justify-center py-16 space-y-4">
-				<p className="text-lg font-medium">ビジネスユニットが見つかりません</p>
-				<Link
-					to="/master/business-units"
-					className="text-sm text-primary hover:underline"
-				>
-					一覧に戻る
-				</Link>
-			</div>
+			<NotFoundState
+				entityName="ビジネスユニット"
+				backTo="/master/business-units"
+			/>
 		);
 	}
 
@@ -127,7 +120,7 @@ function BusinessUnitDetailPage() {
 				<DetailRow label="表示順" value={String(bu.displayOrder)} />
 				<DetailRow
 					label="更新日時"
-					value={new Date(bu.updatedAt).toLocaleString("ja-JP")}
+					value={formatDateTime(bu.updatedAt)}
 				/>
 			</div>
 
@@ -139,15 +132,6 @@ function BusinessUnitDetailPage() {
 				entityLabel="ビジネスユニット"
 				entityName={bu.name}
 			/>
-		</div>
-	);
-}
-
-function DetailRow({ label, value }: { label: string; value: string }) {
-	return (
-		<div className="grid grid-cols-3 gap-4">
-			<dt className="text-sm font-medium text-muted-foreground">{label}</dt>
-			<dd className="col-span-2 text-sm">{value}</dd>
 		</div>
 	);
 }

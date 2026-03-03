@@ -5,6 +5,7 @@ import {
 	headcountPlanCaseListQuerySchema,
 	updateHeadcountPlanCaseSchema,
 } from "@/types/headcountPlanCase";
+import { buildPaginatedResponse } from "@/utils/responseHelper";
 import { validate } from "@/utils/validate";
 
 const app = new Hono()
@@ -19,17 +20,10 @@ const app = new Hono()
 		});
 
 		return c.json(
-			{
-				data: result.items,
-				meta: {
-					pagination: {
-						currentPage: query["page[number]"],
-						pageSize: query["page[size]"],
-						totalItems: result.totalCount,
-						totalPages: Math.ceil(result.totalCount / query["page[size]"]),
-					},
-				},
-			},
+			buildPaginatedResponse(result, {
+				page: query["page[number]"],
+				pageSize: query["page[size]"],
+			}),
 			200,
 		);
 	})

@@ -1,12 +1,8 @@
 import { z } from "zod";
+import { colorCodeSchema } from "@/types/common";
 import { paginationQuerySchema } from "@/types/pagination";
 
 // --- Zod スキーマ ---
-
-/** カラーコードバリデーション（# + 6桁16進数） */
-const colorCodeSchema = z.string().regex(/^#[0-9A-Fa-f]{6}$/, {
-	message: "colorCode must be a valid hex color code (e.g. #FF5733)",
-});
 
 /** 対象タイプバリデーション */
 const targetTypeSchema = z.enum(["project", "indirect_work", "indirect_work_type"]);

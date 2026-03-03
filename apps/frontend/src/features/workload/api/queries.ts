@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import type { ChartDataParams } from "@/features/workload/types";
+import { STALE_TIMES } from "@/lib/api";
 import {
 	fetchBusinessUnits,
 	fetchCapacityScenarios,
@@ -44,7 +45,7 @@ export function chartDataQueryOptions(params: ChartDataParams) {
 	return queryOptions({
 		queryKey: workloadKeys.chartData(params),
 		queryFn: () => fetchChartData(params),
-		staleTime: 5 * 60 * 1000, // 5分
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -56,7 +57,7 @@ export function businessUnitsQueryOptions() {
 	return queryOptions({
 		queryKey: workloadKeys.businessUnits(),
 		queryFn: () => fetchBusinessUnits(),
-		staleTime: 30 * 60 * 1000, // 30分
+		staleTime: STALE_TIMES.LONG,
 	});
 }
 
@@ -64,7 +65,7 @@ export function capacityScenariosQueryOptions() {
 	return queryOptions({
 		queryKey: workloadKeys.capacityScenarios(),
 		queryFn: () => fetchCapacityScenarios(),
-		staleTime: 30 * 60 * 1000,
+		staleTime: STALE_TIMES.LONG,
 	});
 }
 
@@ -72,7 +73,7 @@ export function indirectWorkCasesQueryOptions() {
 	return queryOptions({
 		queryKey: workloadKeys.indirectWorkCases(),
 		queryFn: () => fetchIndirectWorkCases(),
-		staleTime: 30 * 60 * 1000,
+		staleTime: STALE_TIMES.LONG,
 	});
 }
 
@@ -80,7 +81,7 @@ export function projectsQueryOptions(buCodes: string[]) {
 	return queryOptions({
 		queryKey: workloadKeys.projects(buCodes),
 		queryFn: () => fetchProjects({ businessUnitCodes: buCodes }),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 		enabled: buCodes.length > 0,
 	});
 }
@@ -89,7 +90,7 @@ export function projectTypesQueryOptions() {
 	return queryOptions({
 		queryKey: workloadKeys.projectTypes(),
 		queryFn: () => fetchProjectTypes(),
-		staleTime: 30 * 60 * 1000,
+		staleTime: STALE_TIMES.LONG,
 	});
 }
 
@@ -101,7 +102,7 @@ export function colorSettingsQueryOptions(targetType?: string) {
 	return queryOptions({
 		queryKey: workloadKeys.colorSettings(targetType),
 		queryFn: () => fetchChartColorSettings(targetType),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -109,7 +110,7 @@ export function stackOrderSettingsQueryOptions(targetType?: string) {
 	return queryOptions({
 		queryKey: workloadKeys.stackOrderSettings(targetType),
 		queryFn: () => fetchChartStackOrderSettings(targetType),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -117,7 +118,7 @@ export function chartViewsQueryOptions() {
 	return queryOptions({
 		queryKey: workloadKeys.chartViews(),
 		queryFn: () => fetchChartViews(),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -125,6 +126,6 @@ export function chartViewProjectItemsQueryOptions(chartViewId: number) {
 	return queryOptions({
 		queryKey: workloadKeys.chartViewProjectItems(chartViewId),
 		queryFn: () => fetchChartViewProjectItems(chartViewId),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }

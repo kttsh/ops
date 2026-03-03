@@ -5,74 +5,33 @@ import type {
 	PaginatedResponse,
 	Project,
 	ProjectListParams,
-	SingleResponse,
 	UpdateProjectInput,
 } from "@/features/projects/types";
-import { API_BASE_URL, ApiError, handleResponse } from "@/lib/api";
+import { API_BASE_URL, createCrudClient, handleResponse } from "@/lib/api";
 
-export { ApiError };
+const client = createCrudClient<
+	Project,
+	CreateProjectInput,
+	UpdateProjectInput,
+	number,
+	ProjectListParams
+>({
+	resourcePath: "projects",
+	paginated: true,
+});
 
-export async function fetchProjects(
-	params: ProjectListParams,
-): Promise<PaginatedResponse<Project>> {
-	const searchParams = new URLSearchParams({
-		"page[number]": String(params.page),
-		"page[size]": String(params.pageSize),
-	});
-	if (params.includeDisabled) {
-		searchParams.set("filter[includeDisabled]", "true");
-	}
+export const {
+	fetchList: fetchProjects,
+	fetchDetail: fetchProject,
+	create: createProject,
+	update: updateProject,
+	delete: deleteProject,
+	restore: restoreProject,
+} = client;
 
-	const response = await fetch(`${API_BASE_URL}/projects?${searchParams}`);
-	return handleResponse<PaginatedResponse<Project>>(response);
-}
+export { ApiError } from "@/lib/api";
 
-export async function fetchProject(
-	id: number,
-): Promise<SingleResponse<Project>> {
-	const response = await fetch(`${API_BASE_URL}/projects/${id}`);
-	return handleResponse<SingleResponse<Project>>(response);
-}
-
-export async function createProject(
-	input: CreateProjectInput,
-): Promise<SingleResponse<Project>> {
-	const response = await fetch(`${API_BASE_URL}/projects`, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(input),
-	});
-	return handleResponse<SingleResponse<Project>>(response);
-}
-
-export async function updateProject(
-	id: number,
-	input: UpdateProjectInput,
-): Promise<SingleResponse<Project>> {
-	const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
-		method: "PUT",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(input),
-	});
-	return handleResponse<SingleResponse<Project>>(response);
-}
-
-export async function deleteProject(id: number): Promise<void> {
-	const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
-		method: "DELETE",
-	});
-	return handleResponse<void>(response);
-}
-
-export async function restoreProject(
-	id: number,
-): Promise<SingleResponse<Project>> {
-	const response = await fetch(
-		`${API_BASE_URL}/projects/${id}/actions/restore`,
-		{ method: "POST" },
-	);
-	return handleResponse<SingleResponse<Project>>(response);
-}
+// --- Projects 固有の Select 用フェッチ関数 ---
 
 export async function fetchBusinessUnitsForSelect(): Promise<
 	PaginatedResponse<BusinessUnit>

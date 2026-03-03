@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { includeDisabledFilterSchema } from "@/types/common";
 import { paginationQuerySchema } from "@/types/pagination";
 
 // --- Zod Schemas ---
@@ -34,7 +35,7 @@ export const updateStandardEffortMasterSchema = z.object({
 /** List query schema */
 export const standardEffortMasterListQuerySchema = paginationQuerySchema.extend(
 	{
-		"filter[includeDisabled]": z.coerce.boolean().default(false),
+		"filter[includeDisabled]": includeDisabledFilterSchema,
 		"filter[businessUnitCode]": z.string().optional(),
 		"filter[projectTypeCode]": z.string().optional(),
 	},

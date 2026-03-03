@@ -1,28 +1,22 @@
-import { queryOptions } from "@tanstack/react-query";
-import type { ProjectTypeListParams } from "@/features/project-types/types";
+import type { ProjectType, ProjectTypeListParams } from "@/features/project-types/types";
+import {
+	createQueryKeys,
+	createListQueryOptions,
+	createDetailQueryOptions,
+	STALE_TIMES,
+} from "@/lib/api";
 import { fetchProjectType, fetchProjectTypes } from "./api-client";
 
-export const projectTypeKeys = {
-	all: ["project-types"] as const,
-	lists: () => [...projectTypeKeys.all, "list"] as const,
-	list: (params: ProjectTypeListParams) =>
-		[...projectTypeKeys.lists(), params] as const,
-	details: () => [...projectTypeKeys.all, "detail"] as const,
-	detail: (code: string) => [...projectTypeKeys.details(), code] as const,
-};
+export const projectTypeKeys = createQueryKeys<string, ProjectTypeListParams>("project-types");
 
-export function projectTypesQueryOptions(params: ProjectTypeListParams) {
-	return queryOptions({
-		queryKey: projectTypeKeys.list(params),
-		queryFn: () => fetchProjectTypes(params),
-		staleTime: 2 * 60 * 1000,
-	});
-}
+export const projectTypesQueryOptions = createListQueryOptions<ProjectType, ProjectTypeListParams>({
+	queryKeys: projectTypeKeys,
+	fetchList: fetchProjectTypes,
+	staleTime: STALE_TIMES.STANDARD,
+});
 
-export function projectTypeQueryOptions(code: string) {
-	return queryOptions({
-		queryKey: projectTypeKeys.detail(code),
-		queryFn: () => fetchProjectType(code),
-		staleTime: 2 * 60 * 1000,
-	});
-}
+export const projectTypeQueryOptions = createDetailQueryOptions<ProjectType, string>({
+	queryKeys: projectTypeKeys,
+	fetchDetail: fetchProjectType,
+	staleTime: STALE_TIMES.STANDARD,
+});

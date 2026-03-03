@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { yearMonthSchema } from "@/types/common";
 
 // --- CSV変換ヘルパー ---
 
@@ -12,16 +13,6 @@ const csvToStringArray = z.string().transform((val) =>
 const csvToNumberArray = z
 	.string()
 	.transform((val) => val.split(",").map((s) => Number(s.trim())));
-
-// --- YYYYMM形式スキーマ ---
-
-const yearMonthSchema = z
-	.string()
-	.regex(/^\d{6}$/, "YYYYMM形式で指定してください")
-	.refine((val) => {
-		const month = parseInt(val.slice(4, 6), 10);
-		return month >= 1 && month <= 12;
-	}, "月は01〜12の範囲で指定してください");
 
 // --- クエリパラメータスキーマ ---
 

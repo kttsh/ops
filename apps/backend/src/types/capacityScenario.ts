@@ -1,5 +1,9 @@
 import { z } from "zod";
 import { paginationQuerySchema } from "@/types/pagination";
+import {
+	yearMonthSchema,
+	includeDisabledFilterSchema,
+} from "@/types/common";
 
 // --- 共通バリデーション ---
 
@@ -8,18 +12,6 @@ const hoursPerPersonField = z
 	.number()
 	.gt(0, { message: "hoursPerPerson must be greater than 0" })
 	.lte(744, { message: "hoursPerPerson must be 744 or less" });
-
-/** 年月バリデーション: YYYYMM形式（6桁数字、月は01〜12の範囲） */
-const yearMonthSchema = z
-	.string()
-	.regex(/^\d{6}$/, "yearMonth must be a 6-digit string in YYYYMM format")
-	.refine(
-		(val) => {
-			const month = parseInt(val.slice(4, 6), 10);
-			return month >= 1 && month <= 12;
-		},
-		{ message: "Month part must be between 01 and 12" },
-	);
 
 // --- Zod スキーマ ---
 
@@ -41,7 +33,7 @@ export const updateCapacityScenarioSchema = z.object({
 
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
 export const capacityScenarioListQuerySchema = paginationQuerySchema.extend({
-	"filter[includeDisabled]": z.coerce.boolean().default(false),
+	"filter[includeDisabled]": includeDisabledFilterSchema,
 });
 
 /** 自動計算リクエストスキーマ */

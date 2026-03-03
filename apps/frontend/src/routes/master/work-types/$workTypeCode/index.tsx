@@ -3,6 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
+import { DetailRow } from "@/components/shared/DetailRow";
+import { NotFoundState } from "@/components/shared/NotFoundState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,20 +13,12 @@ import {
 	useDeleteWorkType,
 	workTypeQueryOptions,
 } from "@/features/work-types";
-import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
+import { formatDateTime } from "@/lib/format-utils";
 
 export const Route = createFileRoute("/master/work-types/$workTypeCode/")({
 	component: WorkTypeDetailPage,
 	notFoundComponent: () => (
-		<div className="flex flex-col items-center justify-center py-16 space-y-4">
-			<p className="text-lg font-medium">作業種類が見つかりません</p>
-			<Link
-				to="/master/work-types"
-				className="text-sm text-primary hover:underline"
-			>
-				一覧に戻る
-			</Link>
-		</div>
+		<NotFoundState entityName="作業種類" backTo="/master/work-types" />
 	),
 });
 
@@ -72,15 +67,7 @@ function WorkTypeDetailPage() {
 
 	if (isError || !data) {
 		return (
-			<div className="flex flex-col items-center justify-center py-16 space-y-4">
-				<p className="text-lg font-medium">作業種類が見つかりません</p>
-				<Link
-					to="/master/work-types"
-					className="text-sm text-primary hover:underline"
-				>
-					一覧に戻る
-				</Link>
-			</div>
+			<NotFoundState entityName="作業種類" backTo="/master/work-types" />
 		);
 	}
 
@@ -139,7 +126,7 @@ function WorkTypeDetailPage() {
 				<DetailRow label="表示順" value={String(wt.displayOrder)} />
 				<DetailRow
 					label="更新日時"
-					value={new Date(wt.updatedAt).toLocaleString("ja-JP")}
+					value={formatDateTime(wt.updatedAt)}
 				/>
 			</div>
 
@@ -151,15 +138,6 @@ function WorkTypeDetailPage() {
 				entityLabel="作業種類"
 				entityName={wt.name}
 			/>
-		</div>
-	);
-}
-
-function DetailRow({ label, value }: { label: string; value: string }) {
-	return (
-		<div className="grid grid-cols-3 gap-4">
-			<dt className="text-sm font-medium text-muted-foreground">{label}</dt>
-			<dd className="col-span-2 text-sm">{value}</dd>
 		</div>
 	);
 }

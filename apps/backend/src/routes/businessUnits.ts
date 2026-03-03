@@ -5,6 +5,10 @@ import {
 	createBusinessUnitSchema,
 	updateBusinessUnitSchema,
 } from "@/types/businessUnit";
+import {
+	buildPaginatedResponse,
+	setLocationHeader,
+} from "@/utils/responseHelper";
 import { validate } from "@/utils/validate";
 
 const app = new Hono()
@@ -18,17 +22,10 @@ const app = new Hono()
 		});
 
 		return c.json(
-			{
-				data: result.items,
-				meta: {
-					pagination: {
-						currentPage: query["page[number]"],
-						pageSize: query["page[size]"],
-						totalItems: result.totalCount,
-						totalPages: Math.ceil(result.totalCount / query["page[size]"]),
-					},
-				},
-			},
+			buildPaginatedResponse(result, {
+				page: query["page[number]"],
+				pageSize: query["page[size]"],
+			}),
 			200,
 		);
 	})
@@ -42,7 +39,7 @@ const app = new Hono()
 	.post("/", validate("json", createBusinessUnitSchema), async (c) => {
 		const body = c.req.valid("json");
 		const created = await businessUnitService.create(body);
-		c.header("Location", `/business-units/${created.businessUnitCode}`);
+		setLocationHeader(c, "/business-units", created.businessUnitCode);
 		return c.json({ data: created }, 201);
 	})
 	// PUT /:businessUnitCode - 更新

@@ -1,18 +1,19 @@
 import { z } from "zod";
+import { colorCodeSchema } from "@/types/common";
 
 // --- Zod Schemas ---
 
 /** 作成用スキーマ */
 export const createChartColorPaletteSchema = z.object({
 	name: z.string().min(1).max(100),
-	colorCode: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+	colorCode: colorCodeSchema,
 	displayOrder: z.number().int().default(0),
 });
 
 /** 更新用スキーマ */
 export const updateChartColorPaletteSchema = z.object({
 	name: z.string().min(1).max(100),
-	colorCode: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+	colorCode: colorCodeSchema,
 	displayOrder: z.number().int().optional(),
 });
 

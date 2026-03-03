@@ -1,28 +1,22 @@
-import { queryOptions } from "@tanstack/react-query";
-import type { BusinessUnitListParams } from "@/features/business-units/types";
+import type { BusinessUnit, BusinessUnitListParams } from "@/features/business-units/types";
+import {
+	createQueryKeys,
+	createListQueryOptions,
+	createDetailQueryOptions,
+	STALE_TIMES,
+} from "@/lib/api";
 import { fetchBusinessUnit, fetchBusinessUnits } from "./api-client";
 
-export const businessUnitKeys = {
-	all: ["business-units"] as const,
-	lists: () => [...businessUnitKeys.all, "list"] as const,
-	list: (params: BusinessUnitListParams) =>
-		[...businessUnitKeys.lists(), params] as const,
-	details: () => [...businessUnitKeys.all, "detail"] as const,
-	detail: (code: string) => [...businessUnitKeys.details(), code] as const,
-};
+export const businessUnitKeys = createQueryKeys<string, BusinessUnitListParams>("business-units");
 
-export function businessUnitsQueryOptions(params: BusinessUnitListParams) {
-	return queryOptions({
-		queryKey: businessUnitKeys.list(params),
-		queryFn: () => fetchBusinessUnits(params),
-		staleTime: 2 * 60 * 1000,
-	});
-}
+export const businessUnitsQueryOptions = createListQueryOptions<BusinessUnit, BusinessUnitListParams>({
+	queryKeys: businessUnitKeys,
+	fetchList: fetchBusinessUnits,
+	staleTime: STALE_TIMES.STANDARD,
+});
 
-export function businessUnitQueryOptions(code: string) {
-	return queryOptions({
-		queryKey: businessUnitKeys.detail(code),
-		queryFn: () => fetchBusinessUnit(code),
-		staleTime: 2 * 60 * 1000,
-	});
-}
+export const businessUnitQueryOptions = createDetailQueryOptions<BusinessUnit, string>({
+	queryKeys: businessUnitKeys,
+	fetchDetail: fetchBusinessUnit,
+	staleTime: STALE_TIMES.STANDARD,
+});

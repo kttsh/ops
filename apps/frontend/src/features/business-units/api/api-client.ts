@@ -2,82 +2,28 @@ import type {
 	BusinessUnit,
 	BusinessUnitListParams,
 	CreateBusinessUnitInput,
-	PaginatedResponse,
-	SingleResponse,
 	UpdateBusinessUnitInput,
 } from "@/features/business-units/types";
-import { API_BASE_URL, ApiError, handleResponse } from "@/lib/api";
+import { createCrudClient } from "@/lib/api";
 
-export { ApiError };
+const client = createCrudClient<
+	BusinessUnit,
+	CreateBusinessUnitInput,
+	UpdateBusinessUnitInput,
+	string,
+	BusinessUnitListParams
+>({
+	resourcePath: "business-units",
+	paginated: true,
+});
 
-export async function fetchBusinessUnits(
-	params: BusinessUnitListParams,
-): Promise<PaginatedResponse<BusinessUnit>> {
-	const searchParams = new URLSearchParams({
-		"page[number]": String(params.page),
-		"page[size]": String(params.pageSize),
-	});
-	if (params.includeDisabled) {
-		searchParams.set("filter[includeDisabled]", "true");
-	}
+export const {
+	fetchList: fetchBusinessUnits,
+	fetchDetail: fetchBusinessUnit,
+	create: createBusinessUnit,
+	update: updateBusinessUnit,
+	delete: deleteBusinessUnit,
+	restore: restoreBusinessUnit,
+} = client;
 
-	const response = await fetch(
-		`${API_BASE_URL}/business-units?${searchParams}`,
-	);
-	return handleResponse<PaginatedResponse<BusinessUnit>>(response);
-}
-
-export async function fetchBusinessUnit(
-	code: string,
-): Promise<SingleResponse<BusinessUnit>> {
-	const response = await fetch(
-		`${API_BASE_URL}/business-units/${encodeURIComponent(code)}`,
-	);
-	return handleResponse<SingleResponse<BusinessUnit>>(response);
-}
-
-export async function createBusinessUnit(
-	input: CreateBusinessUnitInput,
-): Promise<SingleResponse<BusinessUnit>> {
-	const response = await fetch(`${API_BASE_URL}/business-units`, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(input),
-	});
-	return handleResponse<SingleResponse<BusinessUnit>>(response);
-}
-
-export async function updateBusinessUnit(
-	code: string,
-	input: UpdateBusinessUnitInput,
-): Promise<SingleResponse<BusinessUnit>> {
-	const response = await fetch(
-		`${API_BASE_URL}/business-units/${encodeURIComponent(code)}`,
-		{
-			method: "PUT",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(input),
-		},
-	);
-	return handleResponse<SingleResponse<BusinessUnit>>(response);
-}
-
-export async function deleteBusinessUnit(code: string): Promise<void> {
-	const response = await fetch(
-		`${API_BASE_URL}/business-units/${encodeURIComponent(code)}`,
-		{
-			method: "DELETE",
-		},
-	);
-	return handleResponse<void>(response);
-}
-
-export async function restoreBusinessUnit(
-	code: string,
-): Promise<SingleResponse<BusinessUnit>> {
-	const response = await fetch(
-		`${API_BASE_URL}/business-units/${encodeURIComponent(code)}/actions/restore`,
-		{ method: "POST" },
-	);
-	return handleResponse<SingleResponse<BusinessUnit>>(response);
-}
+export { ApiError } from "@/lib/api";

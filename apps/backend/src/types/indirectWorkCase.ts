@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { includeDisabledFilterSchema } from "@/types/common";
 import { paginationQuerySchema } from "@/types/pagination";
 
 // --- Zod スキーマ ---
@@ -30,7 +31,7 @@ export const updateIndirectWorkCaseSchema = z.object({
 
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
 export const indirectWorkCaseListQuerySchema = paginationQuerySchema.extend({
-	"filter[includeDisabled]": z.coerce.boolean().default(false),
+	"filter[includeDisabled]": includeDisabledFilterSchema,
 	"filter[businessUnitCode]": z.string().max(20).optional(),
 });
 

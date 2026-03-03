@@ -1,8 +1,15 @@
 import { queryOptions } from "@tanstack/react-query";
 import type {
+	Project,
 	ProjectListParams,
 	SelectOption,
 } from "@/features/projects/types";
+import {
+	createQueryKeys,
+	createListQueryOptions,
+	createDetailQueryOptions,
+	STALE_TIMES,
+} from "@/lib/api";
 import {
 	fetchBusinessUnitsForSelect,
 	fetchProject,
@@ -10,30 +17,21 @@ import {
 	fetchProjectTypesForSelect,
 } from "./api-client";
 
-export const projectKeys = {
-	all: ["projects"] as const,
-	lists: () => [...projectKeys.all, "list"] as const,
-	list: (params: ProjectListParams) =>
-		[...projectKeys.lists(), params] as const,
-	details: () => [...projectKeys.all, "detail"] as const,
-	detail: (id: number) => [...projectKeys.details(), id] as const,
-};
+export const projectKeys = createQueryKeys<number, ProjectListParams>("projects");
 
-export function projectsQueryOptions(params: ProjectListParams) {
-	return queryOptions({
-		queryKey: projectKeys.list(params),
-		queryFn: () => fetchProjects(params),
-		staleTime: 60 * 1000,
-	});
-}
+export const projectsQueryOptions = createListQueryOptions<Project, ProjectListParams>({
+	queryKeys: projectKeys,
+	fetchList: fetchProjects,
+	staleTime: STALE_TIMES.SHORT,
+});
 
-export function projectQueryOptions(id: number) {
-	return queryOptions({
-		queryKey: projectKeys.detail(id),
-		queryFn: () => fetchProject(id),
-		staleTime: 60 * 1000,
-	});
-}
+export const projectQueryOptions = createDetailQueryOptions<Project, number>({
+	queryKeys: projectKeys,
+	fetchDetail: fetchProject,
+	staleTime: STALE_TIMES.SHORT,
+});
+
+// --- Projects 固有の Select 用 queryOptions ---
 
 export function businessUnitsForSelectQueryOptions() {
 	return queryOptions({
@@ -44,7 +42,7 @@ export function businessUnitsForSelectQueryOptions() {
 				value: bu.businessUnitCode,
 				label: bu.name,
 			})),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -57,6 +55,6 @@ export function projectTypesForSelectQueryOptions() {
 				value: pt.projectTypeCode,
 				label: pt.name,
 			})),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }

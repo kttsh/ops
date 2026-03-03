@@ -1,21 +1,5 @@
 import { z } from "zod";
-
-// --- 共通バリデーション ---
-
-/** 年月バリデーション: YYYYMM形式（6桁数字、月は01〜12の範囲） */
-const yearMonthSchema = z
-	.string()
-	.regex(/^\d{6}$/, "yearMonth must be a 6-digit string in YYYYMM format")
-	.refine(
-		(val) => {
-			const month = parseInt(val.slice(4, 6), 10);
-			return month >= 1 && month <= 12;
-		},
-		{ message: "Month part must be between 01 and 12" },
-	);
-
-/** 事業部コードバリデーション: 1文字以上20文字以下 */
-const businessUnitCodeSchema = z.string().min(1).max(20);
+import { yearMonthSchema, businessUnitCodeSchema } from "@/types/common";
 
 /** キャパシティバリデーション: 0以上99999999.99以下 */
 const capacityValueSchema = z.number().min(0).max(99999999.99);

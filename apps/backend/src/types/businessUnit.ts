@@ -1,15 +1,15 @@
 import { z } from "zod";
+import {
+	businessUnitCodeSchema,
+	includeDisabledFilterSchema,
+} from "@/types/common";
 import { paginationQuerySchema } from "@/types/pagination";
 
 // --- Zod スキーマ ---
 
 /** 作成用スキーマ */
 export const createBusinessUnitSchema = z.object({
-	businessUnitCode: z
-		.string()
-		.min(1)
-		.max(20)
-		.regex(/^[a-zA-Z0-9_-]+$/),
+	businessUnitCode: businessUnitCodeSchema,
 	name: z.string().min(1).max(100),
 	displayOrder: z.number().int().min(0).default(0),
 });
@@ -22,7 +22,7 @@ export const updateBusinessUnitSchema = z.object({
 
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
 export const businessUnitListQuerySchema = paginationQuerySchema.extend({
-	"filter[includeDisabled]": z.coerce.boolean().default(false),
+	"filter[includeDisabled]": includeDisabledFilterSchema,
 });
 
 // --- TypeScript 型 ---

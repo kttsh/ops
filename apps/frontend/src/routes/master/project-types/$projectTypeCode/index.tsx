@@ -3,6 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
+import { DetailRow } from "@/components/shared/DetailRow";
+import { NotFoundState } from "@/components/shared/NotFoundState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,21 +13,16 @@ import {
 	projectTypeQueryOptions,
 	useDeleteProjectType,
 } from "@/features/project-types";
-import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
+import { formatDateTime } from "@/lib/format-utils";
 
 export const Route = createFileRoute("/master/project-types/$projectTypeCode/")(
 	{
 		component: ProjectTypeDetailPage,
 		notFoundComponent: () => (
-			<div className="flex flex-col items-center justify-center py-16 space-y-4">
-				<p className="text-lg font-medium">案件タイプが見つかりません</p>
-				<Link
-					to="/master/project-types"
-					className="text-sm text-primary hover:underline"
-				>
-					一覧に戻る
-				</Link>
-			</div>
+			<NotFoundState
+				entityName="案件タイプ"
+				backTo="/master/project-types"
+			/>
 		),
 	},
 );
@@ -74,15 +72,10 @@ function ProjectTypeDetailPage() {
 
 	if (isError || !data) {
 		return (
-			<div className="flex flex-col items-center justify-center py-16 space-y-4">
-				<p className="text-lg font-medium">案件タイプが見つかりません</p>
-				<Link
-					to="/master/project-types"
-					className="text-sm text-primary hover:underline"
-				>
-					一覧に戻る
-				</Link>
-			</div>
+			<NotFoundState
+				entityName="案件タイプ"
+				backTo="/master/project-types"
+			/>
 		);
 	}
 
@@ -124,7 +117,7 @@ function ProjectTypeDetailPage() {
 				<DetailRow label="表示順" value={String(pt.displayOrder)} />
 				<DetailRow
 					label="更新日時"
-					value={new Date(pt.updatedAt).toLocaleString("ja-JP")}
+					value={formatDateTime(pt.updatedAt)}
 				/>
 			</div>
 
@@ -136,15 +129,6 @@ function ProjectTypeDetailPage() {
 				entityLabel="案件タイプ"
 				entityName={pt.name}
 			/>
-		</div>
-	);
-}
-
-function DetailRow({ label, value }: { label: string; value: string }) {
-	return (
-		<div className="grid grid-cols-3 gap-4">
-			<dt className="text-sm font-medium text-muted-foreground">{label}</dt>
-			<dd className="col-span-2 text-sm">{value}</dd>
 		</div>
 	);
 }

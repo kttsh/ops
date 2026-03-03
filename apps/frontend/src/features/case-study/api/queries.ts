@@ -3,6 +3,7 @@ import type {
 	ProjectCaseListParams,
 	StandardEffortMasterListParams,
 } from "@/features/case-study/types";
+import { STALE_TIMES } from "@/lib/api";
 import {
 	fetchProjectCase,
 	fetchProjectCases,
@@ -40,7 +41,7 @@ export function projectCasesQueryOptions(
 	return queryOptions({
 		queryKey: caseStudyKeys.projectCases(projectId),
 		queryFn: () => fetchProjectCases(projectId, params),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -48,7 +49,7 @@ export function projectCaseQueryOptions(projectId: number, caseId: number) {
 	return queryOptions({
 		queryKey: caseStudyKeys.projectCase(projectId, caseId),
 		queryFn: () => fetchProjectCase(projectId, caseId),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 	});
 }
 
@@ -60,7 +61,7 @@ export function projectLoadsQueryOptions(caseId: number) {
 	return queryOptions({
 		queryKey: caseStudyKeys.projectLoads(caseId),
 		queryFn: () => fetchProjectLoads(caseId),
-		staleTime: 5 * 60 * 1000,
+		staleTime: STALE_TIMES.MEDIUM,
 		enabled: caseId > 0,
 	});
 }
@@ -75,7 +76,7 @@ export function standardEffortMastersQueryOptions(
 	return queryOptions({
 		queryKey: caseStudyKeys.standardEffortMasters(),
 		queryFn: () => fetchStandardEffortMasters(params),
-		staleTime: 30 * 60 * 1000,
+		staleTime: STALE_TIMES.LONG,
 	});
 }
 
@@ -83,7 +84,7 @@ export function standardEffortMasterQueryOptions(id: number) {
 	return queryOptions({
 		queryKey: caseStudyKeys.standardEffortMaster(id),
 		queryFn: () => fetchStandardEffortMaster(id),
-		staleTime: 30 * 60 * 1000,
+		staleTime: STALE_TIMES.LONG,
 		enabled: id > 0,
 	});
 }

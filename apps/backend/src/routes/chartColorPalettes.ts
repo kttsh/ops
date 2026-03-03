@@ -1,21 +1,11 @@
 import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
 import { chartColorPaletteService } from "@/services/chartColorPaletteService";
 import {
 	createChartColorPaletteSchema,
 	updateChartColorPaletteSchema,
 } from "@/types/chartColorPalette";
+import { parseIntParam } from "@/utils/parseParams";
 import { validate } from "@/utils/validate";
-
-function parseIntParam(value: string, name: string): number {
-	const parsed = parseInt(value, 10);
-	if (Number.isNaN(parsed) || parsed <= 0) {
-		throw new HTTPException(422, {
-			message: `Invalid ${name}: must be a positive integer`,
-		});
-	}
-	return parsed;
-}
 
 const app = new Hono()
 	.get("/", async (c) => {

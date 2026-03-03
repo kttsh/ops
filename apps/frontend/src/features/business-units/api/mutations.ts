@@ -1,8 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
+	BusinessUnit,
+	BusinessUnitListParams,
 	CreateBusinessUnitInput,
 	UpdateBusinessUnitInput,
 } from "@/features/business-units/types";
+import { createCrudMutations } from "@/lib/api";
 import {
 	createBusinessUnit,
 	deleteBusinessUnit,
@@ -11,50 +13,27 @@ import {
 } from "./api-client";
 import { businessUnitKeys } from "./queries";
 
-export function useCreateBusinessUnit() {
-	const queryClient = useQueryClient();
+const mutations = createCrudMutations<
+	BusinessUnit,
+	CreateBusinessUnitInput,
+	UpdateBusinessUnitInput,
+	string,
+	BusinessUnitListParams
+>({
+	client: {
+		create: createBusinessUnit,
+		update: updateBusinessUnit,
+		delete: deleteBusinessUnit,
+		restore: restoreBusinessUnit,
+		fetchList: () => { throw new Error("not used in mutations"); },
+		fetchDetail: () => { throw new Error("not used in mutations"); },
+	},
+	queryKeys: businessUnitKeys,
+});
 
-	return useMutation({
-		mutationFn: (input: CreateBusinessUnitInput) => createBusinessUnit(input),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: businessUnitKeys.lists() });
-		},
-	});
-}
-
-export function useUpdateBusinessUnit(code: string) {
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: (input: UpdateBusinessUnitInput) =>
-			updateBusinessUnit(code, input),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: businessUnitKeys.lists() });
-			queryClient.invalidateQueries({
-				queryKey: businessUnitKeys.detail(code),
-			});
-		},
-	});
-}
-
-export function useDeleteBusinessUnit() {
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: (code: string) => deleteBusinessUnit(code),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: businessUnitKeys.lists() });
-		},
-	});
-}
-
-export function useRestoreBusinessUnit() {
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: (code: string) => restoreBusinessUnit(code),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: businessUnitKeys.lists() });
-		},
-	});
-}
+export const {
+	useCreate: useCreateBusinessUnit,
+	useUpdate: useUpdateBusinessUnit,
+	useDelete: useDeleteBusinessUnit,
+	useRestore: useRestoreBusinessUnit,
+} = mutations;

@@ -1,19 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { SortableHeader } from "@/components/shared/SortableHeader";
+import {
+	createDateTimeColumn,
+	createRestoreActionColumn,
+	createSortableColumn,
+	createStatusColumn,
+} from "@/components/shared/column-helpers";
 import type { BusinessUnit } from "@/features/business-units/types";
-
-function formatDateTime(dateStr: string) {
-	return new Date(dateStr).toLocaleString("ja-JP", {
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-		hour: "2-digit",
-		minute: "2-digit",
-	});
-}
 
 export function createColumns(options: {
 	onRestore?: (code: string) => void;
@@ -32,49 +26,13 @@ export function createColumns(options: {
 				</Link>
 			),
 		},
-		{
-			accessorKey: "name",
-			header: ({ column }) => <SortableHeader column={column} label="名称" />,
-		},
-		{
-			accessorKey: "displayOrder",
-			header: ({ column }) => <SortableHeader column={column} label="表示順" />,
-		},
-		{
-			id: "status",
-			header: "ステータス",
-			cell: ({ row }) => {
-				const isDeleted = !!row.original.deletedAt;
-				return isDeleted ? (
-					<Badge variant="destructive">削除済み</Badge>
-				) : (
-					<Badge variant="success">アクティブ</Badge>
-				);
-			},
-		},
-		{
-			accessorKey: "updatedAt",
-			header: ({ column }) => <SortableHeader column={column} label="更新日時" />,
-			cell: ({ row }) => formatDateTime(row.original.updatedAt),
-		},
-		{
-			id: "actions",
-			cell: ({ row }) => {
-				const isDeleted = !!row.original.deletedAt;
-				if (!isDeleted || !options.onRestore) return null;
-				return (
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={(e) => {
-							e.stopPropagation();
-							options.onRestore!(row.original.businessUnitCode);
-						}}
-					>
-						復元
-					</Button>
-				);
-			},
-		},
+		createSortableColumn<BusinessUnit>({ accessorKey: "name", label: "名称" }),
+		createSortableColumn<BusinessUnit>({ accessorKey: "displayOrder", label: "表示順" }),
+		createStatusColumn<BusinessUnit>(),
+		createDateTimeColumn<BusinessUnit>({ accessorKey: "updatedAt", label: "更新日時" }),
+		createRestoreActionColumn<BusinessUnit, string>({
+			idKey: "businessUnitCode",
+			onRestore: options.onRestore,
+		}),
 	];
 }

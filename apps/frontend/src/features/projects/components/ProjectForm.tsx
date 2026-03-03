@@ -1,9 +1,11 @@
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { FieldWrapper } from "@/components/shared/FieldWrapper";
+import { FormTextField } from "@/components/shared/FormTextField";
+import { QuerySelect } from "@/components/shared/QuerySelect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -19,7 +21,6 @@ import {
 	createProjectSchema,
 	PROJECT_STATUSES,
 } from "@/features/projects/types";
-import { getErrorMessage } from "@/lib/form-utils";
 
 type ProjectFormValues = {
 	projectCode: string;
@@ -88,27 +89,13 @@ export function ProjectForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							案件コード
-							{mode === "create" && (
-								<span className="text-destructive ml-1">*</span>
-							)}
-						</Label>
-						<Input
-							id={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-							onBlur={field.handleBlur}
-							disabled={mode === "edit"}
-							placeholder="例: PRJ001"
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="案件コード"
+						required={mode === "create"}
+						disabled={mode === "edit"}
+						placeholder="例: PRJ001"
+					/>
 				)}
 			</form.Field>
 
@@ -121,24 +108,12 @@ export function ProjectForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							名称
-							<span className="text-destructive ml-1">*</span>
-						</Label>
-						<Input
-							id={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-							onBlur={field.handleBlur}
-							placeholder="例: Webサイトリニューアル"
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="名称"
+						required
+						placeholder="例: Webサイトリニューアル"
+					/>
 				)}
 			</form.Field>
 
@@ -151,101 +126,40 @@ export function ProjectForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							事業部
-							<span className="text-destructive ml-1">*</span>
-						</Label>
-						{buQuery.isLoading ? (
-							<div className="flex items-center gap-2 h-10 text-sm text-muted-foreground">
-								<Loader2 className="h-4 w-4 animate-spin" />
-								読み込み中...
-							</div>
-						) : buQuery.isError ? (
-							<div className="flex items-center gap-2 h-10">
-								<p className="text-sm text-destructive">
-									選択肢の取得に失敗しました
-								</p>
-								<Button
-									type="button"
-									variant="ghost"
-									size="sm"
-									onClick={() => buQuery.refetch()}
-								>
-									再試行
-								</Button>
-							</div>
-						) : (
-							<Select
-								value={field.state.value}
-								onValueChange={(value) => field.handleChange(value)}
-							>
-								<SelectTrigger id={field.name}>
-									<SelectValue placeholder="事業部を選択" />
-								</SelectTrigger>
-								<SelectContent>
-									{buQuery.data?.map((option) => (
-										<SelectItem key={option.value} value={option.value}>
-											{option.label}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						)}
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FieldWrapper
+						label="事業部"
+						htmlFor={field.name}
+						required
+						errors={field.state.meta.errors}
+					>
+						<QuerySelect
+							id={field.name}
+							value={field.state.value}
+							onValueChange={(value) => field.handleChange(value)}
+							placeholder="事業部を選択"
+							queryResult={buQuery}
+						/>
+					</FieldWrapper>
 				)}
 			</form.Field>
 
 			{/* プロジェクト種別 */}
 			<form.Field name="projectTypeCode">
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>種別</Label>
-						{ptQuery.isLoading ? (
-							<div className="flex items-center gap-2 h-10 text-sm text-muted-foreground">
-								<Loader2 className="h-4 w-4 animate-spin" />
-								読み込み中...
-							</div>
-						) : ptQuery.isError ? (
-							<div className="flex items-center gap-2 h-10">
-								<p className="text-sm text-destructive">
-									選択肢の取得に失敗しました
-								</p>
-								<Button
-									type="button"
-									variant="ghost"
-									size="sm"
-									onClick={() => ptQuery.refetch()}
-								>
-									再試行
-								</Button>
-							</div>
-						) : (
-							<Select
-								value={field.state.value || undefined}
-								onValueChange={(value) =>
-									field.handleChange(value === "__none__" ? "" : value)
-								}
-							>
-								<SelectTrigger id={field.name}>
-									<SelectValue placeholder="種別を選択（任意）" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="__none__">未選択</SelectItem>
-									{ptQuery.data?.map((option) => (
-										<SelectItem key={option.value} value={option.value}>
-											{option.label}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						)}
-					</div>
+					<FieldWrapper
+						label="種別"
+						htmlFor={field.name}
+					>
+						<QuerySelect
+							id={field.name}
+							value={field.state.value}
+							onValueChange={(value) => field.handleChange(value)}
+							placeholder="種別を選択（任意）"
+							queryResult={ptQuery}
+							allowEmpty
+							emptyLabel="未選択"
+						/>
+					</FieldWrapper>
 				)}
 			</form.Field>
 
@@ -258,25 +172,13 @@ export function ProjectForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							開始年月
-							<span className="text-destructive ml-1">*</span>
-						</Label>
-						<Input
-							id={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-							onBlur={field.handleBlur}
-							placeholder="例: 202601"
-							maxLength={6}
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="開始年月"
+						required
+						placeholder="例: 202601"
+						inputProps={{ maxLength: 6 }}
+					/>
 				)}
 			</form.Field>
 
@@ -299,27 +201,14 @@ export function ProjectForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							総工数
-							<span className="text-destructive ml-1">*</span>
-						</Label>
-						<Input
-							id={field.name}
-							type="number"
-							value={field.state.value}
-							onChange={(e) => field.handleChange(Number(e.target.value))}
-							onBlur={field.handleBlur}
-							min={0}
-							step="0.1"
-							placeholder="例: 100"
-						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					<FormTextField
+						field={field}
+						label="総工数"
+						required
+						type="number"
+						placeholder="例: 100"
+						inputProps={{ min: 0, step: "0.1" }}
+					/>
 				)}
 			</form.Field>
 
@@ -332,11 +221,12 @@ export function ProjectForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>
-							ステータス
-							<span className="text-destructive ml-1">*</span>
-						</Label>
+					<FieldWrapper
+						label="ステータス"
+						htmlFor={field.name}
+						required
+						errors={field.state.meta.errors}
+					>
 						<Select
 							value={field.state.value}
 							onValueChange={(value) => field.handleChange(value)}
@@ -352,12 +242,7 @@ export function ProjectForm({
 								))}
 							</SelectContent>
 						</Select>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					</FieldWrapper>
 				)}
 			</form.Field>
 
@@ -386,8 +271,11 @@ export function ProjectForm({
 				}}
 			>
 				{(field) => (
-					<div className="space-y-2">
-						<Label htmlFor={field.name}>期間月数</Label>
+					<FieldWrapper
+						label="期間月数"
+						htmlFor={field.name}
+						errors={field.state.meta.errors}
+					>
 						<Input
 							id={field.name}
 							type="number"
@@ -400,12 +288,7 @@ export function ProjectForm({
 							min={1}
 							placeholder="例: 12"
 						/>
-						{field.state.meta.errors.length > 0 && (
-							<p className="text-sm text-destructive">
-								{getErrorMessage(field.state.meta.errors)}
-							</p>
-						)}
-					</div>
+					</FieldWrapper>
 				)}
 			</form.Field>
 

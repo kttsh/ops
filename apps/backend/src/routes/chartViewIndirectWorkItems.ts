@@ -1,26 +1,11 @@
 import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
 import { chartViewIndirectWorkItemService } from "@/services/chartViewIndirectWorkItemService";
 import {
 	createChartViewIndirectWorkItemSchema,
 	updateChartViewIndirectWorkItemSchema,
 } from "@/types/chartViewIndirectWorkItem";
+import { parseIntParam } from "@/utils/parseParams";
 import { validate } from "@/utils/validate";
-
-function parseIntParam(value: string | undefined, name: string): number {
-	if (!value) {
-		throw new HTTPException(422, {
-			message: `Missing required parameter: ${name}`,
-		});
-	}
-	const parsed = parseInt(value, 10);
-	if (Number.isNaN(parsed) || parsed <= 0) {
-		throw new HTTPException(422, {
-			message: `Invalid ${name}: must be a positive integer`,
-		});
-	}
-	return parsed;
-}
 
 const app = new Hono()
 	// GET / - 一覧取得
