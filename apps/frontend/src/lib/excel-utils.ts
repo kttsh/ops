@@ -224,14 +224,12 @@ export function parseImportSheet(
 		const rowLabel = rawRow[0] != null ? String(rawRow[0]) : "";
 		const monthlyValues = new Map<string, number>();
 
-		let ymIndex = 0;
 		for (let colIdx = 1; colIdx < headers.length; colIdx++) {
 			const header = headers[colIdx];
 			if (!header || header.trim() === "") continue;
 
 			const ym = config.parseYearMonth(header);
 			if (ym === null || !yearMonths.includes(ym)) {
-				ymIndex++;
 				continue;
 			}
 
@@ -262,7 +260,6 @@ export function parseImportSheet(
 					monthlyValues.set(ym, numValue);
 				}
 			}
-			ymIndex++;
 		}
 
 		const importRow: ImportRow = { rowLabel, monthlyValues };

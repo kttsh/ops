@@ -236,8 +236,9 @@ function FileSelectStep({
 }) {
 	return (
 		<div className="flex-1 flex flex-col items-center justify-center py-8">
-			<div
-				className={`w-full border-2 border-dashed rounded-xl p-12 text-center transition-colors ${
+			<button
+				type="button"
+				className={`w-full border-2 border-dashed rounded-xl p-12 text-center transition-colors cursor-default ${
 					isDragOver
 						? "border-primary bg-primary/5"
 						: "border-muted-foreground/25 hover:border-muted-foreground/50"
@@ -245,6 +246,7 @@ function FileSelectStep({
 				onDragOver={onDragOver}
 				onDragLeave={onDragLeave}
 				onDrop={onDrop}
+				onClick={() => fileInputRef.current?.click()}
 			>
 				{isParsing ? (
 					<div className="flex flex-col items-center gap-3">
@@ -284,7 +286,7 @@ function FileSelectStep({
 						</p>
 					</div>
 				)}
-			</div>
+			</button>
 
 			{parseError && (
 				<div className="mt-4 flex items-center gap-2 text-sm text-destructive">

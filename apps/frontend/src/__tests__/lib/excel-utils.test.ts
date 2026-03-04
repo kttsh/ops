@@ -153,7 +153,7 @@ describe("buildExportWorkbook", () => {
 
 		// シートのデータ
 		const XLSX = await import("xlsx");
-		const ws = wb.Sheets["案件工数"];
+		const ws = wb.Sheets.案件工数;
 		const aoa: (string | number)[][] = XLSX.utils.sheet_to_json(ws, {
 			header: 1,
 		});
@@ -177,7 +177,7 @@ describe("buildExportWorkbook", () => {
 
 		const wb = await buildExportWorkbook(config);
 		const XLSX = await import("xlsx");
-		const ws = wb.Sheets["間接工数"];
+		const ws = wb.Sheets.間接工数;
 		const aoa: (string | number)[][] = XLSX.utils.sheet_to_json(ws, {
 			header: 1,
 		});
@@ -197,7 +197,7 @@ describe("buildExportWorkbook", () => {
 		};
 
 		const wb = await buildExportWorkbook(config);
-		const ws = wb.Sheets["テスト"];
+		const ws = wb.Sheets.テスト;
 
 		expect(ws["!cols"]).toEqual([{ wch: 20 }, { wch: 12 }, { wch: 12 }]);
 	});

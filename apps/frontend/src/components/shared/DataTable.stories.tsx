@@ -55,7 +55,7 @@ export const Loading: Story = {
 	args: { isLoading: true },
 };
 
-export const Error: Story = {
+export const ErrorState: Story = {
 	args: { isError: true, errorMessage: "サーバーエラーが発生しました" },
 };
 

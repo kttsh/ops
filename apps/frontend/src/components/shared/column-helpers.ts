@@ -86,7 +86,7 @@ export function createDateTimeColumn<TData>(options: {
 export function createSortableColumn<TData>(options: {
 	accessorKey: keyof TData & string;
 	label: string;
-}): ColumnDef<TData> {
+}): ColumnDef<TData> & { accessorKey: keyof TData & string } {
 	const { accessorKey, label } = options;
 
 	return {
