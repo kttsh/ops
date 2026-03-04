@@ -2,16 +2,16 @@ import type {
 	ChartStackOrderSetting,
 	ChartStackOrderSettingRow,
 } from "@/types/chartStackOrderSetting";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toChartStackOrderSettingResponse(
-	row: ChartStackOrderSettingRow,
-): ChartStackOrderSetting {
-	return {
-		chartStackOrderSettingId: row.chart_stack_order_setting_id,
-		targetType: row.target_type,
-		targetCode: row.target_code,
-		stackOrder: row.stack_order,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toChartStackOrderSettingResponse = createFieldMapper<
+	ChartStackOrderSettingRow,
+	ChartStackOrderSetting
+>({
+	chartStackOrderSettingId: "chart_stack_order_setting_id",
+	targetType: "target_type",
+	targetCode: "target_code",
+	stackOrder: "stack_order",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

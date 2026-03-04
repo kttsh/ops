@@ -2,18 +2,18 @@ import type {
 	MonthlyIndirectWorkLoad,
 	MonthlyIndirectWorkLoadRow,
 } from "@/types/monthlyIndirectWorkLoad";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toMonthlyIndirectWorkLoadResponse(
-	row: MonthlyIndirectWorkLoadRow,
-): MonthlyIndirectWorkLoad {
-	return {
-		monthlyIndirectWorkLoadId: row.monthly_indirect_work_load_id,
-		indirectWorkCaseId: row.indirect_work_case_id,
-		businessUnitCode: row.business_unit_code,
-		yearMonth: row.year_month,
-		manhour: row.manhour,
-		source: row.source,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toMonthlyIndirectWorkLoadResponse = createFieldMapper<
+	MonthlyIndirectWorkLoadRow,
+	MonthlyIndirectWorkLoad
+>({
+	monthlyIndirectWorkLoadId: "monthly_indirect_work_load_id",
+	indirectWorkCaseId: "indirect_work_case_id",
+	businessUnitCode: "business_unit_code",
+	yearMonth: "year_month",
+	manhour: "manhour",
+	source: "source",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

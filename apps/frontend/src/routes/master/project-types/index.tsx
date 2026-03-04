@@ -75,36 +75,42 @@ function ProjectTypeListPage() {
 	};
 
 	return (
-		<div className="space-y-6">
+		<div className="grid grid-cols-1 gap-6">
 			<PageHeader
 				title="案件タイプ"
 				description="案件タイプの一覧を管理します"
 			/>
 
-			<DataTableToolbar
-				search={search.search}
-				onSearchChange={handleSearchChange}
-				includeDisabled={search.includeDisabled}
-				onIncludeDisabledChange={handleIncludeDisabledChange}
-				newItemHref="/master/project-types/new"
-			/>
+			<div className="rounded-3xl bg-card border border-border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+				<div className="space-y-6">
+					<DataTableToolbar
+						search={search.search}
+						onSearchChange={handleSearchChange}
+						includeDisabled={search.includeDisabled}
+						onIncludeDisabledChange={handleIncludeDisabledChange}
+						newItemHref="/master/project-types/new"
+					/>
 
-			<DataTable
-				columns={columns}
-				data={data?.data ?? []}
-				globalFilter={search.search}
-				onRowClick={(row: ProjectType) =>
-					navigate({
-						to: "/master/project-types/$projectTypeCode",
-						params: { projectTypeCode: row.projectTypeCode },
-					})
-				}
-				onRowHover={handleRowHover}
-				isLoading={isLoading}
-				isError={isError}
-				errorMessage={error?.message}
-				rowClassName={(row: ProjectType) => (row.deletedAt ? "opacity-50" : "")}
-			/>
+					<DataTable
+						columns={columns}
+						data={data?.data ?? []}
+						globalFilter={search.search}
+						onRowClick={(row: ProjectType) =>
+							navigate({
+								to: "/master/project-types/$projectTypeCode",
+								params: { projectTypeCode: row.projectTypeCode },
+							})
+						}
+						onRowHover={handleRowHover}
+						isLoading={isLoading}
+						isError={isError}
+						errorMessage={error?.message}
+						rowClassName={(row: ProjectType) =>
+							row.deletedAt ? "opacity-50" : ""
+						}
+					/>
+				</div>
+			</div>
 
 			<RestoreConfirmDialog
 				open={!!restoreTarget}

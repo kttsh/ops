@@ -86,6 +86,7 @@ describe("indirectWorkCaseService", () => {
 					businessUnitName: "プラント事業",
 					createdAt: "2026-01-01T00:00:00.000Z",
 					updatedAt: "2026-01-15T00:00:00.000Z",
+					deletedAt: null,
 				},
 			]);
 			expect(result.totalCount).toBe(1);
@@ -142,6 +143,7 @@ describe("indirectWorkCaseService", () => {
 				businessUnitName: "プラント事業",
 				createdAt: "2026-01-01T00:00:00.000Z",
 				updatedAt: "2026-01-15T00:00:00.000Z",
+				deletedAt: null,
 			});
 		});
 
@@ -185,6 +187,7 @@ describe("indirectWorkCaseService", () => {
 				businessUnitName: "プラント事業",
 				createdAt: "2026-01-01T00:00:00.000Z",
 				updatedAt: "2026-01-15T00:00:00.000Z",
+				deletedAt: null,
 			});
 		});
 
@@ -351,6 +354,7 @@ describe("indirectWorkCaseService", () => {
 				businessUnitName: "プラント事業",
 				createdAt: "2026-01-01T00:00:00.000Z",
 				updatedAt: "2026-01-15T00:00:00.000Z",
+				deletedAt: null,
 			});
 		});
 

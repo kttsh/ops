@@ -84,7 +84,7 @@ function BusinessUnitDetailPage() {
 	const bu = data.data;
 
 	return (
-		<div className="space-y-6">
+		<div className="grid grid-cols-1 gap-6">
 			<PageHeader
 				breadcrumbs={[
 					{ label: "ビジネスユニット一覧", href: "/master/business-units" },
@@ -114,7 +114,7 @@ function BusinessUnitDetailPage() {
 			/>
 
 			{/* Detail card */}
-			<div className="rounded-2xl border shadow-sm p-6 space-y-4">
+			<div className="rounded-3xl border p-6 space-y-4 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
 				<DetailRow label="ビジネスユニットコード" value={bu.businessUnitCode} />
 				<DetailRow label="名称" value={bu.name} />
 				<DetailRow label="表示順" value={String(bu.displayOrder)} />

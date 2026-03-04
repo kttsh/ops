@@ -34,10 +34,11 @@ describe("projectTransform", () => {
 				projectTypeName: "受託開発",
 				startYearMonth: "202601",
 				totalManhour: 100,
-				status: "ACTIVE",
+				status: "active",
 				durationMonths: 12,
 				createdAt: "2026-01-01T00:00:00.000Z",
 				updatedAt: "2026-01-15T00:00:00.000Z",
+				deletedAt: null,
 			});
 		});
 
@@ -90,7 +91,7 @@ describe("projectTransform", () => {
 			expect(result.durationMonths).toBeNull();
 		});
 
-		test("deleted_at フィールドがレスポンスに含まれない", () => {
+		test("deleted_at フィールドが deletedAt として ISO 文字列に変換される", () => {
 			const row: ProjectRow = {
 				project_id: 4,
 				project_code: "PRJ-004",
@@ -110,7 +111,7 @@ describe("projectTransform", () => {
 
 			const result = toProjectResponse(row);
 
-			expect(result).not.toHaveProperty("deletedAt");
+			expect(result).toHaveProperty("deletedAt", "2026-01-10T00:00:00.000Z");
 			expect(result).not.toHaveProperty("deleted_at");
 		});
 

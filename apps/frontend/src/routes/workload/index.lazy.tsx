@@ -206,7 +206,7 @@ function WorkloadPage() {
 
 					{/* ローディング状態 */}
 					{hasBusinessUnits && !isError && isLoading && (
-						<div className="space-y-6 p-6">
+						<div className="grid grid-cols-1 gap-6 p-6">
 							{showChart && <SkeletonChart />}
 							{showTable && <SkeletonTable />}
 						</div>
@@ -214,31 +214,33 @@ function WorkloadPage() {
 
 					{/* データ表示 */}
 					{hasBusinessUnits && !isError && !isLoading && (
-						<div className="flex h-full flex-col">
-							{/* チャート + 凡例 */}
+						<div className="grid grid-cols-1 gap-6 p-6 h-full">
+							{/* チャート + 凡例カード */}
 							{showChart && (
-								<div className="flex border-b border-border">
-									<div className="flex-1 p-4">
-										<WorkloadChart
-											data={chartData}
-											seriesConfig={seriesConfig}
-											activeMonth={activeMonth}
+								<div className="rounded-3xl bg-card border border-border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+									<div className="flex">
+										<div className="flex-1">
+											<WorkloadChart
+												data={chartData}
+												seriesConfig={seriesConfig}
+												activeMonth={activeMonth}
+												dispatch={legendDispatch}
+												isFetching={isFetching}
+											/>
+										</div>
+										<LegendPanel
+											data={currentLegendData}
+											isPinned={isPinned}
 											dispatch={legendDispatch}
-											isFetching={isFetching}
+											seriesConfig={seriesConfig}
 										/>
 									</div>
-									<LegendPanel
-										data={currentLegendData}
-										isPinned={isPinned}
-										dispatch={legendDispatch}
-										seriesConfig={seriesConfig}
-									/>
 								</div>
 							)}
 
-							{/* テーブル */}
+							{/* テーブルカード */}
 							{showTable && (
-								<div className="flex-1 overflow-hidden p-4">
+								<div className="rounded-3xl bg-card border border-border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out overflow-hidden">
 									<WorkloadDataTable
 										rows={tableData.rows}
 										filteredRows={tableData.filteredRows}

@@ -128,8 +128,8 @@ function IndirectCapacitySettingsPage() {
 			</div>
 
 			{/* メインコンテンツ - 2カラムレスポンシブ */}
-			<div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-[60fr_40fr] lg:grid-cols-2 gap-4 p-4">
-				<div className="overflow-y-auto">
+			<div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-[60fr_40fr] gap-6 p-6">
+				<div className="overflow-y-auto rounded-3xl bg-card border border-border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
 					<SettingsPanel
 						businessUnitCode={selectedBu}
 						headcountCases={page.headcountCases}
@@ -167,7 +167,7 @@ function IndirectCapacitySettingsPage() {
 						onIwcIncludeDisabledChange={page.setIwcIncludeDisabled}
 					/>
 				</div>
-				<div className="overflow-y-auto">
+				<div className="overflow-y-auto rounded-3xl bg-card border border-border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
 					<ResultPanel
 						capacityResult={page.capacityResult}
 						indirectWorkResult={page.indirectWorkResult}

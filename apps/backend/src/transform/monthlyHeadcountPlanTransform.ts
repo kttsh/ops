@@ -2,17 +2,17 @@ import type {
 	MonthlyHeadcountPlan,
 	MonthlyHeadcountPlanRow,
 } from "@/types/monthlyHeadcountPlan";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toMonthlyHeadcountPlanResponse(
-	row: MonthlyHeadcountPlanRow,
-): MonthlyHeadcountPlan {
-	return {
-		monthlyHeadcountPlanId: row.monthly_headcount_plan_id,
-		headcountPlanCaseId: row.headcount_plan_case_id,
-		businessUnitCode: row.business_unit_code,
-		yearMonth: row.year_month,
-		headcount: row.headcount,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toMonthlyHeadcountPlanResponse = createFieldMapper<
+	MonthlyHeadcountPlanRow,
+	MonthlyHeadcountPlan
+>({
+	monthlyHeadcountPlanId: "monthly_headcount_plan_id",
+	headcountPlanCaseId: "headcount_plan_case_id",
+	businessUnitCode: "business_unit_code",
+	yearMonth: "year_month",
+	headcount: "headcount",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

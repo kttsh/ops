@@ -1,20 +1,19 @@
 import type { Project, ProjectRow } from "@/types/project";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toProjectResponse(row: ProjectRow): Project {
-	return {
-		projectId: row.project_id,
-		projectCode: row.project_code,
-		name: row.name,
-		businessUnitCode: row.business_unit_code,
-		businessUnitName: row.business_unit_name,
-		projectTypeCode: row.project_type_code,
-		projectTypeName: row.project_type_name,
-		startYearMonth: row.start_year_month,
-		totalManhour: row.total_manhour,
-		status: row.status.toLowerCase(),
-		durationMonths: row.duration_months,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-		deletedAt: row.deleted_at?.toISOString() ?? null,
-	};
-}
+export const toProjectResponse = createFieldMapper<ProjectRow, Project>({
+	projectId: "project_id",
+	projectCode: "project_code",
+	name: "name",
+	businessUnitCode: "business_unit_code",
+	businessUnitName: "business_unit_name",
+	projectTypeCode: "project_type_code",
+	projectTypeName: "project_type_name",
+	startYearMonth: "start_year_month",
+	totalManhour: "total_manhour",
+	status: { field: "status", transform: (v) => v.toLowerCase() },
+	durationMonths: "duration_months",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+	deletedAt: "deleted_at",
+});

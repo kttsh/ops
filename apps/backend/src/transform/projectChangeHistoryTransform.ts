@@ -2,18 +2,18 @@ import type {
 	ProjectChangeHistory,
 	ProjectChangeHistoryRow,
 } from "@/types/projectChangeHistory";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toProjectChangeHistoryResponse(
-	row: ProjectChangeHistoryRow,
-): ProjectChangeHistory {
-	return {
-		projectChangeHistoryId: row.project_change_history_id,
-		projectId: row.project_id,
-		changeType: row.change_type,
-		fieldName: row.field_name,
-		oldValue: row.old_value,
-		newValue: row.new_value,
-		changedBy: row.changed_by,
-		changedAt: row.changed_at.toISOString(),
-	};
-}
+export const toProjectChangeHistoryResponse = createFieldMapper<
+	ProjectChangeHistoryRow,
+	ProjectChangeHistory
+>({
+	projectChangeHistoryId: "project_change_history_id",
+	projectId: "project_id",
+	changeType: "change_type",
+	fieldName: "field_name",
+	oldValue: "old_value",
+	newValue: "new_value",
+	changedBy: "changed_by",
+	changedAt: "changed_at",
+});

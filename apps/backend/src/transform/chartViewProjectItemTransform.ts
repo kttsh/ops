@@ -2,25 +2,29 @@ import type {
 	ChartViewProjectItem,
 	ChartViewProjectItemRow,
 } from "@/types/chartViewProjectItem";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toChartViewProjectItemResponse(
-	row: ChartViewProjectItemRow,
-): ChartViewProjectItem {
-	return {
-		chartViewProjectItemId: row.chart_view_project_item_id,
-		chartViewId: row.chart_view_id,
-		projectId: row.project_id,
-		projectCaseId: row.project_case_id,
-		displayOrder: row.display_order,
-		isVisible: !!row.is_visible,
-		color: row.color_code ?? null,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-		project: {
+export const toChartViewProjectItemResponse = createFieldMapper<
+	ChartViewProjectItemRow,
+	ChartViewProjectItem
+>({
+	chartViewProjectItemId: "chart_view_project_item_id",
+	chartViewId: "chart_view_id",
+	projectId: "project_id",
+	projectCaseId: "project_case_id",
+	displayOrder: "display_order",
+	isVisible: { field: "is_visible", transform: (v) => !!v },
+	color: { field: "color_code", transform: (v) => v ?? null },
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+	project: {
+		computed: (row) => ({
 			projectCode: row.project_code,
 			projectName: row.project_name,
-		},
-		projectCase:
+		}),
+	},
+	projectCase: {
+		computed: (row) =>
 			row.project_case_id !== null ? { caseName: row.case_name! } : null,
-	};
-}
+	},
+});

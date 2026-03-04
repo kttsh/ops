@@ -1,20 +1,22 @@
 import type { ProjectCase, ProjectCaseRow } from "@/types/projectCase";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toProjectCaseResponse(row: ProjectCaseRow): ProjectCase {
-	return {
-		projectCaseId: row.project_case_id,
-		projectId: row.project_id,
-		caseName: row.case_name,
-		isPrimary: row.is_primary,
-		description: row.description,
-		calculationType: row.calculation_type,
-		standardEffortId: row.standard_effort_id,
-		startYearMonth: row.start_year_month,
-		durationMonths: row.duration_months,
-		totalManhour: row.total_manhour,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-		projectName: row.project_name,
-		standardEffortName: row.standard_effort_name,
-	};
-}
+export const toProjectCaseResponse = createFieldMapper<
+	ProjectCaseRow,
+	ProjectCase
+>({
+	projectCaseId: "project_case_id",
+	projectId: "project_id",
+	caseName: "case_name",
+	isPrimary: "is_primary",
+	description: "description",
+	calculationType: "calculation_type",
+	standardEffortId: "standard_effort_id",
+	startYearMonth: "start_year_month",
+	durationMonths: "duration_months",
+	totalManhour: "total_manhour",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+	projectName: "project_name",
+	standardEffortName: "standard_effort_name",
+});

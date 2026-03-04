@@ -25,8 +25,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 			{/* Desktop sidebar */}
 			<aside
 				className={cn(
-					"hidden lg:flex lg:flex-col border-r border-border bg-sidebar",
-					collapsed ? "lg:w-16" : "lg:w-72",
+					"hidden lg:flex lg:flex-col border-r border-sidebar-border bg-sidebar transition-all duration-200 ease-in-out",
+					collapsed ? "lg:w-16" : "lg:w-60",
 				)}
 			>
 				<div className="flex h-14 items-center px-6">

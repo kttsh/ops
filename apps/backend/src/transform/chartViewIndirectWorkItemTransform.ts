@@ -2,18 +2,18 @@ import type {
 	ChartViewIndirectWorkItem,
 	ChartViewIndirectWorkItemRow,
 } from "@/types/chartViewIndirectWorkItem";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toChartViewIndirectWorkItemResponse(
-	row: ChartViewIndirectWorkItemRow,
-): ChartViewIndirectWorkItem {
-	return {
-		chartViewIndirectWorkItemId: row.chart_view_indirect_work_item_id,
-		chartViewId: row.chart_view_id,
-		indirectWorkCaseId: row.indirect_work_case_id,
-		caseName: row.case_name,
-		displayOrder: row.display_order,
-		isVisible: !!row.is_visible,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toChartViewIndirectWorkItemResponse = createFieldMapper<
+	ChartViewIndirectWorkItemRow,
+	ChartViewIndirectWorkItem
+>({
+	chartViewIndirectWorkItemId: "chart_view_indirect_work_item_id",
+	chartViewId: "chart_view_id",
+	indirectWorkCaseId: "indirect_work_case_id",
+	caseName: "case_name",
+	displayOrder: "display_order",
+	isVisible: { field: "is_visible", transform: (v) => !!v },
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

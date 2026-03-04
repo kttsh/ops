@@ -1,11 +1,13 @@
 import type { ProjectType, ProjectTypeRow } from "@/types/projectType";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toProjectTypeResponse(row: ProjectTypeRow): ProjectType {
-	return {
-		projectTypeCode: row.project_type_code,
-		name: row.name,
-		displayOrder: row.display_order,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toProjectTypeResponse = createFieldMapper<
+	ProjectTypeRow,
+	ProjectType
+>({
+	projectTypeCode: "project_type_code",
+	name: "name",
+	displayOrder: "display_order",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

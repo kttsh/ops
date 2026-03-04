@@ -2,17 +2,17 @@ import type {
 	IndirectWorkTypeRatio,
 	IndirectWorkTypeRatioRow,
 } from "@/types/indirectWorkTypeRatio";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toIndirectWorkTypeRatioResponse(
-	row: IndirectWorkTypeRatioRow,
-): IndirectWorkTypeRatio {
-	return {
-		indirectWorkTypeRatioId: row.indirect_work_type_ratio_id,
-		indirectWorkCaseId: row.indirect_work_case_id,
-		workTypeCode: row.work_type_code,
-		fiscalYear: row.fiscal_year,
-		ratio: row.ratio,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toIndirectWorkTypeRatioResponse = createFieldMapper<
+	IndirectWorkTypeRatioRow,
+	IndirectWorkTypeRatio
+>({
+	indirectWorkTypeRatioId: "indirect_work_type_ratio_id",
+	indirectWorkCaseId: "indirect_work_case_id",
+	workTypeCode: "work_type_code",
+	fiscalYear: "fiscal_year",
+	ratio: "ratio",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

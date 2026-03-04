@@ -73,10 +73,11 @@ const sampleResponse = {
 	projectTypeName: "受託開発",
 	startYearMonth: "202601",
 	totalManhour: 100,
-	status: "ACTIVE",
+	status: "active",
 	durationMonths: 12,
 	createdAt: "2026-01-01T00:00:00.000Z",
 	updatedAt: "2026-01-15T00:00:00.000Z",
+	deletedAt: null,
 };
 
 describe("projectService", () => {

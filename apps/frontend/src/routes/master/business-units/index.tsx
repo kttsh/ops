@@ -88,46 +88,50 @@ function BusinessUnitListPage() {
 	};
 
 	return (
-		<div className="space-y-6">
+		<div className="grid grid-cols-1 gap-6">
 			<PageHeader
 				title="ビジネスユニット"
 				description="ビジネスユニットの一覧を管理します"
 			/>
 
-			<DataTableToolbar
-				search={search.search}
-				onSearchChange={handleSearchChange}
-				includeDisabled={search.includeDisabled}
-				onIncludeDisabledChange={handleIncludeDisabledChange}
-				newItemHref="/master/business-units/new"
-			/>
+			<div className="rounded-3xl bg-card border border-border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+				<div className="space-y-6">
+					<DataTableToolbar
+						search={search.search}
+						onSearchChange={handleSearchChange}
+						includeDisabled={search.includeDisabled}
+						onIncludeDisabledChange={handleIncludeDisabledChange}
+						newItemHref="/master/business-units/new"
+					/>
 
-			<DataTable
-				columns={columns}
-				data={data?.data ?? []}
-				globalFilter={search.search}
-				pagination={{
-					currentPage: search.page,
-					pageSize: search.pageSize,
-					totalItems: data?.meta.pagination.totalItems ?? 0,
-					totalPages: data?.meta.pagination.totalPages ?? 0,
-				}}
-				onPageChange={handlePageChange}
-				onPageSizeChange={handlePageSizeChange}
-				onRowClick={(row: BusinessUnit) =>
-					navigate({
-						to: "/master/business-units/$businessUnitCode",
-						params: { businessUnitCode: row.businessUnitCode },
-					})
-				}
-				onRowHover={handleRowHover}
-				isLoading={isLoading}
-				isError={isError}
-				errorMessage={error?.message}
-				rowClassName={(row: BusinessUnit) =>
-					row.deletedAt ? "opacity-50" : ""
-				}
-			/>
+					<DataTable
+						columns={columns}
+						data={data?.data ?? []}
+						globalFilter={search.search}
+						pagination={{
+							currentPage: search.page,
+							pageSize: search.pageSize,
+							totalItems: data?.meta.pagination.totalItems ?? 0,
+							totalPages: data?.meta.pagination.totalPages ?? 0,
+						}}
+						onPageChange={handlePageChange}
+						onPageSizeChange={handlePageSizeChange}
+						onRowClick={(row: BusinessUnit) =>
+							navigate({
+								to: "/master/business-units/$businessUnitCode",
+								params: { businessUnitCode: row.businessUnitCode },
+							})
+						}
+						onRowHover={handleRowHover}
+						isLoading={isLoading}
+						isError={isError}
+						errorMessage={error?.message}
+						rowClassName={(row: BusinessUnit) =>
+							row.deletedAt ? "opacity-50" : ""
+						}
+					/>
+				</div>
+			</div>
 
 			<RestoreConfirmDialog
 				open={!!restoreTarget}

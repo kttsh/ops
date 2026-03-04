@@ -2,16 +2,16 @@ import type {
 	ChartColorSetting,
 	ChartColorSettingRow,
 } from "@/types/chartColorSetting";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toChartColorSettingResponse(
-	row: ChartColorSettingRow,
-): ChartColorSetting {
-	return {
-		chartColorSettingId: row.chart_color_setting_id,
-		targetType: row.target_type,
-		targetCode: row.target_code,
-		colorCode: row.color_code,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toChartColorSettingResponse = createFieldMapper<
+	ChartColorSettingRow,
+	ChartColorSetting
+>({
+	chartColorSettingId: "chart_color_setting_id",
+	targetType: "target_type",
+	targetCode: "target_code",
+	colorCode: "color_code",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

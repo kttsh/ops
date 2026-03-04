@@ -1,12 +1,11 @@
 import type { WorkType, WorkTypeRow } from "@/types/workType";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toWorkTypeResponse(row: WorkTypeRow): WorkType {
-	return {
-		workTypeCode: row.work_type_code,
-		name: row.name,
-		displayOrder: row.display_order,
-		color: row.color,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toWorkTypeResponse = createFieldMapper<WorkTypeRow, WorkType>({
+	workTypeCode: "work_type_code",
+	name: "name",
+	displayOrder: "display_order",
+	color: "color",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

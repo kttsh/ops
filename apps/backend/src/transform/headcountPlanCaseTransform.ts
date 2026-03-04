@@ -2,19 +2,19 @@ import type {
 	HeadcountPlanCase,
 	HeadcountPlanCaseRow,
 } from "@/types/headcountPlanCase";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toHeadcountPlanCaseResponse(
-	row: HeadcountPlanCaseRow,
-): HeadcountPlanCase {
-	return {
-		headcountPlanCaseId: row.headcount_plan_case_id,
-		caseName: row.case_name,
-		isPrimary: row.is_primary,
-		description: row.description,
-		businessUnitCode: row.business_unit_code,
-		businessUnitName: row.business_unit_name,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-		deletedAt: row.deleted_at?.toISOString() ?? null,
-	};
-}
+export const toHeadcountPlanCaseResponse = createFieldMapper<
+	HeadcountPlanCaseRow,
+	HeadcountPlanCase
+>({
+	headcountPlanCaseId: "headcount_plan_case_id",
+	caseName: "case_name",
+	isPrimary: "is_primary",
+	description: "description",
+	businessUnitCode: "business_unit_code",
+	businessUnitName: "business_unit_name",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+	deletedAt: "deleted_at",
+});

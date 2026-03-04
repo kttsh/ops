@@ -75,7 +75,7 @@ function WorkTypeEditPage() {
 	const wt = data.data;
 
 	return (
-		<div className="space-y-6">
+		<div className="grid grid-cols-1 gap-6">
 			<PageHeader
 				breadcrumbs={[
 					{ label: "作業種類一覧", href: "/master/work-types" },
@@ -90,7 +90,7 @@ function WorkTypeEditPage() {
 				description="作業種類情報を編集します"
 			/>
 
-			<div className="rounded-2xl border shadow-sm p-6">
+			<div className="rounded-3xl border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
 				<WorkTypeForm
 					mode="edit"
 					defaultValues={{

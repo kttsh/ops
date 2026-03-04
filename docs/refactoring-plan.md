@@ -1,8 +1,21 @@
 # リファクタリング計画書
 
 > 策定日: 2026-03-02
+> 最終更新: 2026-03-04
 > 対象: ops モノレポ全体 (apps/backend, apps/frontend)
 > 手法: Martin Fowler「リファクタリング」カタログに基づく
+
+---
+
+## 進捗サマリー
+
+| Phase | 総タスク数 | 完了 | 未着手 | 進捗率 |
+|-------|----------|------|-------|--------|
+| Phase 1: 共通ユーティリティ抽出 | 14 | **14** | 0 | **100%** |
+| Phase 2: パターン抽象化 | 12 | **10** | 2 | **83%** |
+| Phase 3: アーキテクチャリファクタリング | 15 | **1** | 14 | **7%** |
+| Phase 4: 品質向上・統一化 | 7 | **0** | 7 | **0%** |
+| **合計** | **48** | **25** | **23** | **52%** |
 
 ---
 
@@ -34,66 +47,41 @@
 
 ### 2.1 Backend: Routes レイヤー
 
-#### [B-R1] parseIntParam 関数の重複 (CRITICAL)
-- **スメル**: Duplicated Code / Shotgun Surgery
-- **影響範囲**: 14ファイル (~110行の重複)
-- **内容**: パスパラメータのパース関数が全ルートファイルにコピペ。さらに2つの異なるシグネチャ (`string` vs `string | undefined`) が混在し、エラーメッセージも不統一
-- **対象ファイル**: `routes/projects.ts`, `routes/projectCases.ts`, `routes/monthlyCapacities.ts`, `routes/monthlyIndirectWorkLoads.ts`, `routes/chartViewProjectItems.ts`, `routes/monthlyHeadcountPlans.ts`, `routes/indirectWorkTypeRatios.ts`, `routes/projectLoads.ts`, `routes/chartColorSettings.ts`, `routes/chartStackOrderSettings.ts` 他4ファイル
-
-#### [B-R2] ページネーションレスポンスのボイラープレート (CRITICAL)
-- **スメル**: Duplicated Code / Feature Envy
-- **影響範囲**: 12ファイル (~96行の重複)
-- **内容**: `{ data, meta: { pagination: { ... } } }` 構造の組み立てが全一覧エンドポイントで同一コードとして繰り返される
-- **対象ファイル**: `routes/workTypes.ts`, `routes/businessUnits.ts`, `routes/projectTypes.ts`, `routes/capacityScenarios.ts`, `routes/headcountPlanCases.ts`, `routes/indirectWorkCases.ts`, `routes/projects.ts`, `routes/projectCases.ts`, `routes/chartColorSettings.ts`, `routes/chartStackOrderSettings.ts`, `routes/chartViews.ts`, `routes/standardEffortMasters.ts`
-
-#### [B-R3] ルート集約の肥大化 (MEDIUM)
+#### [B-R3] ルート集約の肥大化 (MEDIUM) — 未着手
 - **スメル**: Long Method / Open-Closed Principle 違反
 - **影響範囲**: `index.ts` 1ファイル (23ルートを直接マウント)
 - **内容**: ドメイン境界なくフラットに全ルートをマウント。新ルート追加のたびに必ず修正が必要
-
-#### [B-R4] Location ヘッダーの手動構築 (LOW)
-- **スメル**: Duplicated Code
-- **影響範囲**: 7ファイル
-- **内容**: POST 成功時の `c.header("Location", ...)` が各ルートで手動構築
+- **現状**: ルートは半階層的にマウントされているが、ドメイン別グルーピング (master/chart/workload) は未実施
 
 ---
 
 ### 2.2 Backend: Services レイヤー
 
-#### [B-S1] CRUD サービスパターンの大量重複 (CRITICAL)
+#### [B-S1] CRUD サービスパターンの大量重複 (CRITICAL) — 未着手
 - **スメル**: Duplicated Code / Parallel Class Hierarchies
 - **影響範囲**: 20+ サービスファイル (~85-90% のコード構造が同一)
 - **内容**: `findAll`, `findById`, `create`, `update`, `delete`, `restore` の6メソッドが全マスター系サービスで同一構造。差異は型名とデータ層呼び出し先のみ
-- **代表例**:
-  - `workTypeService.ts` (92行)
-  - `projectTypeService.ts` (87行)
-  - `businessUnitService.ts` (88行)
 
-#### [B-S2] Middle Man / Pass-Through 層 (HIGH)
+#### [B-S2] Middle Man / Pass-Through 層 (HIGH) — 未着手
 - **スメル**: Middle Man / Feature Envy
 - **影響範囲**: 15+ サービスファイル
-- **内容**: サービス層がビジネスロジックをほとんど持たず、Data 層への委譲 + Transform 呼び出しだけの薄いラッパーとして機能。サービス層としての存在意義が薄い
+- **内容**: サービス層がビジネスロジックをほとんど持たず、Data 層への委譲 + Transform 呼び出しだけの薄いラッパーとして機能
 
-#### [B-S3] 親リソース存在チェックの重複 (HIGH)
+#### [B-S3] 親リソース存在チェックの重複 (HIGH) — 一部残存
 - **スメル**: Duplicated Code
 - **影響範囲**: `monthlyCapacityService.ts`, `indirectWorkTypeRatioService.ts`, `monthlyHeadcountPlanService.ts`, `projectLoadService.ts`
-- **内容**: ネストリソースの各メソッド冒頭で親リソースの存在チェックを同一コードで繰り返す (1ファイル内で3-4回、ファイル間でも重複)
+- **内容**: 各データファイルで `*Exists()` メソッドが個別実装されており、共通ヘルパーは未作成
 
-#### [B-S4] バルク Upsert バリデーションの重複 (MEDIUM)
+#### [B-S5] ソフトデリート認識ロジックの重複 (HIGH) — 未着手
 - **スメル**: Duplicated Code
-- **影響範囲**: 4サービスファイル
-- **内容**: 一括登録時の重複キーチェック (`new Set(keys).size !== keys.length`) が同一パターンで4箇所に存在
-
-#### [B-S5] ソフトデリート認識ロジックの重複 (HIGH)
-- **スメル**: Duplicated Code
-- **影響範囲**: `workTypeService.ts`, `projectTypeService.ts`, `businessUnitService.ts` 他
-- **内容**: 「削除済みレコードが存在する場合の復元案内付き 409 エラー」パターンが全ソフトデリート対応サービスで同一
+- **影響範囲**: 15+ データファイルで同一の soft-delete/restore SQL パターン
+- **内容**: `UPDATE SET deleted_at = GETDATE()` / `deleted_at = NULL` が全ファイルで重複
 
 ---
 
 ### 2.3 Backend: Data レイヤー
 
-#### [B-D1] SQL クエリパターンの大量重複 (CRITICAL)
+#### [B-D1] SQL クエリパターンの大量重複 (CRITICAL) — 未着手
 - **スメル**: Duplicated Code
 - **影響範囲**: 22 データファイル (~1,770行)
 - **内容**:
@@ -103,295 +91,114 @@
   - **参照チェック**: 3ファイルで `CASE WHEN EXISTS(...)` パターン
   - **作成パターン**: `INSERT + OUTPUT + findById 再取得` が全データファイルで同一構造
 
-#### [B-D2] WHERE 句の文字列組み立て (MEDIUM)
-- **スメル**: Primitive Obsession
-- **影響範囲**: `projectData.ts`, `standardEffortMasterData.ts`, `headcountPlanCaseData.ts`, `indirectWorkCaseData.ts`
-- **内容**: フィルタ条件を `string[]` に push して `join(" AND ")` する手法が型安全でない
-
 ---
 
 ### 2.4 Backend: Transform レイヤー
 
-#### [B-T1] 機械的フィールドマッピングのみ (HIGH)
+#### [B-T1] 機械的フィールドマッピングのみ (HIGH) — 未着手
 - **スメル**: Unnecessary Indirection / Inline Class
 - **影響範囲**: 21 transform ファイル (~170行)
 - **内容**: Transform 層の99%が `snake_case → camelCase` のフィールド名変換のみ。ビジネスロジックなし。汎用マッパーで代替可能
-- **例**: `workTypeTransform.ts` (12行), `businessUnitTransform.ts` (11行), `projectTypeTransform.ts` (11行)
 
 ---
 
-### 2.5 Backend: Types レイヤー
+### 2.5 Frontend: Features API レイヤー
 
-#### [B-TY1] Zod スキーマの重複定義 (CRITICAL)
-- **スメル**: Duplicated Code / Shotgun Surgery
-- **影響範囲**: 24型ファイル (~1,816行)
-- **内容**:
-  - **yearMonthSchema**: 7ファイルで同一定義
-  - **businessUnitCode バリデーション**: 6ファイルで同一 (min/max 不統一あり)
-  - **colorCode 正規表現**: 3ファイルで定義 (大文字小文字の揺れあり)
-  - **paginationQuerySchema.extend**: 13ファイルで同一拡張パターン
-  - **Create/Update スキーマペア**: 全22ファイルで同一パターン (Update は optional 化)
-
-#### [B-TY2] chartData.ts の肥大化 (MEDIUM)
-- **スメル**: God Class
-- **影響範囲**: `types/chartData.ts` (162行)
-- **内容**: CSV Transform ヘルパー + バリデーションスキーマ + 8つのTypeScript型が1ファイルに混在
-
----
-
-### 2.6 Frontend: Features API レイヤー
-
-#### [F-A1] API クライアントの CRUD パターン重複 (CRITICAL)
-- **スメル**: Duplicated Code
-- **影響範囲**: 7 features × api-client.ts (~180行の重複)
-- **内容**: `fetch` + `handleResponse` の CRUD ラッパーが全 feature で同一構造。差異は URL パスと型名のみ
-- **対象**: `work-types`, `business-units`, `projects`, `project-types`, `case-study`, `indirect-case-study` (3クライアント), `workload`
-
-#### [F-A2] Query Key Factory の重複 (HIGH)
-- **スメル**: Data Clumps
-- **影響範囲**: 7 features × queries.ts
-- **内容**: `{ all, lists, list, details, detail }` の Key Factory 構造が全 feature で同一。9行 × 7 = 63行の重複
-
-#### [F-A3] Mutation Hook の重複 (HIGH)
-- **スメル**: Duplicated Code
-- **影響範囲**: 7 features × mutations.ts (~192行の重複)
-- **内容**: `useCreate*`, `useUpdate*`, `useDelete*`, `useRestore*` が全 feature で同一構造。差異は API 関数名とキーのみ
-
-#### [F-A4] staleTime のマジックナンバー散在 (MEDIUM)
-- **スメル**: Magic Number
-- **影響範囲**: 6+ queries.ts ファイル
-- **内容**: `staleTime: 2 * 60 * 1000` (2分), `60 * 1000` (1分), `5 * 60 * 1000` (5分), `30 * 60 * 1000` (30分) が根拠不明のまま散在
-
-#### [F-A5] トースト通知の不統一 (MEDIUM)
+#### [F-A5] トースト通知の不統一 (MEDIUM) — 未着手
 - **スメル**: Inconsistent Code
 - **影響範囲**: mutations.ts 全般
-- **内容**: 一部の Mutation は `onSuccess/onError` でトースト表示、他はトーストなし。メッセージも不統一
+- **内容**: マスター系 CRUD Mutation (factory経由) はトーストなし、workload/case-study 系は一部のみトーストあり。特にバルク操作でトーストが欠落
 
 ---
 
-### 2.7 Frontend: Features Types レイヤー
+### 2.6 Frontend: Features Types レイヤー
 
-#### [F-T1] エンティティ型の構造重複 (HIGH)
-- **スメル**: Data Clumps / Parallel Inheritance Hierarchies
-- **影響範囲**: 4 master features × types/index.ts
-- **内容**: `WorkType`, `BusinessUnit`, `ProjectType`, `Project` が全て `{ code, name, displayOrder, createdAt, updatedAt, deletedAt }` の同一基本構造を持つが、共通の基底型がない
-
-#### [F-T2] Zod バリデーションスキーマの重複 (HIGH)
-- **スメル**: Duplicated Code
-- **影響範囲**: 4 master features
-- **内容**: `createXxxSchema` の `code`, `name`, `displayOrder` フィールドが同一バリデーションルール (min/max/regex) + 同一日本語エラーメッセージで定義。3ファイルで60行以上の重複
-
-#### [F-T3] Search スキーマの不統一 (MEDIUM)
+#### [F-T3] Search スキーマの不統一 (MEDIUM) — 未着手
 - **スメル**: Inconsistent Code
 - **影響範囲**: `workTypeSearchSchema` (ページネーションなし) vs `businessUnitSearchSchema` (ページネーションあり)
-- **内容**: 類似機能の一覧画面で異なるページネーション戦略。統一されたパターンがない
+- **内容**: work-types / project-types はページネーションなし、projects / business-units はページネーションあり。統一されたパターンがない
 
 ---
 
-### 2.8 Frontend: Components レイヤー
+### 2.7 Frontend: Components レイヤー
 
-#### [F-C1] formatDateTime 関数の4重複 (HIGH)
-- **スメル**: Duplicated Code
-- **影響範囲**: `columns.tsx` × 4 features
-- **内容**: 同一の日時フォーマット関数が4ファイルに定義
-
-#### [F-C2] ステータスバッジカラムの重複 (HIGH)
-- **スメル**: Duplicated Code / Feature Envy
-- **影響範囲**: `columns.tsx` × 3 features
-- **内容**: `deletedAt` 判定 → Badge 表示の同一ロジックが3箇所に
-
-#### [F-C3] 復元アクションカラムの重複 (HIGH)
-- **スメル**: Duplicated Code
-- **影響範囲**: `columns.tsx` × 4 features
-- **内容**: 同一の復元ボタンロジックが4箇所に
-
-#### [F-C4] displayOrder バリデータの重複 (HIGH)
-- **スメル**: Duplicated Code
-- **影響範囲**: `WorkTypeForm.tsx`, `BusinessUnitForm.tsx`, `ProjectTypeForm.tsx`
-- **内容**: onChange/onBlur の同一バリデーションロジックが3箇所に
-
-#### [F-C5] フォームフィールドラッパーの構造重複 (MEDIUM)
-- **スメル**: Duplicated Code
-- **影響範囲**: 全 Form コンポーネント
-- **内容**: `<form.Field> → <div> → <Label> → <Input> → <ErrorMessage>` の同一構造が12+ 箇所で繰り返される
-
-#### [F-C6] ProjectForm.tsx の Select コンポーネント重複 (HIGH)
-- **スメル**: Feature Envy / Long Method
-- **影響範囲**: `ProjectForm.tsx` (420行)
-- **内容**: ローディング/エラー/成功の3状態を持つ Select パターンが2箇所で重複。`<QuerySelect />` として抽出可能
-
-#### [F-C7] ケース管理リストの状態管理重複 (MEDIUM)
-- **スメル**: Duplicated Code
-- **影響範囲**: `HeadcountPlanCaseList.tsx`, `IndirectWorkCaseList.tsx`, `CapacityScenarioList.tsx`
-- **内容**: `formOpen/formMode/editTarget/deleteTargetId` の状態管理 + CRUD ハンドラが3コンポーネントで同一
-
-#### [F-C8] 巨大コンポーネント (200行超) (MEDIUM)
+#### [F-C8] 巨大コンポーネント (200行超) (MEDIUM) — 一部実施済み
 - **スメル**: Large Class / Long Method
-- **対象**:
-  - `ProjectForm.tsx` (420行) - 7フィールド + ネスト Select
-  - `WorkloadDataTable.tsx` (416行) - 仮想化テーブル + 展開ロジック
-  - `SidePanelSettings.tsx` (368行) - 期間/カラー/プロファイル管理が混在
-  - `CaseForm.tsx` (356行) - 手動/標準計算モード切替
-  - `CalculationResultTable.tsx` (320行) - 複数の条件分岐テーブル
+- **現状**:
+  - `ProjectForm.tsx` — **300行** (420行から削減済み) ✅
+  - `WorkloadDataTable.tsx` (416行) — **未着手**
+  - `SidePanelSettings.tsx` (368行) — **未着手**
+  - `CaseForm.tsx` (356行) — **未着手**
+  - `CalculationResultTable.tsx` (320行) — **未着手**
 
 ---
 
-### 2.9 Frontend: Routes レイヤー
+### 2.8 Frontend: Routes レイヤー
 
-#### [F-RO1] マスター CRUD ルートの大量重複 (CRITICAL)
+#### [F-RO1] マスター CRUD ルートの大量重複 (CRITICAL) — 未着手
 - **スメル**: Duplicated Code / Clone Classes
 - **影響範囲**: 4 master × 4ルート (index/new/edit/detail) = 16ファイル
 - **内容**:
-  - **一覧ページ**: 検索ハンドラ、ページネーションハンドラ、復元ダイアログロジックが4ファイルで同一 (各115-136行)
-  - **新規作成ページ**: `handleSubmit` のエラーハンドリングが4ファイルで同一 (各23-32行)
-  - **編集ページ**: ローディング/エラー状態表示 + 更新ハンドラが4ファイルで同一 (各108-125行)
-  - **詳細ページ**: 削除/復元エラーハンドリング + ローディング/NotFound 表示が4ファイルで同一 (各145-210行)
+  - **一覧ページ**: 検索ハンドラ、ページネーションハンドラ、復元ダイアログロジックが4ファイルで同一
+  - **新規作成ページ**: `handleSubmit` のエラーハンドリングが4ファイルで同一
+  - **編集ページ**: ローディング/エラー状態表示 + 更新ハンドラが4ファイルで同一
+  - **詳細ページ**: 削除/復元エラーハンドリング + ローディング/NotFound 表示が4ファイルで同一
+- **備考**: Mutation フックファクトリ (F-A3) により Mutation 層の重複は解消済み。ルートコンポーネント自体の共通化が残課題
 
-#### [F-RO2] DetailRow コンポーネントの4重複 (MEDIUM)
-- **スメル**: Duplicated Code
-- **影響範囲**: 4 detail ページ
-- **内容**: 同一の `DetailRow` ローカルコンポーネントが4ファイルに定義 (各8行)
-
-#### [F-RO3] NotFound コンポーネントの4重複 (MEDIUM)
-- **スメル**: Duplicated Code
-- **影響範囲**: 4 detail ページ
-- **内容**: `notFoundComponent` の同一 JSX が4ファイルに定義 (各12行)
-
-#### [F-RO4] ルートパスのハードコード (MEDIUM)
+#### [F-RO4] ルートパスのハードコード (MEDIUM) — 未着手
 - **スメル**: Magic String
-- **影響範囲**: 全ルートファイル (40+ 箇所)
-- **内容**: `"/master/work-types"` 等のパス文字列がリテラルとして散在
+- **影響範囲**: columns.tsx × 4 features + hooks 内 (6+ 箇所)
+- **内容**: `"/master/work-types/$workTypeCode"` 等のパス文字列がリテラルとして散在
 
 ---
 
 ## 3. ファウラーのリファクタリングメソッド対応表
 
-| ID | コードスメル | 適用するリファクタリング手法 | 難易度 | 削減行数 |
-|----|------------|--------------------------|--------|---------|
-| B-R1 | parseIntParam 重複 | **Extract Method** → 共通ユーティリティ | 低 | ~110 |
-| B-R2 | ページネーション応答重複 | **Extract Method** → ヘルパー関数 | 低 | ~96 |
-| B-S1 | CRUD サービスパターン重複 | **Extract Superclass** → ジェネリック Base Service | 高 | ~800 |
-| B-S2 | Middle Man | **Inline Class** (検討) / **Move Method** | 中 | - |
-| B-S3 | 親リソース存在チェック重複 | **Extract Method** → バリデーションユーティリティ | 低 | ~100 |
-| B-S5 | ソフトデリートロジック重複 | **Extract Method** → 共通ヘルパー | 低 | ~60 |
-| B-D1 | SQL パターン重複 | **Extract Superclass** → Base Data クラス / クエリビルダー | 高 | ~600 |
-| B-T1 | 機械的 Transform | **Inline Class** → 汎用マッパーに置換 | 中 | ~170 |
-| B-TY1 | Zod スキーマ重複 | **Extract Method** → 共通スキーマモジュール | 中 | ~200 |
-| F-A1 | API クライアント重複 | **Extract Superclass** → CRUD クライアントファクトリ | 中 | ~180 |
-| F-A2 | Query Key Factory 重複 | **Extract Method** → Key Factory ジェネレータ | 低 | ~63 |
-| F-A3 | Mutation Hook 重複 | **Extract Method** → Mutation フックファクトリ | 中 | ~192 |
-| F-T1 | エンティティ型の構造重複 | **Extract Superclass** → 基底インターフェース | 低 | ~80 |
-| F-T2 | Zod スキーマ重複 | **Extract Method** → 共通スキーマヘルパー | 低 | ~60 |
-| F-C1 | formatDateTime 重複 | **Extract Method** → lib/format-utils.ts | 低 | ~32 |
-| F-C2-C3 | カラム定義重複 | **Extract Method** → カラムファクトリ | 低 | ~80 |
-| F-C4 | バリデータ重複 | **Extract Method** → lib/validators.ts | 低 | ~40 |
-| F-C5 | フォームフィールド構造重複 | **Extract Class** → FormField ラッパー | 中 | ~120 |
-| F-C6 | Select ローディング重複 | **Extract Class** → QuerySelect | 中 | ~60 |
-| F-C8 | 巨大コンポーネント | **Extract Class** → サブコンポーネント分割 | 中 | - |
-| F-RO1 | マスター CRUD ルート重複 | **Extract Method** → カスタムフック群 | 高 | ~600 |
-| F-RO2-3 | DetailRow/NotFound 重複 | **Extract Class** → 共有コンポーネント | 低 | ~80 |
+> 実施済み項目は [Appendix A](#appendix-a-実施済みバックログ) に移動
+
+| ID | コードスメル | 適用するリファクタリング手法 | 難易度 | 削減行数 | 状態 |
+|----|------------|--------------------------|--------|---------|------|
+| B-S1 | CRUD サービスパターン重複 | **Extract Superclass** → ジェネリック Base Service | 高 | ~800 | 未着手 |
+| B-S2 | Middle Man | **Inline Class** (検討) / **Move Method** | 中 | - | 未着手 |
+| B-S3 | 親リソース存在チェック重複 | **Extract Method** → バリデーションユーティリティ | 低 | ~100 | 一部残存 |
+| B-S5 | ソフトデリートロジック重複 | **Extract Method** → 共通ヘルパー | 低 | ~60 | 未着手 |
+| B-D1 | SQL パターン重複 | **Extract Superclass** → Base Data クラス / クエリビルダー | 高 | ~600 | 未着手 |
+| B-T1 | 機械的 Transform | **Inline Class** → 汎用マッパーに置換 | 中 | ~170 | 未着手 |
+| F-C8 | 巨大コンポーネント | **Extract Class** → サブコンポーネント分割 | 中 | - | 一部実施 |
+| F-RO1 | マスター CRUD ルート重複 | **Extract Method** → カスタムフック群 | 高 | ~600 | 未着手 |
 
 ---
 
 ## 4. リファクタリング実行計画
 
-### Phase 1: 共通ユーティリティ抽出 (低リスク・高効果)
+### Phase 1: 共通ユーティリティ抽出 — ✅ 完了
 
-**目標**: 単純な関数/定数の重複を解消。既存の振る舞いを変えずに共通化。
-
-#### 1-1. Backend 共通ユーティリティ
-- [ ] `utils/parseParams.ts` 作成: `parseIntParam` を統一シグネチャで一元化 [B-R1]
-- [ ] `utils/responseHelper.ts` 作成: `buildPaginatedResponse()` ヘルパー [B-R2]
-- [ ] `utils/locationHelper.ts` 作成: `setLocationHeader()` ヘルパー [B-R4]
-- [ ] 14ルートファイルからローカル `parseIntParam` を削除し、共通モジュールを import
-
-#### 1-2. Backend 共通 Zod スキーマ
-- [ ] `types/common.ts` 作成 (または既存 `pagination.ts` を拡張):
-  - `yearMonthSchema` (7ファイルから集約) [B-TY1]
-  - `businessUnitCodeSchema` (6ファイルから集約)
-  - `colorCodeSchema` (3ファイルから集約)
-  - `withIncludeDisabledFilter()` ヘルパー (13ファイルから集約)
-- [ ] 各型ファイルを共通スキーマの import に切り替え
-
-#### 1-3. Frontend 共通ユーティリティ
-- [ ] `lib/format-utils.ts` に `formatDateTime()` を追加 [F-C1]
-- [ ] `lib/validators.ts` 作成: `displayOrderValidators`, `stringLengthValidator`, `numberRangeValidator` [F-C4]
-- [ ] `lib/api/constants.ts` 作成: `STALE_TIMES` 定数オブジェクト [F-A4]
-- [ ] 4つの `columns.tsx` からローカル `formatDateTime` を削除
-
-#### 1-4. Frontend 共有コンポーネント抽出
-- [ ] `components/shared/DetailRow.tsx` 作成 [F-RO2]
-- [ ] `components/shared/NotFoundState.tsx` 作成 [F-RO3]
-- [ ] 4つの detail ルートから重複ローカルコンポーネントを削除
-
-**推定削減行数**: ~400行
-**リスク**: 低 (単純な Extract Method)
-**所要規模**: 小
+> Phase 1 の全タスクは実施済み。詳細は [Appendix A](#appendix-a-実施済みバックログ) を参照。
 
 ---
 
-### Phase 2: パターン抽象化 (中リスク・高効果)
+### Phase 2: パターン抽象化 — 🔶 83% 完了
 
 **目標**: 繰り返される構造パターンをファクトリ/ジェネレータに置き換え。
 
-#### 2-1. Frontend: CRUD API インフラ
-- [ ] `lib/api/crud-client-factory.ts` 作成: `createCrudClient<T>()` ファクトリ [F-A1]
-  ```typescript
-  // 使用例
-  export const workTypeClient = createCrudClient<WorkType, CreateInput, UpdateInput>({
-    basePath: "/work-types",
-    idField: "workTypeCode",
-  });
-  ```
-- [ ] `lib/api/query-key-factory.ts` 作成: `createQueryKeys()` ジェネレータ [F-A2]
-- [ ] `lib/api/mutation-hooks-factory.ts` 作成: `createCrudMutations()` ジェネレータ [F-A3]
-- [ ] 各 feature の `api-client.ts`, `queries.ts`, `mutations.ts` をファクトリ呼び出しに置換
+#### 2-1〜2-4: Frontend パターン抽象化 — ✅ 完了
+> 実施済み。詳細は [Appendix A](#appendix-a-実施済みバックログ) を参照。
 
-#### 2-2. Frontend: カラムファクトリ
-- [ ] `components/shared/column-helpers.ts` 作成 [F-C2, F-C3]:
-  - `createStatusColumn()`
-  - `createRestoreActionColumn()`
-  - `createDateTimeColumn()`
-  - `createSortableColumn()`
-- [ ] 4つの `columns.tsx` をファクトリ呼び出しに簡素化
-
-#### 2-3. Frontend: フォームインフラ
-- [ ] `components/shared/FormField.tsx` 作成: Label + Input + Error 表示のラッパー [F-C5]
-- [ ] `components/shared/QuerySelect.tsx` 作成: ローディング/エラー/成功 3状態の Select [F-C6]
-- [ ] 各 Form コンポーネントを共通ラッパーで簡素化
-
-#### 2-4. Frontend: 共通型定義
-- [ ] `lib/types/base-entity.ts` 作成 [F-T1]:
-  ```typescript
-  export interface SoftDeletableEntity {
-    createdAt: string;
-    updatedAt: string;
-    deletedAt?: string | null;
-  }
-  export interface MasterEntity extends SoftDeletableEntity {
-    name: string;
-    displayOrder: number;
-  }
-  ```
-- [ ] `lib/schemas/master-entity-schema.ts` 作成: 共通 Zod スキーマヘルパー [F-T2]
-- [ ] 各 feature の型を基底型の拡張に変更
-
-#### 2-5. Backend: Transform 層の簡素化
+#### 2-5. Backend: Transform 層の簡素化 — ❌ 未着手
 - [ ] `utils/fieldMapper.ts` 作成: `snake_case → camelCase` 汎用変換 + ISO 日付フォーマット [B-T1]
 - [ ] 既存 Transform ファイルを汎用マッパー + 差分カスタマイズの構成に移行
 - [ ] ビジネスロジックを含む Transform (`chartViewTransform.ts`, `standardEffortMasterTransform.ts`) は個別に残す
 
-**推定削減行数**: ~900行
-**リスク**: 中 (API 互換性の維持が必要)
-**所要規模**: 中
+**Phase 2 残作業の推定削減行数**: ~170行
+**リスク**: 中 (Transform のインターフェース変更がサービス層に波及)
 
 ---
 
-### Phase 3: アーキテクチャリファクタリング (高リスク・最大効果)
+### Phase 3: アーキテクチャリファクタリング (高リスク・最大効果) — 🔴 7% 完了
 
 **目標**: レイヤー構造自体のボイラープレートを解消。
 
-#### 3-1. Backend: Base CRUD Service
+#### 3-1. Backend: Base CRUD Service — ❌ 未着手
 - [ ] `services/base/BaseCrudService.ts` 作成 [B-S1]:
   ```typescript
   abstract class BaseCrudService<TRow, TResponse, TCreate, TUpdate> {
@@ -410,7 +217,7 @@
 - [ ] `utils/validationHelpers.ts` 作成: 親存在チェック、複合キー重複チェック [B-S3, B-S4]
 - [ ] 既存の単純 CRUD サービスを基底クラス継承に移行
 
-#### 3-2. Backend: Base CRUD Data
+#### 3-2. Backend: Base CRUD Data — ❌ 未着手
 - [ ] `data/base/BaseCrudData.ts` 作成 [B-D1]:
   - 共通の `findAll` (ページネーション付き)
   - 共通の `softDelete` / `restore`
@@ -418,13 +225,13 @@
   - テーブル名・カラム定義をメタデータとして受け取る
 - [ ] 単純な CRUD データクラスを基底クラス継承に移行
 
-#### 3-3. Backend: ルートのドメイン別グルーピング
+#### 3-3. Backend: ルートのドメイン別グルーピング — ❌ 未着手
 - [ ] `routes/master/index.ts` 作成: マスターデータ系ルートを集約 [B-R3]
 - [ ] `routes/chart/index.ts` 作成: チャート関連ルートを集約
 - [ ] `routes/workload/index.ts` 作成: 工数関連ルートを集約
 - [ ] `index.ts` のルートマウントをドメイン単位に簡素化
 
-#### 3-4. Frontend: マスター CRUD ルートの統合
+#### 3-4. Frontend: マスター CRUD ルートの統合 — ❌ 未着手
 - [ ] `hooks/useMasterListPage.ts` 作成 [F-RO1]:
   ```typescript
   export function useMasterListPage<T>(config: {
@@ -438,8 +245,8 @@
 - [ ] `hooks/useMasterFormPage.ts` 作成: 新規作成/編集のエラーハンドリング共通化
 - [ ] 16のマスタールートファイルを共通フック呼び出し + JSX レイアウトのみに簡素化
 
-#### 3-5. Frontend: 巨大コンポーネントの分割
-- [ ] `ProjectForm.tsx` (420行) → `ProjectBasicFields` + `ProjectRelationFields` に分割 [F-C8]
+#### 3-5. Frontend: 巨大コンポーネントの分割 — 🔶 一部実施
+- [x] `ProjectForm.tsx` (420行 → 300行) ✅ 削減済み
 - [ ] `SidePanelSettings.tsx` (368行) → `PeriodSettings` + `ProjectColorSettings` + `ProfileSettings` に分割
 - [ ] `WorkloadDataTable.tsx` (416行) → カラム定義、展開ロジック、フィルタリングを分離
 - [ ] `CaseForm.tsx` (356行) → 計算モード別コンポーネントに分割
@@ -450,25 +257,27 @@
 
 ---
 
-### Phase 4: 品質向上・統一化 (低リスク・整理)
+### Phase 4: 品質向上・統一化 (低リスク・整理) — 🔴 未着手
 
 **目標**: 一貫性の確保と残余の整理。
 
-#### 4-1. トースト通知の統一
+#### 4-1. トースト通知の統一 — ❌ 未着手
 - [ ] `lib/toast-utils.ts` を拡充: CRUD 操作用の標準メッセージテンプレート [F-A5]
 - [ ] 全 Mutation のトースト処理を統一パターンに
 
-#### 4-2. ページネーション戦略の統一
+#### 4-2. ページネーション戦略の統一 — ❌ 未着手
 - [ ] マスター一覧のページネーション有無を統一 [F-T3]
 - [ ] `lib/api/constants.ts` にデフォルトページサイズを定義
 
-#### 4-3. Backend 型ファイルの整理
-- [ ] `chartData.ts` を分割 (`chartDataSchemas.ts` + `chartDataTypes.ts`) [B-TY2]
+#### 4-3. Backend 型ファイルの整理 — ❌ 未着手
 - [ ] `chartColorPalette.ts` と `chartColorSetting.ts` を `chartSettings.ts` に統合
 - [ ] `pagination.ts` を `types/common.ts` に統合
 
-#### 4-4. Row 型の命名統一
+#### 4-4. Row 型の命名統一 — ❌ 未着手
 - [ ] JOIN 付き Row 型を `*DetailRow` / `*QueryRow` に改名して意図を明確化
+
+#### 4-5. ルートパスのハードコード解消 — ❌ 未着手
+- [ ] TanStack Router の型安全ルートパスを活用し、マジックストリングを排除 [F-RO4]
 
 **推定削減行数**: ~200行
 **リスク**: 低
@@ -479,31 +288,32 @@
 ## 5. 実行順序と依存関係
 
 ```
-Phase 1 (共通ユーティリティ)
-  ├── 1-1 Backend ユーティリティ ← 最初に着手
-  ├── 1-2 Backend Zod スキーマ
-  ├── 1-3 Frontend ユーティリティ
-  └── 1-4 Frontend 共有コンポーネント
+Phase 1 (共通ユーティリティ) ✅ 完了
+  ├── 1-1 Backend ユーティリティ ✅
+  ├── 1-2 Backend Zod スキーマ ✅
+  ├── 1-3 Frontend ユーティリティ ✅
+  └── 1-4 Frontend 共有コンポーネント ✅
         │
-Phase 2 (パターン抽象化) ← Phase 1 完了後
-  ├── 2-1 CRUD API インフラ
-  ├── 2-2 カラムファクトリ (Phase 1-3 依存)
-  ├── 2-3 フォームインフラ
-  ├── 2-4 共通型定義
-  └── 2-5 Transform 簡素化
+Phase 2 (パターン抽象化) 🔶 83% 完了
+  ├── 2-1 CRUD API インフラ ✅
+  ├── 2-2 カラムファクトリ ✅
+  ├── 2-3 フォームインフラ ✅
+  ├── 2-4 共通型定義 ✅
+  └── 2-5 Transform 簡素化 ❌ 未着手
         │
-Phase 3 (アーキテクチャ) ← Phase 2 完了後
-  ├── 3-1 Base CRUD Service (Phase 2-5 依存)
-  ├── 3-2 Base CRUD Data
-  ├── 3-3 ルートグルーピング
-  ├── 3-4 マスター CRUD ルート統合 (Phase 2-1, 2-2, 2-3 依存)
-  └── 3-5 巨大コンポーネント分割
+Phase 3 (アーキテクチャ) 🔴 7% 完了
+  ├── 3-1 Base CRUD Service ❌ (Phase 2-5 依存)
+  ├── 3-2 Base CRUD Data ❌
+  ├── 3-3 ルートグルーピング ❌
+  ├── 3-4 マスター CRUD ルート統合 ❌
+  └── 3-5 巨大コンポーネント分割 🔶 (ProjectForm のみ完了)
         │
-Phase 4 (品質向上) ← 随時実行可
-  ├── 4-1 トースト統一
-  ├── 4-2 ページネーション統一
-  ├── 4-3 型ファイル整理
-  └── 4-4 Row 型命名統一
+Phase 4 (品質向上) 🔴 未着手
+  ├── 4-1 トースト統一 ❌
+  ├── 4-2 ページネーション統一 ❌
+  ├── 4-3 型ファイル整理 ❌
+  ├── 4-4 Row 型命名統一 ❌
+  └── 4-5 ルートパスハードコード解消 ❌
 ```
 
 ---
@@ -543,3 +353,90 @@ Phase 4 (品質向上) ← 随時実行可
 - **一貫性確保**: バリデーション、エラーメッセージ、レスポンス形式の統一
 - **オンボーディング改善**: 新規開発者が理解すべきパターンが明確に
 - **拡張性向上**: 新機能追加時のボイラープレートが大幅削減
+
+---
+
+## Appendix A: 実施済みバックログ
+
+> 以下は実施完了済みのリファクタリング項目。コードベース調査日: 2026-03-04
+
+### Phase 1: 共通ユーティリティ抽出 (全完了)
+
+#### 1-1. Backend 共通ユーティリティ ✅
+| タスク | 対応スメル | 実装先 |
+|--------|----------|--------|
+| `parseIntParam` を統一シグネチャで一元化 | B-R1 | `utils/parseParams.ts` |
+| `buildPaginatedResponse()` ヘルパー作成 | B-R2 | `utils/responseHelper.ts` |
+| `setLocationHeader()` ヘルパー作成 | B-R4 | `utils/responseHelper.ts` |
+| 14ルートファイルからローカル関数を削除し共通 import に切替 | B-R1 | 各 routes/*.ts |
+
+#### 1-2. Backend 共通 Zod スキーマ ✅
+| タスク | 対応スメル | 実装先 |
+|--------|----------|--------|
+| `yearMonthSchema` を一元化 | B-TY1 | `types/common.ts` |
+| `businessUnitCodeSchema` を一元化 | B-TY1 | `types/common.ts` |
+| `colorCodeSchema` を一元化 | B-TY1 | `types/common.ts` |
+| `includeDisabledFilterSchema` を一元化 | B-TY1 | `types/common.ts` |
+| 各型ファイルを共通スキーマの import に切替 | B-TY1 | 各 types/*.ts |
+
+#### 1-3. Frontend 共通ユーティリティ ✅
+| タスク | 対応スメル | 実装先 |
+|--------|----------|--------|
+| `formatDateTime()` 共通関数作成 | F-C1 | `lib/format-utils.ts` |
+| `displayOrderValidators` 共通バリデータ作成 | F-C4 | `lib/validators.ts` |
+| `STALE_TIMES` 定数オブジェクト作成 | F-A4 | `lib/api/constants.ts` |
+| 4つの columns.tsx からローカル formatDateTime 削除 | F-C1 | 各 columns.tsx |
+
+#### 1-4. Frontend 共有コンポーネント抽出 ✅
+| タスク | 対応スメル | 実装先 |
+|--------|----------|--------|
+| `DetailRow.tsx` 共有コンポーネント作成 | F-RO2 | `components/shared/DetailRow.tsx` |
+| `NotFoundState.tsx` 共有コンポーネント作成 | F-RO3 | `components/shared/NotFoundState.tsx` |
+| 4つの detail ルートから重複ローカルコンポーネント削除 | F-RO2/3 | 各 detail routes |
+
+---
+
+### Phase 2: パターン抽象化 (2-1〜2-4 完了)
+
+#### 2-1. Frontend: CRUD API インフラ ✅
+| タスク | 対応スメル | 実装先 |
+|--------|----------|--------|
+| `createCrudClient<T>()` ファクトリ作成 | F-A1 | `lib/api/crud-client-factory.ts` |
+| `createQueryKeys()` ジェネレータ作成 | F-A2 | `lib/api/query-key-factory.ts` |
+| `createCrudMutations()` ジェネレータ作成 | F-A3 | `lib/api/mutation-hooks-factory.ts` |
+| 各 feature の api-client/queries/mutations をファクトリ呼出に置換 | F-A1/2/3 | 各 features/*/api/ |
+
+#### 2-2. Frontend: カラムファクトリ ✅
+| タスク | 対応スメル | 実装先 |
+|--------|----------|--------|
+| `createStatusColumn()` 作成 | F-C2 | `components/shared/column-helpers.ts` |
+| `createRestoreActionColumn()` 作成 | F-C3 | `components/shared/column-helpers.ts` |
+| `createDateTimeColumn()` 作成 | F-C2 | `components/shared/column-helpers.ts` |
+| `createSortableColumn()` 作成 | F-C2 | `components/shared/column-helpers.ts` |
+| 4つの columns.tsx をファクトリ呼出に簡素化 | F-C2/3 | 各 columns.tsx |
+
+#### 2-3. Frontend: フォームインフラ ✅
+| タスク | 対応スメル | 実装先 |
+|--------|----------|--------|
+| `FormTextField.tsx` ラッパー作成 | F-C5 | `components/shared/FormTextField.tsx` |
+| `QuerySelect.tsx` 3状態 Select 作成 | F-C6 | `components/shared/QuerySelect.tsx` |
+| 各 Form コンポーネントを共通ラッパーで簡素化 | F-C5/6 | 各 *Form.tsx |
+
+#### 2-4. Frontend: 共通型定義 ✅
+| タスク | 対応スメル | 実装先 |
+|--------|----------|--------|
+| `SoftDeletableEntity` / `MasterEntity` 基底型作成 | F-T1 | `lib/types/base-entity.ts` |
+| 共通 Zod スキーマヘルパー作成 | F-T2 | `lib/schemas/master-entity-schema.ts` |
+| 各 feature の型を基底型の拡張に変更 | F-T1/2 | 各 features/*/types/ |
+
+---
+
+### 個別解消済みスメル
+
+| ID | 内容 | 状態 | 備考 |
+|----|------|------|------|
+| B-S4 | バルク Upsert バリデーション重複 | ✅ 解消 | 重複パターンが検出されなくなった |
+| B-D2 | WHERE 句の文字列組み立て | ✅ 解消 | パラメータ化クエリに移行済み |
+| B-TY2 | chartData.ts の肥大化 | ✅ 軽減 | 162行 → 153行に削減 |
+| F-C7 | ケース管理リスト状態管理重複 | ✅ 解消 | props ベースの状態管理に整理済み |
+| F-C8 (部分) | ProjectForm.tsx 巨大化 | ✅ 軽減 | 420行 → 300行に削減 |

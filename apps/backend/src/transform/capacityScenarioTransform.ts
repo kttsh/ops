@@ -2,18 +2,18 @@ import type {
 	CapacityScenario,
 	CapacityScenarioRow,
 } from "@/types/capacityScenario";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toCapacityScenarioResponse(
-	row: CapacityScenarioRow,
-): CapacityScenario {
-	return {
-		capacityScenarioId: row.capacity_scenario_id,
-		scenarioName: row.scenario_name,
-		isPrimary: row.is_primary,
-		description: row.description,
-		hoursPerPerson: row.hours_per_person,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-		deletedAt: row.deleted_at?.toISOString() ?? null,
-	};
-}
+export const toCapacityScenarioResponse = createFieldMapper<
+	CapacityScenarioRow,
+	CapacityScenario
+>({
+	capacityScenarioId: "capacity_scenario_id",
+	scenarioName: "scenario_name",
+	isPrimary: "is_primary",
+	description: "description",
+	hoursPerPerson: "hours_per_person",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+	deletedAt: "deleted_at",
+});

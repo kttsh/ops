@@ -1,4 +1,5 @@
 import type { ChartView, ChartViewRow } from "@/types/chartView";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
 function parseBusinessUnitCodes(value: string | null): string[] | null {
 	if (value === null) return null;
@@ -9,17 +10,17 @@ function parseBusinessUnitCodes(value: string | null): string[] | null {
 	}
 }
 
-export function toChartViewResponse(row: ChartViewRow): ChartView {
-	return {
-		chartViewId: row.chart_view_id,
-		viewName: row.view_name,
-		chartType: row.chart_type,
-		startYearMonth: row.start_year_month,
-		endYearMonth: row.end_year_month,
-		isDefault: row.is_default,
-		description: row.description,
-		businessUnitCodes: parseBusinessUnitCodes(row.business_unit_codes),
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toChartViewResponse = createFieldMapper<ChartViewRow, ChartView>({
+	chartViewId: "chart_view_id",
+	viewName: "view_name",
+	chartType: "chart_type",
+	startYearMonth: "start_year_month",
+	endYearMonth: "end_year_month",
+	isDefault: "is_default",
+	description: "description",
+	businessUnitCodes: {
+		computed: (row) => parseBusinessUnitCodes(row.business_unit_codes),
+	},
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

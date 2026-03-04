@@ -1,11 +1,13 @@
 import type { BusinessUnit, BusinessUnitRow } from "@/types/businessUnit";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toBusinessUnitResponse(row: BusinessUnitRow): BusinessUnit {
-	return {
-		businessUnitCode: row.business_unit_code,
-		name: row.name,
-		displayOrder: row.display_order,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toBusinessUnitResponse = createFieldMapper<
+	BusinessUnitRow,
+	BusinessUnit
+>({
+	businessUnitCode: "business_unit_code",
+	name: "name",
+	displayOrder: "display_order",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});

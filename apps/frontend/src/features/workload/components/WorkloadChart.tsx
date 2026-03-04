@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import {
 	Area,
 	CartesianGrid,
@@ -75,6 +75,16 @@ function WorkloadChartInner({
 		? `${activeMonth.slice(0, 4)}/${activeMonth.slice(4, 6)}`
 		: undefined;
 
+	// グラデーション定義をメモ化
+	const gradientDefs = useMemo(
+		() =>
+			seriesConfig.areas.map((area) => ({
+				id: `gradient-${area.dataKey}`,
+				color: area.fill,
+			})),
+		[seriesConfig.areas],
+	);
+
 	if (data.length === 0) return null;
 
 	const chartContent = (
@@ -87,7 +97,15 @@ function WorkloadChartInner({
 				margin={{ top: 8, right: 8, left: 8, bottom: 0 }}
 				accessibilityLayer={false}
 			>
-				<CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+				<defs>
+					{gradientDefs.map((g) => (
+						<linearGradient key={g.id} id={g.id} x1="0" y1="0" x2="0" y2="1">
+							<stop offset="0%" stopColor={g.color} stopOpacity={0.3} />
+							<stop offset="100%" stopColor={g.color} stopOpacity={0.05} />
+						</linearGradient>
+					))}
+				</defs>
+				<CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
 				<XAxis
 					dataKey="month"
 					tick={{ fontSize: 12 }}
@@ -111,9 +129,9 @@ function WorkloadChartInner({
 						type="monotone"
 						dataKey={area.dataKey}
 						stackId={area.stackId}
-						fill={area.fill}
+						fill={`url(#gradient-${area.dataKey})`}
 						stroke={area.stroke}
-						fillOpacity={area.fillOpacity}
+						fillOpacity={1}
 						name={area.name}
 						isAnimationActive={false}
 						animationDuration={0}

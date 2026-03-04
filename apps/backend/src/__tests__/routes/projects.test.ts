@@ -167,7 +167,7 @@ describe("GET /projects", () => {
 		expect(res.status).toBe(200);
 
 		expect(mockedService.findAll).toHaveBeenCalledWith(
-			expect.objectContaining({ businessUnitCode: "BU-001" }),
+			expect.objectContaining({ businessUnitCodes: ["BU-001"] }),
 		);
 	});
 
