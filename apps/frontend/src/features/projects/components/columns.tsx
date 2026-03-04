@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
-import { SortableHeader } from "@/components/shared/SortableHeader";
 import {
 	createDateTimeColumn,
 	createRestoreActionColumn,
 } from "@/components/shared/column-helpers";
+import { SortableHeader } from "@/components/shared/SortableHeader";
+import { Badge } from "@/components/ui/badge";
 import type { Project } from "@/features/projects/types";
 import { PROJECT_STATUSES } from "@/features/projects/types";
 
@@ -49,7 +49,9 @@ export function createColumns(options: {
 		},
 		{
 			accessorKey: "startYearMonth",
-			header: ({ column }) => <SortableHeader column={column} label="開始年月" />,
+			header: ({ column }) => (
+				<SortableHeader column={column} label="開始年月" />
+			),
 			cell: ({ row }) => formatYearMonth(row.original.startYearMonth),
 		},
 		{
@@ -81,7 +83,10 @@ export function createColumns(options: {
 				return <Badge variant={variant}>{label}</Badge>;
 			},
 		},
-		createDateTimeColumn<Project>({ accessorKey: "updatedAt", label: "更新日時" }),
+		createDateTimeColumn<Project>({
+			accessorKey: "updatedAt",
+			label: "更新日時",
+		}),
 		createRestoreActionColumn<Project, number>({
 			idKey: "projectId",
 			onRestore: options.onRestore,

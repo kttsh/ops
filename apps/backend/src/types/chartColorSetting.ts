@@ -5,7 +5,11 @@ import { paginationQuerySchema } from "@/types/pagination";
 // --- Zod スキーマ ---
 
 /** 対象タイプバリデーション */
-const targetTypeSchema = z.enum(["project", "indirect_work", "indirect_work_type"]);
+const targetTypeSchema = z.enum([
+	"project",
+	"indirect_work",
+	"indirect_work_type",
+]);
 
 /** 作成用スキーマ */
 export const createChartColorSettingSchema = z.object({

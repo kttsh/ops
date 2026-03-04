@@ -25,9 +25,6 @@ export const displayOrderSchema = z
 /** カラーコードフィールド: #RRGGBB 形式、nullable/optional */
 export const colorCodeSchema = z
 	.string()
-	.regex(
-		/^#[0-9A-Fa-f]{6}$/,
-		"カラーコードは #RRGGBB 形式で入力してください",
-	)
+	.regex(/^#[0-9A-Fa-f]{6}$/, "カラーコードは #RRGGBB 形式で入力してください")
 	.nullable()
 	.optional();

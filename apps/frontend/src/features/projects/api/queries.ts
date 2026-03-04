@@ -1,13 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 import type {
-	Project,
 	ProjectListParams,
 	SelectOption,
 } from "@/features/projects/types";
 import {
-	createQueryKeys,
-	createListQueryOptions,
 	createDetailQueryOptions,
+	createListQueryOptions,
+	createQueryKeys,
 	STALE_TIMES,
 } from "@/lib/api";
 import {
@@ -17,15 +16,17 @@ import {
 	fetchProjectTypesForSelect,
 } from "./api-client";
 
-export const projectKeys = createQueryKeys<number, ProjectListParams>("projects");
+export const projectKeys = createQueryKeys<number, ProjectListParams>(
+	"projects",
+);
 
-export const projectsQueryOptions = createListQueryOptions<Project, ProjectListParams>({
+export const projectsQueryOptions = createListQueryOptions({
 	queryKeys: projectKeys,
 	fetchList: fetchProjects,
 	staleTime: STALE_TIMES.SHORT,
 });
 
-export const projectQueryOptions = createDetailQueryOptions<Project, number>({
+export const projectQueryOptions = createDetailQueryOptions({
 	queryKeys: projectKeys,
 	fetchDetail: fetchProject,
 	staleTime: STALE_TIMES.SHORT,

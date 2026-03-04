@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Plus, Search } from "lucide-react";
+import { DebouncedSearchInput } from "@/components/shared/DebouncedSearchInput";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { DebouncedSearchInput } from "@/components/shared/DebouncedSearchInput";
 
 interface DataTableToolbarProps {
 	search: string;

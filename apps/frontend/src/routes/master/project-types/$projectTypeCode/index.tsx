@@ -19,10 +19,7 @@ export const Route = createFileRoute("/master/project-types/$projectTypeCode/")(
 	{
 		component: ProjectTypeDetailPage,
 		notFoundComponent: () => (
-			<NotFoundState
-				entityName="案件タイプ"
-				backTo="/master/project-types"
-			/>
+			<NotFoundState entityName="案件タイプ" backTo="/master/project-types" />
 		),
 	},
 );
@@ -72,10 +69,7 @@ function ProjectTypeDetailPage() {
 
 	if (isError || !data) {
 		return (
-			<NotFoundState
-				entityName="案件タイプ"
-				backTo="/master/project-types"
-			/>
+			<NotFoundState entityName="案件タイプ" backTo="/master/project-types" />
 		);
 	}
 
@@ -115,10 +109,7 @@ function ProjectTypeDetailPage() {
 				<DetailRow label="案件タイプコード" value={pt.projectTypeCode} />
 				<DetailRow label="名称" value={pt.name} />
 				<DetailRow label="表示順" value={String(pt.displayOrder)} />
-				<DetailRow
-					label="更新日時"
-					value={formatDateTime(pt.updatedAt)}
-				/>
+				<DetailRow label="更新日時" value={formatDateTime(pt.updatedAt)} />
 			</div>
 
 			<DeleteConfirmDialog

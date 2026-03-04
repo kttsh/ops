@@ -22,7 +22,8 @@ export const WithRetry: Story = {
 export const CustomMessage: Story = {
 	args: {
 		title: "接続エラー",
-		message: "サーバーに接続できませんでした。ネットワーク接続を確認してください。",
+		message:
+			"サーバーに接続できませんでした。ネットワーク接続を確認してください。",
 		onRetry: fn(),
 	},
 };

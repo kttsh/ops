@@ -8,6 +8,7 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
+import { ChartFullscreenDialog } from "@/components/shared/ChartFullscreenDialog";
 
 interface WorkloadChartProps {
 	data: Array<{ yearMonth: string; manhour: number }>;
@@ -39,50 +40,59 @@ export function WorkloadChart({ data }: WorkloadChartProps) {
 		);
 	}
 
+	const chartContent = (
+		<ResponsiveContainer width="100%" height="100%">
+			<AreaChart
+				data={chartData}
+				margin={{ top: 8, right: 8, left: 8, bottom: 0 }}
+			>
+				<defs>
+					<linearGradient id="manhourGradient" x1="0" y1="0" x2="0" y2="1">
+						<stop
+							offset="0%"
+							stopColor="hsl(var(--primary))"
+							stopOpacity={0.6}
+						/>
+						<stop
+							offset="100%"
+							stopColor="hsl(var(--primary))"
+							stopOpacity={0.05}
+						/>
+					</linearGradient>
+				</defs>
+				<CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+				<XAxis dataKey="label" tick={{ fontSize: 12 }} />
+				<YAxis
+					tickFormatter={(value: number) => numberFormatter.format(value)}
+					tick={{ fontSize: 12 }}
+				/>
+				<Tooltip
+					formatter={(value) => [
+						`${numberFormatter.format(value as number)} 工数`,
+						"",
+					]}
+					labelFormatter={(label) => `年月 ${String(label)}`}
+				/>
+				<Area
+					type="monotone"
+					dataKey="manhour"
+					stroke="hsl(var(--primary))"
+					strokeWidth={2}
+					fill="url(#manhourGradient)"
+					activeDot={{ r: 4 }}
+				/>
+			</AreaChart>
+		</ResponsiveContainer>
+	);
+
 	return (
 		<div className="rounded-2xl border shadow-sm p-6">
-			<ResponsiveContainer width="100%" height={256}>
-				<AreaChart
-					data={chartData}
-					margin={{ top: 8, right: 8, left: 8, bottom: 0 }}
-				>
-					<defs>
-						<linearGradient id="manhourGradient" x1="0" y1="0" x2="0" y2="1">
-							<stop
-								offset="0%"
-								stopColor="hsl(var(--primary))"
-								stopOpacity={0.6}
-							/>
-							<stop
-								offset="100%"
-								stopColor="hsl(var(--primary))"
-								stopOpacity={0.05}
-							/>
-						</linearGradient>
-					</defs>
-					<CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-					<XAxis dataKey="label" tick={{ fontSize: 12 }} />
-					<YAxis
-						tickFormatter={(value: number) => numberFormatter.format(value)}
-						tick={{ fontSize: 12 }}
-					/>
-					<Tooltip
-						formatter={(value) => [
-							`${numberFormatter.format(value as number)} 工数`,
-							"",
-						]}
-						labelFormatter={(label) => `年月 ${String(label)}`}
-					/>
-					<Area
-						type="monotone"
-						dataKey="manhour"
-						stroke="hsl(var(--primary))"
-						strokeWidth={2}
-						fill="url(#manhourGradient)"
-						activeDot={{ r: 4 }}
-					/>
-				</AreaChart>
-			</ResponsiveContainer>
+			<div className="flex justify-end mb-2">
+				<ChartFullscreenDialog title="月次工数グラフ">
+					{chartContent}
+				</ChartFullscreenDialog>
+			</div>
+			<div className="h-[256px]">{chartContent}</div>
 		</div>
 	);
 }

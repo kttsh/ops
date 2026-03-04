@@ -78,9 +78,7 @@ function ProjectDetailPage() {
 	}
 
 	if (isError || !data) {
-		return (
-			<NotFoundState entityName="案件" backTo="/master/projects" />
-		);
+		return <NotFoundState entityName="案件" backTo="/master/projects" />;
 	}
 
 	const project = data.data;
@@ -179,10 +177,7 @@ function ProjectDetailCard({
 						: "—"
 				}
 			/>
-			<DetailRow
-				label="更新日時"
-				value={formatDateTime(project.updatedAt)}
-			/>
+			<DetailRow label="更新日時" value={formatDateTime(project.updatedAt)} />
 		</div>
 	);
 }

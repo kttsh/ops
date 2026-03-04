@@ -25,8 +25,12 @@ const mutations = createCrudMutations<
 		update: updateProject,
 		delete: deleteProject,
 		restore: restoreProject,
-		fetchList: () => { throw new Error("not used in mutations"); },
-		fetchDetail: () => { throw new Error("not used in mutations"); },
+		fetchList: () => {
+			throw new Error("not used in mutations");
+		},
+		fetchDetail: () => {
+			throw new Error("not used in mutations");
+		},
 	},
 	queryKeys: projectKeys,
 });

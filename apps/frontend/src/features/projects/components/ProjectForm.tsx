@@ -146,10 +146,7 @@ export function ProjectForm({
 			{/* プロジェクト種別 */}
 			<form.Field name="projectTypeCode">
 				{(field) => (
-					<FieldWrapper
-						label="種別"
-						htmlFor={field.name}
-					>
+					<FieldWrapper label="種別" htmlFor={field.name}>
 						<QuerySelect
 							id={field.name}
 							value={field.state.value}

@@ -10,8 +10,8 @@ import {
 	capacityScenariosQueryOptions,
 	projectsQueryOptions,
 } from "@/features/workload/api/queries";
-import { CAPACITY_COLORS, PROJECT_TYPE_COLORS } from "@/lib/chart-colors";
 import type { BulkUpsertProjectItemInput } from "@/features/workload/types";
+import { CAPACITY_COLORS, PROJECT_TYPE_COLORS } from "@/lib/chart-colors";
 import { PeriodSelector } from "./PeriodSelector";
 import { ProfileManager } from "./ProfileManager";
 

@@ -2,6 +2,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { DataTable } from "@/components/shared/DataTable";
+import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 import type { BusinessUnit } from "@/features/business-units";
 import {
 	ApiError,
@@ -11,10 +15,6 @@ import {
 	useRestoreBusinessUnit,
 } from "@/features/business-units";
 import { createColumns } from "@/features/business-units/components/columns";
-import { DataTable } from "@/components/shared/DataTable";
-import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 export const Route = createFileRoute("/master/business-units/")({
 	validateSearch: businessUnitSearchSchema,
 	component: BusinessUnitListPage,
@@ -66,7 +66,9 @@ function BusinessUnitListPage() {
 
 	const handleRowHover = useCallback(
 		(row: BusinessUnit) => {
-			queryClient.ensureQueryData(businessUnitQueryOptions(row.businessUnitCode));
+			queryClient.ensureQueryData(
+				businessUnitQueryOptions(row.businessUnitCode),
+			);
 		},
 		[queryClient],
 	);
@@ -87,7 +89,10 @@ function BusinessUnitListPage() {
 
 	return (
 		<div className="space-y-6">
-			<PageHeader title="ビジネスユニット" description="ビジネスユニットの一覧を管理します" />
+			<PageHeader
+				title="ビジネスユニット"
+				description="ビジネスユニットの一覧を管理します"
+			/>
 
 			<DataTableToolbar
 				search={search.search}

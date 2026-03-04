@@ -17,9 +17,7 @@ interface QueryKeys<TId extends string | number, TListParams> {
 export function createQueryKeys<
 	TId extends string | number = string,
 	TListParams = unknown,
->(
-	resourceName: string,
-): QueryKeys<TId, TListParams> {
+>(resourceName: string): QueryKeys<TId, TListParams> {
 	return {
 		all: [resourceName] as const,
 		lists: () => [resourceName, "list"] as const,
@@ -31,11 +29,15 @@ export function createQueryKeys<
 
 // --- queryOptions ヘルパー ---
 
-export function createListQueryOptions<TEntity, TListParams>(options: {
-	queryKeys: QueryKeys<string | number, TListParams>;
+export function createListQueryOptions<
+	TEntity,
+	TId extends string | number,
+	TListParams,
+>(options: {
+	queryKeys: QueryKeys<TId, TListParams>;
 	fetchList: (params: TListParams) => Promise<PaginatedResponse<TEntity>>;
 	staleTime?: number;
-}): (params: TListParams) => ReturnType<typeof queryOptions> {
+}) {
 	const { queryKeys, fetchList, staleTime = STALE_TIMES.STANDARD } = options;
 
 	return (params: TListParams) =>
@@ -46,11 +48,15 @@ export function createListQueryOptions<TEntity, TListParams>(options: {
 		});
 }
 
-export function createDetailQueryOptions<TEntity, TId extends string | number>(options: {
-	queryKeys: QueryKeys<TId, unknown>;
+export function createDetailQueryOptions<
+	TEntity,
+	TId extends string | number,
+	TListParams,
+>(options: {
+	queryKeys: QueryKeys<TId, TListParams>;
 	fetchDetail: (id: TId) => Promise<SingleResponse<TEntity>>;
 	staleTime?: number;
-}): (id: TId) => ReturnType<typeof queryOptions> {
+}) {
 	const { queryKeys, fetchDetail, staleTime = STALE_TIMES.STANDARD } = options;
 
 	return (id: TId) =>

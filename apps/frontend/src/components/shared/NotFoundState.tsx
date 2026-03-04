@@ -21,9 +21,7 @@ export function NotFoundState({
 				className,
 			)}
 		>
-			<p className="text-lg font-medium">
-				{entityName}が見つかりません
-			</p>
+			<p className="text-lg font-medium">{entityName}が見つかりません</p>
 			<Link to={backTo} className="text-sm text-primary hover:underline">
 				{backLabel}
 			</Link>

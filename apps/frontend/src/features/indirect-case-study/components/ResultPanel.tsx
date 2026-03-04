@@ -1,8 +1,11 @@
-import { Download, Loader2 } from "lucide-react";
-import { memo, useCallback } from "react";
+import { Download, Loader2, Upload } from "lucide-react";
+import { memo, useCallback, useState } from "react";
+import { ExcelImportDialog } from "@/components/shared/ExcelImportDialog";
 import { Button } from "@/components/ui/button";
 import { useExcelExport } from "@/features/indirect-case-study/hooks/useExcelExport";
 import { getFiscalYear } from "@/features/indirect-case-study/hooks/useIndirectWorkCalculation";
+import { useIndirectWorkLoadExcelExport } from "@/features/indirect-case-study/hooks/useIndirectWorkLoadExcelExport";
+import { useIndirectWorkLoadExcelImport } from "@/features/indirect-case-study/hooks/useIndirectWorkLoadExcelImport";
 import type {
 	CalculateCapacityResult,
 	CalculationTableData,
@@ -24,9 +27,12 @@ interface ResultPanelProps {
 	headcountPlanCaseName: string;
 	scenarioName: string;
 	indirectWorkCaseName: string;
+	indirectWorkCaseId: number | null;
 	onSaveIndirectWorkLoads: () => Promise<void>;
 	isSavingResults: boolean;
 	indirectWorkResultDirty: boolean;
+	businessUnitCode: string;
+	businessUnitName: string;
 }
 
 const MONTHS = [
@@ -61,11 +67,24 @@ export const ResultPanel = memo(function ResultPanel({
 	headcountPlanCaseName,
 	scenarioName,
 	indirectWorkCaseName,
+	indirectWorkCaseId,
 	onSaveIndirectWorkLoads,
 	isSavingResults,
 	indirectWorkResultDirty,
+	businessUnitCode,
+	businessUnitName,
 }: ResultPanelProps) {
 	const { exportToExcel, isExporting } = useExcelExport();
+	const { exportToExcel: exportInputData, isExporting: isExportingInput } =
+		useIndirectWorkLoadExcelExport();
+
+	// インポート
+	const [importDialogOpen, setImportDialogOpen] = useState(false);
+	const { parseFile, confirmImport, isImporting } =
+		useIndirectWorkLoadExcelImport({
+			indirectWorkCaseId: indirectWorkCaseId ?? 0,
+			businessUnits: [{ businessUnitName, businessUnitCode }],
+		});
 
 	const hasResults = capacityResult !== null;
 
@@ -149,7 +168,56 @@ export const ResultPanel = memo(function ResultPanel({
 			fiscalYear,
 			tableData: { rows, months: yearMonths },
 		});
-	}, [capacityResult, indirectWorkResult, monthlyHeadcountPlans, ratios, workTypes, fiscalYear, headcountPlanCaseName, scenarioName, indirectWorkCaseName, exportToExcel]);
+	}, [
+		capacityResult,
+		indirectWorkResult,
+		monthlyHeadcountPlans,
+		ratios,
+		workTypes,
+		fiscalYear,
+		headcountPlanCaseName,
+		scenarioName,
+		indirectWorkCaseName,
+		exportToExcel,
+	]);
+
+	const handleExportInput = useCallback(async () => {
+		if (!indirectWorkResult) return;
+
+		// monthlyLoads をグルーピングして yearMonths を抽出
+		const yearMonthSet = new Set<string>();
+		const loadMap = new Map<
+			string,
+			Array<{ yearMonth: string; manhour: number }>
+		>();
+
+		for (const load of indirectWorkResult.monthlyLoads) {
+			yearMonthSet.add(load.yearMonth);
+			const existing = loadMap.get(load.businessUnitCode) ?? [];
+			existing.push({ yearMonth: load.yearMonth, manhour: load.manhour });
+			loadMap.set(load.businessUnitCode, existing);
+		}
+
+		const yearMonths = [...yearMonthSet].sort();
+
+		await exportInputData({
+			indirectWorkCaseName,
+			businessUnits: [
+				{
+					businessUnitName,
+					businessUnitCode,
+					loads: loadMap.get(businessUnitCode) ?? [],
+				},
+			],
+			yearMonths,
+		});
+	}, [
+		indirectWorkResult,
+		indirectWorkCaseName,
+		businessUnitCode,
+		businessUnitName,
+		exportInputData,
+	]);
 
 	if (!hasResults) {
 		return (
@@ -167,16 +235,39 @@ export const ResultPanel = memo(function ResultPanel({
 				<h2 className="text-base font-semibold">計算結果</h2>
 				<div className="flex gap-2">
 					{indirectWorkResult && (
-						<Button
-							size="sm"
-							onClick={onSaveIndirectWorkLoads}
-							disabled={!indirectWorkResultDirty || isSavingResults}
-						>
-							{isSavingResults && (
-								<Loader2 className="h-4 w-4 animate-spin mr-1" />
-							)}
-							間接作業工数を保存
-						</Button>
+						<>
+							<Button
+								size="sm"
+								onClick={onSaveIndirectWorkLoads}
+								disabled={!indirectWorkResultDirty || isSavingResults}
+							>
+								{isSavingResults && (
+									<Loader2 className="h-4 w-4 animate-spin mr-1" />
+								)}
+								間接作業工数を保存
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => setImportDialogOpen(true)}
+							>
+								<Upload className="h-4 w-4 mr-1" />
+								インポート
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleExportInput}
+								disabled={isExportingInput}
+							>
+								{isExportingInput ? (
+									<Loader2 className="h-4 w-4 animate-spin mr-1" />
+								) : (
+									<Download className="h-4 w-4 mr-1" />
+								)}
+								入力データ
+							</Button>
+						</>
 					)}
 					<Button
 						variant="outline"
@@ -189,7 +280,7 @@ export const ResultPanel = memo(function ResultPanel({
 						) : (
 							<Download className="h-4 w-4 mr-1" />
 						)}
-						Excelエクスポート
+						計算結果
 					</Button>
 				</div>
 			</div>
@@ -205,6 +296,17 @@ export const ResultPanel = memo(function ResultPanel({
 				headcountPlanCaseName={headcountPlanCaseName}
 				scenarioName={scenarioName}
 				indirectWorkCaseName={indirectWorkCaseName}
+			/>
+
+			{/* Excel インポートダイアログ */}
+			<ExcelImportDialog
+				open={importDialogOpen}
+				onOpenChange={setImportDialogOpen}
+				title="間接工数インポート"
+				description="Excel ファイルから間接工数データを一括インポートします。エクスポートしたファイルをそのまま使用できます。"
+				onFileParsed={parseFile}
+				onConfirm={confirmImport}
+				isImporting={isImporting}
 			/>
 		</div>
 	);

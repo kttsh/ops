@@ -1,12 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { chartDataQueryOptions } from "@/features/workload/api/queries";
-import {
-	CAPACITY_COLORS,
-	INDIRECT_COLORS,
-	PROJECT_TYPE_COLORS,
-	UNCLASSIFIED_COLOR,
-} from "@/lib/chart-colors";
 import type {
 	AreaSeriesConfig,
 	ChartDataParams,
@@ -16,6 +10,12 @@ import type {
 	LineSeriesConfig,
 	MonthlyDataPoint,
 } from "@/features/workload/types";
+import {
+	CAPACITY_COLORS,
+	INDIRECT_COLORS,
+	PROJECT_TYPE_COLORS,
+	UNCLASSIFIED_COLOR,
+} from "@/lib/chart-colors";
 
 export interface UseChartDataReturn {
 	chartData: MonthlyDataPoint[];

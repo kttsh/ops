@@ -2,8 +2,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
 import { DataTable } from "@/components/shared/DataTable";
+import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 import type { Project } from "@/features/projects";
 import {
 	ApiError,
@@ -13,8 +15,6 @@ import {
 	useRestoreProject,
 } from "@/features/projects";
 import { createColumns } from "@/features/projects/components/columns";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 
 export const Route = createFileRoute("/master/projects/")({
 	validateSearch: projectSearchSchema,

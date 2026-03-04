@@ -1,11 +1,11 @@
 import { z } from "zod";
-import type { MasterEntity } from "@/lib/types/base-entity";
 import {
 	codeSchema,
 	colorCodeSchema,
 	displayOrderSchema,
 	nameSchema,
 } from "@/lib/schemas/master-entity-schema";
+import type { MasterEntity } from "@/lib/types/base-entity";
 
 // --- 共通型を共有レイヤーから re-export ---
 export type {

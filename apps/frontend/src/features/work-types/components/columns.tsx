@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { SortableHeader } from "@/components/shared/SortableHeader";
 import {
 	createDateTimeColumn,
 	createRestoreActionColumn,
 	createSortableColumn,
 	createStatusColumn,
 } from "@/components/shared/column-helpers";
+import { SortableHeader } from "@/components/shared/SortableHeader";
 import type { WorkType } from "@/features/work-types/types";
 
 export function createColumns(options: {
@@ -44,9 +44,15 @@ export function createColumns(options: {
 				);
 			},
 		},
-		createSortableColumn<WorkType>({ accessorKey: "displayOrder", label: "表示順" }),
+		createSortableColumn<WorkType>({
+			accessorKey: "displayOrder",
+			label: "表示順",
+		}),
 		createStatusColumn<WorkType>(),
-		createDateTimeColumn<WorkType>({ accessorKey: "updatedAt", label: "更新日時" }),
+		createDateTimeColumn<WorkType>({
+			accessorKey: "updatedAt",
+			label: "更新日時",
+		}),
 		createRestoreActionColumn<WorkType, string>({
 			idKey: "workTypeCode",
 			onRestore: options.onRestore,

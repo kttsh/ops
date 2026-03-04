@@ -118,10 +118,7 @@ function BusinessUnitDetailPage() {
 				<DetailRow label="ビジネスユニットコード" value={bu.businessUnitCode} />
 				<DetailRow label="名称" value={bu.name} />
 				<DetailRow label="表示順" value={String(bu.displayOrder)} />
-				<DetailRow
-					label="更新日時"
-					value={formatDateTime(bu.updatedAt)}
-				/>
+				<DetailRow label="更新日時" value={formatDateTime(bu.updatedAt)} />
 			</div>
 
 			<DeleteConfirmDialog

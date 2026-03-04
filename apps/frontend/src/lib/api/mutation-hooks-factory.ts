@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UseMutationResult } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { BaseListParams, CrudClient } from "./crud-client-factory";
 import type { QueryKeys } from "./query-key-factory";
 import type { SingleResponse } from "./types";
@@ -54,7 +54,13 @@ export function createCrudMutations<
 	TId extends string | number,
 	TListParams,
 >(
-	config: CrudMutationConfig<TEntity, TCreateInput, TUpdateInput, TId, TListParams>,
+	config: CrudMutationConfig<
+		TEntity,
+		TCreateInput,
+		TUpdateInput,
+		TId,
+		TListParams
+	>,
 ): CrudMutations<TEntity, TCreateInput, TUpdateInput, TId> {
 	const { client, queryKeys } = config;
 

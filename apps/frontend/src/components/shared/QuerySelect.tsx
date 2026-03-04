@@ -66,9 +66,7 @@ export function QuerySelect({
 	if (queryResult.isError) {
 		return (
 			<div className="flex items-center gap-2 h-10">
-				<p className="text-sm text-destructive">
-					選択肢の取得に失敗しました
-				</p>
+				<p className="text-sm text-destructive">選択肢の取得に失敗しました</p>
 				<Button
 					type="button"
 					variant="ghost"

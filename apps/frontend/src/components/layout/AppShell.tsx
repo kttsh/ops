@@ -1,15 +1,7 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import {
-	BarChart3,
-	Briefcase,
-	Building2,
-	Calculator,
-	ChevronRight,
-	FolderKanban,
-	Menu,
-	Palette,
-} from "lucide-react";
+import { useRouterState } from "@tanstack/react-router";
+import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useState } from "react";
+import { SidebarNav } from "@/components/layout/SidebarNav";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -19,105 +11,47 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { useSidebarState } from "@/hooks/useSidebarState";
 import { cn } from "@/lib/utils";
-
-const menuItems = [
-	{
-		label: "ダッシュボード",
-		children: [
-			{
-				label: "山積ダッシュボード",
-				href: "/workload",
-				icon: BarChart3,
-			},
-		],
-	},
-	{
-		label: "マスタ管理",
-		children: [
-			{
-				label: "ビジネスユニット",
-				href: "/master/business-units",
-				icon: Building2,
-			},
-			{
-				label: "案件",
-				href: "/master/projects",
-				icon: Briefcase,
-			},
-			{
-				label: "案件タイプ",
-				href: "/master/project-types",
-				icon: FolderKanban,
-			},
-			{
-				label: "作業種類",
-				href: "/master/work-types",
-				icon: Palette,
-			},
-			{
-				label: "間接作業・キャパシティ",
-				href: "/master/indirect-capacity-settings",
-				icon: Calculator,
-			},
-		],
-	},
-];
-
-function SidebarNav() {
-	const routerState = useRouterState();
-	const currentPath = routerState.location.pathname;
-
-	return (
-		<nav className="flex flex-col gap-2 p-4">
-			{menuItems.map((group) => (
-				<div key={group.label}>
-					<p className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-						{group.label}
-					</p>
-					<div className="flex flex-col gap-1">
-						{group.children.map((item) => {
-							const isActive = currentPath.startsWith(item.href);
-							return (
-								<Link
-									key={item.href}
-									to={item.href}
-									className={cn(
-										"flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150",
-										isActive
-											? "bg-primary/10 text-primary"
-											: "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-									)}
-								>
-									<item.icon className="h-4 w-4" />
-									{item.label}
-									{isActive && <ChevronRight className="ml-auto h-4 w-4" />}
-								</Link>
-							);
-						})}
-					</div>
-				</div>
-			))}
-		</nav>
-	);
-}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
 	const [sheetOpen, setSheetOpen] = useState(false);
+	const { collapsed, toggle } = useSidebarState();
 	const routerState = useRouterState();
 	const currentPath = routerState.location.pathname;
 
 	return (
 		<div className="flex h-screen">
 			{/* Desktop sidebar */}
-			<aside className="hidden lg:flex lg:w-72 lg:flex-col border-r border-border bg-sidebar">
+			<aside
+				className={cn(
+					"hidden lg:flex lg:flex-col border-r border-border bg-sidebar",
+					collapsed ? "lg:w-16" : "lg:w-72",
+				)}
+			>
 				<div className="flex h-14 items-center px-6">
-					<h1 className="text-lg font-bold text-sidebar-foreground">
-						操業管理システム
-					</h1>
+					{!collapsed && (
+						<h1 className="text-lg font-bold text-sidebar-foreground">
+							操業管理システム
+						</h1>
+					)}
 				</div>
 				<Separator />
-				<SidebarNav />
+				<SidebarNav collapsed={collapsed} />
+				<div className="mt-auto border-t border-border p-2">
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={toggle}
+						className={cn("h-9 w-9", !collapsed && "ml-2")}
+					>
+						{collapsed ? (
+							<PanelLeftOpen className="h-4 w-4" />
+						) : (
+							<PanelLeftClose className="h-4 w-4" />
+						)}
+					</Button>
+				</div>
 			</aside>
 
 			{/* Main content */}
@@ -134,7 +68,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 							<SheetHeader className="p-6 pb-0">
 								<SheetTitle>操業管理システム</SheetTitle>
 							</SheetHeader>
-							<SidebarNav />
+							<SidebarNav collapsed={false} />
 						</SheetContent>
 					</Sheet>
 					<h1 className="text-lg font-bold">操業管理システム</h1>

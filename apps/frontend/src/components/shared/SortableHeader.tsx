@@ -1,18 +1,20 @@
-import type { Column } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface SortableHeaderProps<TData> {
-	column: Column<TData, unknown>;
+interface SortableHeaderProps {
+	column: {
+		getIsSorted: () => false | "asc" | "desc";
+		toggleSorting: (desc: boolean) => void;
+	};
 	label: string;
 	className?: string;
 }
 
-export function SortableHeader<TData>({
+export function SortableHeader({
 	column,
 	label,
 	className = "-ml-3 h-8",
-}: SortableHeaderProps<TData>) {
+}: SortableHeaderProps) {
 	const sorted = column.getIsSorted();
 
 	return (

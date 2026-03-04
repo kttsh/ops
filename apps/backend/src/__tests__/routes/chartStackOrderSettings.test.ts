@@ -489,7 +489,8 @@ describe("PUT /chart-stack-order-settings/bulk", () => {
 	test("入力配列内の (targetType, targetCode) 重複で 422 を返す", async () => {
 		mockedService.bulkUpsert.mockRejectedValue(
 			new HTTPException(422, {
-				message: "Duplicate targetType and targetCode combination found in items",
+				message:
+					"Duplicate targetType and targetCode combination found in items",
 			}),
 		);
 

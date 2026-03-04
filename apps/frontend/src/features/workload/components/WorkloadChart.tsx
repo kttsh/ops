@@ -10,6 +10,7 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
+import { ChartFullscreenDialog } from "@/components/shared/ChartFullscreenDialog";
 import type {
 	ChartSeriesConfig,
 	LegendAction,
@@ -76,85 +77,94 @@ function WorkloadChartInner({
 
 	if (data.length === 0) return null;
 
+	const chartContent = (
+		<ResponsiveContainer width="100%" height="100%">
+			<ComposedChart
+				data={data}
+				onMouseMove={handleMouseMove}
+				onMouseLeave={handleMouseLeave}
+				onClick={handleClick}
+				margin={{ top: 8, right: 8, left: 8, bottom: 0 }}
+				accessibilityLayer={false}
+			>
+				<CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+				<XAxis
+					dataKey="month"
+					tick={{ fontSize: 12 }}
+					tickLine={false}
+					axisLine={{ stroke: "#d1d5db" }}
+				/>
+				<YAxis
+					tick={{ fontSize: 12 }}
+					tickLine={false}
+					axisLine={{ stroke: "#d1d5db" }}
+					tickFormatter={(value: number) =>
+						value >= 1000 ? `${(value / 1000).toFixed(0)}k` : String(value)
+					}
+				/>
+				<Tooltip content={() => null} />
+
+				{/* 間接作業 → 案件タイプ の順でエリア描画 */}
+				{seriesConfig.areas.map((area) => (
+					<Area
+						key={area.dataKey}
+						type="monotone"
+						dataKey={area.dataKey}
+						stackId={area.stackId}
+						fill={area.fill}
+						stroke={area.stroke}
+						fillOpacity={area.fillOpacity}
+						name={area.name}
+						isAnimationActive={false}
+						animationDuration={0}
+						dot={false}
+						activeDot={false}
+					/>
+				))}
+
+				{/* キャパシティライン */}
+				{seriesConfig.lines.map((line) => (
+					<Line
+						key={line.dataKey}
+						type="monotone"
+						dataKey={line.dataKey}
+						stroke={line.stroke}
+						strokeDasharray={line.strokeDasharray}
+						strokeWidth={2}
+						name={line.name}
+						isAnimationActive={false}
+						animationDuration={0}
+						dot={false}
+						activeDot={false}
+					/>
+				))}
+
+				{/* アクティブ月のカーソル線 */}
+				{activeLabel && (
+					<ReferenceLine
+						x={activeLabel}
+						stroke="#6b7280"
+						strokeDasharray="3 3"
+						strokeWidth={1}
+					/>
+				)}
+			</ComposedChart>
+		</ResponsiveContainer>
+	);
+
 	return (
 		<div className="relative h-[400px] w-full" style={{ contain: "content" }}>
+			<div className="absolute top-1 right-1 z-10">
+				<ChartFullscreenDialog title="山積グラフ">
+					{chartContent}
+				</ChartFullscreenDialog>
+			</div>
 			{isFetching && (
 				<div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60">
 					<div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 				</div>
 			)}
-			<ResponsiveContainer width="100%" height="100%">
-				<ComposedChart
-					data={data}
-					onMouseMove={handleMouseMove}
-					onMouseLeave={handleMouseLeave}
-					onClick={handleClick}
-					margin={{ top: 8, right: 8, left: 8, bottom: 0 }}
-					accessibilityLayer={false}
-				>
-					<CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-					<XAxis
-						dataKey="month"
-						tick={{ fontSize: 12 }}
-						tickLine={false}
-						axisLine={{ stroke: "#d1d5db" }}
-					/>
-					<YAxis
-						tick={{ fontSize: 12 }}
-						tickLine={false}
-						axisLine={{ stroke: "#d1d5db" }}
-						tickFormatter={(value: number) =>
-							value >= 1000 ? `${(value / 1000).toFixed(0)}k` : String(value)
-						}
-					/>
-					<Tooltip content={() => null} />
-
-					{/* 間接作業 → 案件タイプ の順でエリア描画 */}
-					{seriesConfig.areas.map((area) => (
-						<Area
-							key={area.dataKey}
-							type="monotone"
-							dataKey={area.dataKey}
-							stackId={area.stackId}
-							fill={area.fill}
-							stroke={area.stroke}
-							fillOpacity={area.fillOpacity}
-							name={area.name}
-							isAnimationActive={false}
-							animationDuration={0}
-							dot={false}
-							activeDot={false}
-						/>
-					))}
-
-					{/* キャパシティライン */}
-					{seriesConfig.lines.map((line) => (
-						<Line
-							key={line.dataKey}
-							type="monotone"
-							dataKey={line.dataKey}
-							stroke={line.stroke}
-							strokeDasharray={line.strokeDasharray}
-							strokeWidth={2}
-							name={line.name}
-							isAnimationActive={false}
-							animationDuration={0}
-							dot={false}
-							activeDot={false}
-						/>
-					))}
-
-					{/* アクティブ月のカーソル線 */}
-					{activeLabel && (
-						<ReferenceLine
-							x={activeLabel}
-							stroke="#6b7280"
-							strokeDasharray="3 3"
-							strokeWidth={1}
-						/>
-					)}
-				</ComposedChart>
-			</ResponsiveContainer>
+			{chartContent}
 		</div>
 	);
 }

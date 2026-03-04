@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { createDetailQueryOptions, createListQueryOptions, createQueryKeys } from "../query-key-factory";
 import { STALE_TIMES } from "../constants";
+import {
+	createDetailQueryOptions,
+	createListQueryOptions,
+	createQueryKeys,
+} from "../query-key-factory";
 
 describe("createQueryKeys", () => {
 	it("リソース名から5つのキー生成関数を持つオブジェクトを返す", () => {
@@ -24,7 +28,9 @@ describe("createQueryKeys", () => {
 	});
 
 	it("list(params) は [resourceName, 'list', params] を返す", () => {
-		const keys = createQueryKeys<string, { includeDisabled: boolean }>("work-types");
+		const keys = createQueryKeys<string, { includeDisabled: boolean }>(
+			"work-types",
+		);
 		const params = { includeDisabled: true };
 		expect(keys.list(params)).toEqual(["work-types", "list", params]);
 	});
@@ -68,10 +74,19 @@ describe("createQueryKeys", () => {
 
 describe("createListQueryOptions", () => {
 	it("queryKey と queryFn と staleTime を含む queryOptions を返す", () => {
-		const keys = createQueryKeys<string, { includeDisabled: boolean }>("work-types");
+		const keys = createQueryKeys<string, { includeDisabled: boolean }>(
+			"work-types",
+		);
 		const fetchList = async (_params: { includeDisabled: boolean }) => ({
 			data: [],
-			meta: { pagination: { currentPage: 1, pageSize: 20, totalItems: 0, totalPages: 0 } },
+			meta: {
+				pagination: {
+					currentPage: 1,
+					pageSize: 20,
+					totalItems: 0,
+					totalPages: 0,
+				},
+			},
 		});
 
 		const getOptions = createListQueryOptions({
@@ -81,16 +96,29 @@ describe("createListQueryOptions", () => {
 
 		const options = getOptions({ includeDisabled: false });
 
-		expect(options.queryKey).toEqual(["work-types", "list", { includeDisabled: false }]);
+		expect(options.queryKey).toEqual([
+			"work-types",
+			"list",
+			{ includeDisabled: false },
+		]);
 		expect(options.staleTime).toBe(STALE_TIMES.STANDARD);
 		expect(typeof options.queryFn).toBe("function");
 	});
 
 	it("staleTime をオーバーライドできる", () => {
-		const keys = createQueryKeys<string, { includeDisabled: boolean }>("work-types");
+		const keys = createQueryKeys<string, { includeDisabled: boolean }>(
+			"work-types",
+		);
 		const fetchList = async (_params: { includeDisabled: boolean }) => ({
-			data: [],
-			meta: { pagination: { currentPage: 1, pageSize: 20, totalItems: 0, totalPages: 0 } },
+			data: [] as unknown[],
+			meta: {
+				pagination: {
+					currentPage: 1,
+					pageSize: 20,
+					totalItems: 0,
+					totalPages: 0,
+				},
+			},
 		});
 
 		const getOptions = createListQueryOptions({
@@ -107,7 +135,9 @@ describe("createListQueryOptions", () => {
 describe("createDetailQueryOptions", () => {
 	it("queryKey と queryFn と staleTime を含む queryOptions を返す", () => {
 		const keys = createQueryKeys<string>("work-types");
-		const fetchDetail = async (_id: string) => ({ data: { code: "WT-01", name: "test" } });
+		const fetchDetail = async (_id: string) => ({
+			data: { code: "WT-01", name: "test" },
+		});
 
 		const getOptions = createDetailQueryOptions({
 			queryKeys: keys,
@@ -123,7 +153,9 @@ describe("createDetailQueryOptions", () => {
 
 	it("number ID でも正しく動作する", () => {
 		const keys = createQueryKeys<number>("projects");
-		const fetchDetail = async (_id: number) => ({ data: { id: 42, name: "test" } });
+		const fetchDetail = async (_id: number) => ({
+			data: { id: 42, name: "test" },
+		});
 
 		const getOptions = createDetailQueryOptions({
 			queryKeys: keys,
@@ -136,7 +168,9 @@ describe("createDetailQueryOptions", () => {
 
 	it("staleTime をオーバーライドできる", () => {
 		const keys = createQueryKeys<string>("work-types");
-		const fetchDetail = async (_id: string) => ({ data: { code: "WT-01", name: "test" } });
+		const fetchDetail = async (_id: string) => ({
+			data: { code: "WT-01", name: "test" },
+		});
 
 		const getOptions = createDetailQueryOptions({
 			queryKeys: keys,

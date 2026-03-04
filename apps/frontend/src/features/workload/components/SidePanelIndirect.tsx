@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { workTypesQueryOptions } from "@/features/work-types/api/queries";
-import { INDIRECT_COLORS } from "@/lib/chart-colors";
 import {
 	useBulkUpsertColorSettings,
 	useBulkUpsertStackOrderSettings,
 } from "@/features/workload/api/mutations";
+import { INDIRECT_COLORS } from "@/lib/chart-colors";
 
 interface IndirectWorkTypeSettingsItem {
 	workTypeCode: string;

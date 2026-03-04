@@ -25,8 +25,12 @@ const mutations = createCrudMutations<
 		update: updateBusinessUnit,
 		delete: deleteBusinessUnit,
 		restore: restoreBusinessUnit,
-		fetchList: () => { throw new Error("not used in mutations"); },
-		fetchDetail: () => { throw new Error("not used in mutations"); },
+		fetchList: () => {
+			throw new Error("not used in mutations");
+		},
+		fetchDetail: () => {
+			throw new Error("not used in mutations");
+		},
 	},
 	queryKeys: businessUnitKeys,
 });

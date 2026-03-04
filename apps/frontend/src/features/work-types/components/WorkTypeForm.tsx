@@ -98,10 +98,7 @@ export function WorkTypeForm({
 				)}
 			</form.Field>
 
-			<form.Field
-				name="displayOrder"
-				validators={displayOrderValidators}
-			>
+			<form.Field name="displayOrder" validators={displayOrderValidators}>
 				{(field) => (
 					<FormTextField
 						field={field}

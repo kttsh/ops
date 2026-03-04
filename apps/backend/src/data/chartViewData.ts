@@ -94,9 +94,7 @@ export const chartViewData = {
 			.input(
 				"businessUnitCodes",
 				sql.NVarChar,
-				data.businessUnitCodes
-					? JSON.stringify(data.businessUnitCodes)
-					: null,
+				data.businessUnitCodes ? JSON.stringify(data.businessUnitCodes) : null,
 			)
 			.query<ChartViewRow>(
 				`INSERT INTO chart_views (view_name, chart_type, start_year_month, end_year_month, is_default, description, business_unit_codes)

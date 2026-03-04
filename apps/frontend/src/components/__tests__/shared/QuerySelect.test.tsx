@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-	QuerySelect,
-	EMPTY_SENTINEL,
 	convertSentinelValue,
+	EMPTY_SENTINEL,
+	QuerySelect,
 } from "@/components/shared/QuerySelect";
 
 describe("QuerySelect", () => {

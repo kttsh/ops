@@ -1,13 +1,15 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { StatusBadge } from "@/components/shared/StatusBadge";
-import { SortableHeader } from "@/components/shared/SortableHeader";
-import { formatDateTime } from "@/lib/format-utils";
 import { createElement } from "react";
+import { SortableHeader } from "@/components/shared/SortableHeader";
+import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
+import { formatDateTime } from "@/lib/format-utils";
 
 // --- ステータスカラム ---
 
-export function createStatusColumn<TData extends { deletedAt?: string | null }>(options?: {
+export function createStatusColumn<
+	TData extends { deletedAt?: string | null },
+>(options?: {
 	id?: string;
 	header?: string;
 	activeLabel?: string;
@@ -69,7 +71,7 @@ export function createRestoreActionColumn<
 export function createDateTimeColumn<TData>(options: {
 	accessorKey: keyof TData & string;
 	label: string;
-}): ColumnDef<TData> {
+}): ColumnDef<TData> & { accessorKey: keyof TData & string } {
 	const { accessorKey, label } = options;
 
 	return {

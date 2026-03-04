@@ -1,29 +1,29 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { fn } from 'storybook/test'
-import { WorkloadCard } from './WorkloadCard'
-import { mockProjectCase, mockProjectLoads } from './__mocks__/data'
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { fn } from "storybook/test";
+import { mockProjectCase, mockProjectLoads } from "./__mocks__/data";
+import { WorkloadCard } from "./WorkloadCard";
 
 const meta = {
-  title: 'Features/CaseStudy/WorkloadCard',
-  component: WorkloadCard,
-  tags: ['autodocs'],
-} satisfies Meta<typeof WorkloadCard>
+	title: "Features/CaseStudy/WorkloadCard",
+	component: WorkloadCard,
+	tags: ["autodocs"],
+} satisfies Meta<typeof WorkloadCard>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    projectCase: mockProjectCase,
-    projectLoads: mockProjectLoads,
-    onWorkloadsChange: fn(),
-  },
-}
+	args: {
+		projectCase: mockProjectCase,
+		projectLoads: mockProjectLoads,
+		onWorkloadsChange: fn(),
+	},
+};
 
 export const EmptyLoads: Story = {
-  args: {
-    projectCase: mockProjectCase,
-    projectLoads: [],
-    onWorkloadsChange: fn(),
-  },
-}
+	args: {
+		projectCase: mockProjectCase,
+		projectLoads: [],
+		onWorkloadsChange: fn(),
+	},
+};

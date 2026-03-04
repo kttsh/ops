@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
 import {
-	yearMonthSchema,
 	businessUnitCodeSchema,
 	colorCodeSchema,
 	includeDisabledFilterSchema,
+	yearMonthSchema,
 } from "@/types/common";
 
 describe("yearMonthSchema", () => {

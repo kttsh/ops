@@ -66,9 +66,7 @@ function WorkTypeDetailPage() {
 	}
 
 	if (isError || !data) {
-		return (
-			<NotFoundState entityName="作業種類" backTo="/master/work-types" />
-		);
+		return <NotFoundState entityName="作業種類" backTo="/master/work-types" />;
 	}
 
 	const wt = data.data;
@@ -124,10 +122,7 @@ function WorkTypeDetailPage() {
 					</dd>
 				</div>
 				<DetailRow label="表示順" value={String(wt.displayOrder)} />
-				<DetailRow
-					label="更新日時"
-					value={formatDateTime(wt.updatedAt)}
-				/>
+				<DetailRow label="更新日時" value={formatDateTime(wt.updatedAt)} />
 			</div>
 
 			<DeleteConfirmDialog

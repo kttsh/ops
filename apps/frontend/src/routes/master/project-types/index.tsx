@@ -2,6 +2,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { DataTable } from "@/components/shared/DataTable";
+import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 import type { ProjectType } from "@/features/project-types";
 import {
 	ApiError,
@@ -11,10 +15,6 @@ import {
 	useRestoreProjectType,
 } from "@/features/project-types";
 import { createColumns } from "@/features/project-types/components/columns";
-import { DataTable } from "@/components/shared/DataTable";
-import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 
 export const Route = createFileRoute("/master/project-types/")({
 	validateSearch: projectTypeSearchSchema,
@@ -76,7 +76,10 @@ function ProjectTypeListPage() {
 
 	return (
 		<div className="space-y-6">
-			<PageHeader title="案件タイプ" description="案件タイプの一覧を管理します" />
+			<PageHeader
+				title="案件タイプ"
+				description="案件タイプの一覧を管理します"
+			/>
 
 			<DataTableToolbar
 				search={search.search}

@@ -22,6 +22,9 @@ export {
 export { CaseFormSheet } from "./components/CaseFormSheet";
 // Components
 export { CaseStudySection } from "./components/CaseStudySection";
+// Hooks
+export { useProjectLoadExcelExport } from "./hooks/useProjectLoadExcelExport";
+export { useProjectLoadExcelImport } from "./hooks/useProjectLoadExcelImport";
 export type {
 	BulkProjectLoadInput,
 	CreateProjectCaseInput,

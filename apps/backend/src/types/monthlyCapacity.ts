@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { yearMonthSchema, businessUnitCodeSchema } from "@/types/common";
+import { businessUnitCodeSchema, yearMonthSchema } from "@/types/common";
 
 /** キャパシティバリデーション: 0以上99999999.99以下 */
 const capacityValueSchema = z.number().min(0).max(99999999.99);

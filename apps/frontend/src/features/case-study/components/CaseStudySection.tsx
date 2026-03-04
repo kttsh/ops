@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { Download, Loader2, Upload } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
+import { ExcelImportDialog } from "@/components/shared/ExcelImportDialog";
+import { Button } from "@/components/ui/button";
 import type { ProjectCase } from "@/features/case-study";
 import {
 	ApiError,
@@ -9,10 +12,12 @@ import {
 	projectLoadsQueryOptions,
 	useDeleteProjectCase,
 } from "@/features/case-study";
+import { useProjectLoadExcelExport } from "@/features/case-study/hooks/useProjectLoadExcelExport";
+import { useProjectLoadExcelImport } from "@/features/case-study/hooks/useProjectLoadExcelImport";
 import type { Project } from "@/features/projects";
 import { CaseFormSheet } from "./CaseFormSheet";
 import { CaseSidebar } from "./CaseSidebar";
-import { WorkloadCard } from "./WorkloadCard";
+import { generateMonthRange, WorkloadCard } from "./WorkloadCard";
 import { WorkloadChart } from "./WorkloadChart";
 
 interface CaseStudySectionProps {
@@ -42,6 +47,17 @@ export function CaseStudySection({
 	// 削除ダイアログ
 	const [caseToDelete, setCaseToDelete] = useState<ProjectCase | null>(null);
 	const deleteMutation = useDeleteProjectCase();
+
+	// インポートダイアログ
+	const [importDialogOpen, setImportDialogOpen] = useState(false);
+
+	// Excel エクスポート
+	const { exportToExcel, isExporting } = useProjectLoadExcelExport();
+
+	// Excel インポート
+	const { parseFile, confirmImport, isImporting } = useProjectLoadExcelImport({
+		projectCaseId: selectedCaseId ?? 0,
+	});
 
 	// 選択ケースの詳細
 	const { data: caseData } = useQuery({
@@ -116,6 +132,24 @@ export function CaseStudySection({
 		setFormSheet({ open: false, mode: "create", editCaseId: null });
 	}, []);
 
+	// エクスポート用の年月範囲
+	const yearMonths = useMemo(() => {
+		if (!selectedCase) return [];
+		return generateMonthRange(selectedCase, projectLoads);
+	}, [selectedCase, projectLoads]);
+
+	const handleExport = useCallback(async () => {
+		if (!selectedCase) return;
+		await exportToExcel({
+			caseName: selectedCase.caseName,
+			loads: projectLoads.map((pl) => ({
+				yearMonth: pl.yearMonth,
+				manhour: pl.manhour,
+			})),
+			yearMonths,
+		});
+	}, [selectedCase, projectLoads, yearMonths, exportToExcel]);
+
 	return (
 		<>
 			<div className="rounded-2xl border shadow-sm overflow-hidden">
@@ -142,6 +176,30 @@ export function CaseStudySection({
 							</div>
 						) : (
 							<>
+								{/* Excel エクスポート・インポートボタン */}
+								<div className="flex justify-end gap-2">
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => setImportDialogOpen(true)}
+									>
+										<Upload className="h-4 w-4" />
+										インポート
+									</Button>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={handleExport}
+										disabled={isExporting}
+									>
+										{isExporting ? (
+											<Loader2 className="h-4 w-4 animate-spin" />
+										) : (
+											<Download className="h-4 w-4" />
+										)}
+										エクスポート
+									</Button>
+								</div>
 								<WorkloadCard
 									projectCase={selectedCase}
 									projectLoads={projectLoads}
@@ -176,6 +234,17 @@ export function CaseStudySection({
 				isDeleting={deleteMutation.isPending}
 				entityLabel="ケース"
 				entityName={caseToDelete?.caseName ?? ""}
+			/>
+
+			{/* Excel インポートダイアログ */}
+			<ExcelImportDialog
+				open={importDialogOpen}
+				onOpenChange={setImportDialogOpen}
+				title="案件工数インポート"
+				description="Excel ファイルから案件工数データを一括インポートします。エクスポートしたファイルをそのまま使用できます。"
+				onFileParsed={parseFile}
+				onConfirm={confirmImport}
+				isImporting={isImporting}
 			/>
 		</>
 	);

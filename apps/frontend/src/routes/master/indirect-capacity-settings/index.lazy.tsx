@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { Building2, Loader2 } from "lucide-react";
 import { useCallback, useMemo } from "react";
+import { UnsavedChangesDialog } from "@/components/shared/UnsavedChangesDialog";
 import {
 	Select,
 	SelectContent,
@@ -11,17 +12,16 @@ import {
 } from "@/components/ui/select";
 import { ResultPanel } from "@/features/indirect-case-study/components/ResultPanel";
 import { SettingsPanel } from "@/features/indirect-case-study/components/SettingsPanel";
-import { UnsavedChangesDialog } from "@/components/shared/UnsavedChangesDialog";
 import { useIndirectCaseStudyPage } from "@/features/indirect-case-study/hooks/useIndirectCaseStudyPage";
-import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 import { workTypesQueryOptions } from "@/features/work-types/api/queries";
 import { businessUnitsQueryOptions } from "@/features/workload/api/queries";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 
-export const Route = createLazyFileRoute(
-	"/master/indirect-capacity-settings/",
-)({
-	component: IndirectCapacitySettingsPage,
-});
+export const Route = createLazyFileRoute("/master/indirect-capacity-settings/")(
+	{
+		component: IndirectCapacitySettingsPage,
+	},
+);
 
 function IndirectCapacitySettingsPage() {
 	const search = Route.useSearch();
@@ -85,6 +85,13 @@ function IndirectCapacitySettingsPage() {
 				(c) => c.indirectWorkCaseId === page.selectedIndirectWorkCaseId,
 			)?.caseName ?? "",
 		[page.indirectWorkCases, page.selectedIndirectWorkCaseId],
+	);
+
+	const selectedBuName = useMemo(
+		() =>
+			businessUnits.find((bu) => bu.businessUnitCode === selectedBu)?.name ??
+			"",
+		[businessUnits, selectedBu],
 	);
 
 	if (buLoading) {
@@ -172,9 +179,12 @@ function IndirectCapacitySettingsPage() {
 						headcountPlanCaseName={headcountPlanCaseName}
 						scenarioName={scenarioName}
 						indirectWorkCaseName={indirectWorkCaseName}
+						indirectWorkCaseId={page.selectedIndirectWorkCaseId}
 						onSaveIndirectWorkLoads={page.saveIndirectWorkLoads}
 						isSavingResults={page.isSavingResults}
 						indirectWorkResultDirty={page.indirectWorkResultDirty}
+						businessUnitCode={selectedBu}
+						businessUnitName={selectedBuName}
 					/>
 				</div>
 			</div>

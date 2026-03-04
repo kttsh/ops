@@ -5,7 +5,11 @@ interface FieldValidators<T> {
 	onBlur: FieldValidateFn<T>;
 }
 
-function validateDisplayOrder({ value }: { value: number }): string | undefined {
+function validateDisplayOrder({
+	value,
+}: {
+	value: number;
+}): string | undefined {
 	if (typeof value !== "number" || !Number.isInteger(value))
 		return "表示順は整数で入力してください";
 	if (value < 0) return "表示順は0以上で入力してください";

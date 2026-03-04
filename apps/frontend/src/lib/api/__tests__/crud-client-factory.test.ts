@@ -61,7 +61,13 @@ describe("createCrudClient", () => {
 	});
 
 	it("設定から6つの関数を持つクライアントオブジェクトを返す", () => {
-		const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, TestListParams>({
+		const client = createCrudClient<
+			TestEntity,
+			CreateTestInput,
+			UpdateTestInput,
+			string,
+			TestListParams
+		>({
 			resourcePath: "work-types",
 		});
 
@@ -81,7 +87,13 @@ describe("createCrudClient", () => {
 
 	describe("fetchList（ページネーションなし）", () => {
 		it("includeDisabled=false の場合、クエリパラメータなしで GET リクエストを送信する", async () => {
-			const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, TestListParams>({
+			const client = createCrudClient<
+				TestEntity,
+				CreateTestInput,
+				UpdateTestInput,
+				string,
+				TestListParams
+			>({
 				resourcePath: "work-types",
 			});
 
@@ -91,7 +103,13 @@ describe("createCrudClient", () => {
 		});
 
 		it("includeDisabled=true の場合、filter[includeDisabled]=true を付与する", async () => {
-			const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, TestListParams>({
+			const client = createCrudClient<
+				TestEntity,
+				CreateTestInput,
+				UpdateTestInput,
+				string,
+				TestListParams
+			>({
 				resourcePath: "work-types",
 			});
 
@@ -104,7 +122,13 @@ describe("createCrudClient", () => {
 
 	describe("fetchList（ページネーションあり）", () => {
 		it("page, pageSize, includeDisabled パラメータを正しく付与する", async () => {
-			const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, PaginatedListParams>({
+			const client = createCrudClient<
+				TestEntity,
+				CreateTestInput,
+				UpdateTestInput,
+				string,
+				PaginatedListParams
+			>({
 				resourcePath: "business-units",
 				paginated: true,
 			});
@@ -118,7 +142,13 @@ describe("createCrudClient", () => {
 		});
 
 		it("ページネーション + includeDisabled=true の場合、両方のパラメータを付与する", async () => {
-			const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, PaginatedListParams>({
+			const client = createCrudClient<
+				TestEntity,
+				CreateTestInput,
+				UpdateTestInput,
+				string,
+				PaginatedListParams
+			>({
 				resourcePath: "business-units",
 				paginated: true,
 			});
@@ -134,17 +164,31 @@ describe("createCrudClient", () => {
 
 	describe("fetchDetail", () => {
 		it("string ID を encodeURIComponent でエンコードして GET リクエストを送信する", async () => {
-			const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, TestListParams>({
+			const client = createCrudClient<
+				TestEntity,
+				CreateTestInput,
+				UpdateTestInput,
+				string,
+				TestListParams
+			>({
 				resourcePath: "work-types",
 			});
 
 			await client.fetchDetail("test-code");
 
-			expect(mockFetch).toHaveBeenCalledWith("http://test-api/work-types/test-code");
+			expect(mockFetch).toHaveBeenCalledWith(
+				"http://test-api/work-types/test-code",
+			);
 		});
 
 		it("number ID で正しい URL を生成する", async () => {
-			const client = createCrudClient<NumericEntity, { name: string }, { name: string }, number, PaginatedListParams>({
+			const client = createCrudClient<
+				NumericEntity,
+				{ name: string },
+				{ name: string },
+				number,
+				PaginatedListParams
+			>({
 				resourcePath: "projects",
 				paginated: true,
 			});
@@ -157,7 +201,13 @@ describe("createCrudClient", () => {
 
 	describe("create", () => {
 		it("POST リクエストを Content-Type: application/json ヘッダー付きで送信する", async () => {
-			const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, TestListParams>({
+			const client = createCrudClient<
+				TestEntity,
+				CreateTestInput,
+				UpdateTestInput,
+				string,
+				TestListParams
+			>({
 				resourcePath: "work-types",
 			});
 
@@ -174,22 +224,37 @@ describe("createCrudClient", () => {
 
 	describe("update", () => {
 		it("PUT リクエストを Content-Type: application/json ヘッダー付きで送信する", async () => {
-			const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, TestListParams>({
+			const client = createCrudClient<
+				TestEntity,
+				CreateTestInput,
+				UpdateTestInput,
+				string,
+				TestListParams
+			>({
 				resourcePath: "work-types",
 			});
 
 			const input: UpdateTestInput = { name: "更新後" };
 			await client.update("WT-01", input);
 
-			expect(mockFetch).toHaveBeenCalledWith("http://test-api/work-types/WT-01", {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(input),
-			});
+			expect(mockFetch).toHaveBeenCalledWith(
+				"http://test-api/work-types/WT-01",
+				{
+					method: "PUT",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(input),
+				},
+			);
 		});
 
 		it("number ID の場合も正しい URL を生成する", async () => {
-			const client = createCrudClient<NumericEntity, { name: string }, { name: string }, number, PaginatedListParams>({
+			const client = createCrudClient<
+				NumericEntity,
+				{ name: string },
+				{ name: string },
+				number,
+				PaginatedListParams
+			>({
 				resourcePath: "projects",
 				paginated: true,
 			});
@@ -212,21 +277,36 @@ describe("createCrudClient", () => {
 				json: () => Promise.resolve(undefined),
 			});
 
-			const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, TestListParams>({
+			const client = createCrudClient<
+				TestEntity,
+				CreateTestInput,
+				UpdateTestInput,
+				string,
+				TestListParams
+			>({
 				resourcePath: "work-types",
 			});
 
 			await client.delete("WT-01");
 
-			expect(mockFetch).toHaveBeenCalledWith("http://test-api/work-types/WT-01", {
-				method: "DELETE",
-			});
+			expect(mockFetch).toHaveBeenCalledWith(
+				"http://test-api/work-types/WT-01",
+				{
+					method: "DELETE",
+				},
+			);
 		});
 	});
 
 	describe("restore", () => {
 		it("POST リクエストを /actions/restore エンドポイントに送信する", async () => {
-			const client = createCrudClient<TestEntity, CreateTestInput, UpdateTestInput, string, TestListParams>({
+			const client = createCrudClient<
+				TestEntity,
+				CreateTestInput,
+				UpdateTestInput,
+				string,
+				TestListParams
+			>({
 				resourcePath: "work-types",
 			});
 
@@ -239,7 +319,13 @@ describe("createCrudClient", () => {
 		});
 
 		it("number ID の場合も正しい URL を生成する", async () => {
-			const client = createCrudClient<NumericEntity, { name: string }, { name: string }, number, PaginatedListParams>({
+			const client = createCrudClient<
+				NumericEntity,
+				{ name: string },
+				{ name: string },
+				number,
+				PaginatedListParams
+			>({
 				resourcePath: "projects",
 				paginated: true,
 			});

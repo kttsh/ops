@@ -1,21 +1,23 @@
-import type { BusinessUnit, BusinessUnitListParams } from "@/features/business-units/types";
+import type { BusinessUnitListParams } from "@/features/business-units/types";
 import {
-	createQueryKeys,
-	createListQueryOptions,
 	createDetailQueryOptions,
+	createListQueryOptions,
+	createQueryKeys,
 	STALE_TIMES,
 } from "@/lib/api";
 import { fetchBusinessUnit, fetchBusinessUnits } from "./api-client";
 
-export const businessUnitKeys = createQueryKeys<string, BusinessUnitListParams>("business-units");
+export const businessUnitKeys = createQueryKeys<string, BusinessUnitListParams>(
+	"business-units",
+);
 
-export const businessUnitsQueryOptions = createListQueryOptions<BusinessUnit, BusinessUnitListParams>({
+export const businessUnitsQueryOptions = createListQueryOptions({
 	queryKeys: businessUnitKeys,
 	fetchList: fetchBusinessUnits,
 	staleTime: STALE_TIMES.STANDARD,
 });
 
-export const businessUnitQueryOptions = createDetailQueryOptions<BusinessUnit, string>({
+export const businessUnitQueryOptions = createDetailQueryOptions({
 	queryKeys: businessUnitKeys,
 	fetchDetail: fetchBusinessUnit,
 	staleTime: STALE_TIMES.STANDARD,

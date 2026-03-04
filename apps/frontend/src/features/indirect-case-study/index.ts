@@ -35,10 +35,11 @@ export { ScenarioFormSheet } from "./components/ScenarioFormSheet";
 export { SettingsPanel } from "./components/SettingsPanel";
 export { useCapacityCalculation } from "./hooks/useCapacityCalculation";
 export { useExcelExport } from "./hooks/useExcelExport";
-
 // Hooks
 export { useIndirectCaseStudyPage } from "./hooks/useIndirectCaseStudyPage";
 export { useIndirectWorkCalculation } from "./hooks/useIndirectWorkCalculation";
+export { useIndirectWorkLoadExcelExport } from "./hooks/useIndirectWorkLoadExcelExport";
+export { useIndirectWorkLoadExcelImport } from "./hooks/useIndirectWorkLoadExcelImport";
 export type {
 	CalculateCapacityResult,
 	CalculationTableData,

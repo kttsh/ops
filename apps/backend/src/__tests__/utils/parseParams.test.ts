@@ -1,5 +1,5 @@
-import { describe, expect, test } from "vitest";
 import { HTTPException } from "hono/http-exception";
+import { describe, expect, test } from "vitest";
 import { parseIntParam } from "@/utils/parseParams";
 
 describe("parseIntParam", () => {

@@ -485,7 +485,11 @@ describe("PUT /chart-color-settings/bulk", () => {
 			body: JSON.stringify({
 				items: [
 					{ targetType: "project", targetCode: "1", colorCode: "#FF5733" },
-					{ targetType: "indirect_work", targetCode: "2", colorCode: "#33FF57" },
+					{
+						targetType: "indirect_work",
+						targetCode: "2",
+						colorCode: "#33FF57",
+					},
 				],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -510,7 +514,11 @@ describe("PUT /chart-color-settings/bulk", () => {
 			body: JSON.stringify({
 				items: [
 					{ targetType: "project", targetCode: "1", colorCode: "#000000" },
-					{ targetType: "indirect_work", targetCode: "2", colorCode: "#33FF57" },
+					{
+						targetType: "indirect_work",
+						targetCode: "2",
+						colorCode: "#33FF57",
+					},
 				],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
@@ -525,7 +533,9 @@ describe("PUT /chart-color-settings/bulk", () => {
 		const res = await app.request(`${BASE_URL}/bulk`, {
 			method: "PUT",
 			body: JSON.stringify({
-				items: [{ targetType: "project", targetCode: "1", colorCode: "INVALID" }],
+				items: [
+					{ targetType: "project", targetCode: "1", colorCode: "INVALID" },
+				],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
@@ -569,7 +579,9 @@ describe("PUT /chart-color-settings/bulk", () => {
 		const res = await app.request(`${BASE_URL}/bulk`, {
 			method: "PUT",
 			body: JSON.stringify({
-				items: [{ targetType: "project", targetCode: "1", colorCode: "#FF5733" }],
+				items: [
+					{ targetType: "project", targetCode: "1", colorCode: "#FF5733" },
+				],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});

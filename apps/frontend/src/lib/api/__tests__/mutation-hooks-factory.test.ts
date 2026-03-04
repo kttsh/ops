@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
+import type { BaseListParams, CrudClient } from "../crud-client-factory";
 import { createCrudMutations } from "../mutation-hooks-factory";
 import { createQueryKeys } from "../query-key-factory";
-import type { CrudClient, BaseListParams } from "../crud-client-factory";
-import type { SingleResponse, PaginatedResponse } from "../types";
+import type { PaginatedResponse, SingleResponse } from "../types";
 
 // Mock TanStack Query hooks
 const mockInvalidateQueries = vi.fn();
@@ -21,12 +21,25 @@ type CreateInput = { code: string; name: string };
 type UpdateInput = { name: string };
 type TestListParams = { includeDisabled: boolean };
 
-function createMockClient(): CrudClient<TestEntity, CreateInput, UpdateInput, string, BaseListParams> {
+function createMockClient(): CrudClient<
+	TestEntity,
+	CreateInput,
+	UpdateInput,
+	string,
+	BaseListParams
+> {
 	return {
-		fetchList: vi.fn<(params: BaseListParams) => Promise<PaginatedResponse<TestEntity>>>(),
+		fetchList:
+			vi.fn<
+				(params: BaseListParams) => Promise<PaginatedResponse<TestEntity>>
+			>(),
 		fetchDetail: vi.fn<(id: string) => Promise<SingleResponse<TestEntity>>>(),
-		create: vi.fn<(input: CreateInput) => Promise<SingleResponse<TestEntity>>>(),
-		update: vi.fn<(id: string, input: UpdateInput) => Promise<SingleResponse<TestEntity>>>(),
+		create:
+			vi.fn<(input: CreateInput) => Promise<SingleResponse<TestEntity>>>(),
+		update:
+			vi.fn<
+				(id: string, input: UpdateInput) => Promise<SingleResponse<TestEntity>>
+			>(),
 		delete: vi.fn<(id: string) => Promise<void>>(),
 		restore: vi.fn<(id: string) => Promise<SingleResponse<TestEntity>>>(),
 	};
@@ -56,7 +69,9 @@ describe("createCrudMutations", () => {
 			const queryKeys = createQueryKeys<string, TestListParams>("work-types");
 			const mutations = createCrudMutations({ client, queryKeys });
 
-			const result = mutations.useCreate() as unknown as { onSuccess: () => void };
+			const result = mutations.useCreate() as unknown as {
+				onSuccess: () => void;
+			};
 			result.onSuccess();
 
 			expect(mockInvalidateQueries).toHaveBeenCalledWith({
@@ -71,7 +86,9 @@ describe("createCrudMutations", () => {
 			const mutations = createCrudMutations({ client, queryKeys });
 
 			const customOnSuccess = vi.fn();
-			const result = mutations.useCreate({ onSuccess: customOnSuccess }) as unknown as {
+			const result = mutations.useCreate({
+				onSuccess: customOnSuccess,
+			}) as unknown as {
 				onSuccess: (data: SingleResponse<TestEntity>) => void;
 			};
 			const mockData = { data: { code: "WT-01", name: "test" } };
@@ -88,7 +105,9 @@ describe("createCrudMutations", () => {
 			const queryKeys = createQueryKeys<string, TestListParams>("work-types");
 			const mutations = createCrudMutations({ client, queryKeys });
 
-			const result = mutations.useUpdate("WT-01") as unknown as { onSuccess: () => void };
+			const result = mutations.useUpdate("WT-01") as unknown as {
+				onSuccess: () => void;
+			};
 			result.onSuccess();
 
 			expect(mockInvalidateQueries).toHaveBeenCalledWith({
@@ -107,7 +126,9 @@ describe("createCrudMutations", () => {
 			const queryKeys = createQueryKeys<string, TestListParams>("work-types");
 			const mutations = createCrudMutations({ client, queryKeys });
 
-			const result = mutations.useDelete() as unknown as { onSuccess: () => void };
+			const result = mutations.useDelete() as unknown as {
+				onSuccess: () => void;
+			};
 			result.onSuccess();
 
 			expect(mockInvalidateQueries).toHaveBeenCalledWith({
@@ -123,7 +144,9 @@ describe("createCrudMutations", () => {
 			const queryKeys = createQueryKeys<string, TestListParams>("work-types");
 			const mutations = createCrudMutations({ client, queryKeys });
 
-			const result = mutations.useRestore() as unknown as { onSuccess: () => void };
+			const result = mutations.useRestore() as unknown as {
+				onSuccess: () => void;
+			};
 			result.onSuccess();
 
 			expect(mockInvalidateQueries).toHaveBeenCalledWith({

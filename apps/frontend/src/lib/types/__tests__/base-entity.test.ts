@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type {
-	MasterEntity,
-	SoftDeletableEntity,
-} from "../base-entity";
+import type { MasterEntity, SoftDeletableEntity } from "../base-entity";
 
 describe("SoftDeletableEntity", () => {
 	it("createdAt, updatedAt を必須フィールドとして持つ", () => {

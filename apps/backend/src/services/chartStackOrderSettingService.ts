@@ -102,7 +102,8 @@ export const chartStackOrderSettingService = {
 		const uniqueKeys = new Set(keys);
 		if (uniqueKeys.size !== keys.length) {
 			throw new HTTPException(422, {
-				message: "Duplicate targetType and targetCode combination found in items",
+				message:
+					"Duplicate targetType and targetCode combination found in items",
 			});
 		}
 

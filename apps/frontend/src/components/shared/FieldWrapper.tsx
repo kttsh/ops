@@ -39,9 +39,7 @@ export function FieldWrapper({
 			</Label>
 			{children}
 			{hasErrors && (
-				<p className="text-sm text-destructive">
-					{getErrorMessage(errors)}
-				</p>
+				<p className="text-sm text-destructive">{getErrorMessage(errors)}</p>
 			)}
 		</div>
 	);

@@ -5,6 +5,8 @@ import type { PaginatedResponse, SingleResponse } from "./types";
 
 interface BaseListParams {
 	includeDisabled?: boolean;
+	page?: number;
+	pageSize?: number;
 }
 
 interface CrudClientConfig {
@@ -51,10 +53,9 @@ export function createCrudClient<
 		async fetchList(params: TListParams): Promise<PaginatedResponse<TEntity>> {
 			const searchParams = new URLSearchParams();
 
-			if (paginated) {
-				const p = params as BaseListParams & { page: number; pageSize: number };
-				searchParams.set("page[number]", String(p.page));
-				searchParams.set("page[size]", String(p.pageSize));
+			if (paginated && params.page != null && params.pageSize != null) {
+				searchParams.set("page[number]", String(params.page));
+				searchParams.set("page[size]", String(params.pageSize));
 			}
 
 			if (params.includeDisabled) {
@@ -81,7 +82,10 @@ export function createCrudClient<
 			return handleResponse<SingleResponse<TEntity>>(response);
 		},
 
-		async update(id: TId, input: TUpdateInput): Promise<SingleResponse<TEntity>> {
+		async update(
+			id: TId,
+			input: TUpdateInput,
+		): Promise<SingleResponse<TEntity>> {
 			const response = await fetch(buildIdUrl(id), {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },

@@ -1,5 +1,5 @@
-import type { ColumnDef } from "@tanstack/react-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { ColumnDef } from "@tanstack/react-table";
 import { fn } from "storybook/test";
 import { DataTable } from "./DataTable";
 

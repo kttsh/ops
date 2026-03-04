@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { yearMonthSchema, businessUnitCodeSchema } from "@/types/common";
+import { businessUnitCodeSchema, yearMonthSchema } from "@/types/common";
 
 // --- 共通バリデーション ---
 
