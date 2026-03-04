@@ -32,6 +32,53 @@ export interface UseChartDataReturn {
 
 interface UseChartDataOptions {
 	projectColors?: Record<number, string>;
+	projectOrder?: number[];
+}
+
+/**
+ * 案件シリーズを projectOrder に基づいてソートする。
+ * 間接作業シリーズ（type: "indirect"）の位置は維持し、案件シリーズのみを並び替える。
+ */
+export function sortAreasByProjectOrder(
+	areas: AreaSeriesConfig[],
+	projectOrder: number[] | undefined,
+): AreaSeriesConfig[] {
+	if (!projectOrder || projectOrder.length === 0) {
+		// projectOrder 未指定 or 空の場合は元の順序を維持
+		// ただし空配列の場合も元順序維持（全て indexOf === -1 になるため）
+		if (!projectOrder) return areas;
+	}
+
+	const indirectAreas = areas.filter((a) => a.type === "indirect");
+	const projectAreas = [...areas.filter((a) => a.type === "project")];
+
+	const orderMap = new Map(projectOrder.map((id, idx) => [id, idx]));
+
+	projectAreas.sort((a, b) => {
+		const idA = parseInt(a.dataKey.replace("project_", ""), 10);
+		const idB = parseInt(b.dataKey.replace("project_", ""), 10);
+		const orderA = orderMap.get(idA) ?? Number.MAX_SAFE_INTEGER;
+		const orderB = orderMap.get(idB) ?? Number.MAX_SAFE_INTEGER;
+		return orderA - orderB;
+	});
+
+	return [...indirectAreas, ...projectAreas];
+}
+
+/**
+ * 凡例パネル用の案件リストを projectOrder に基づいてソートする。
+ */
+export function sortLegendProjectsByOrder<
+	T extends { projectId: number },
+>(projects: T[], projectOrder: number[] | undefined): T[] {
+	if (!projectOrder) return projects;
+
+	const orderMap = new Map(projectOrder.map((id, idx) => [id, idx]));
+	return [...projects].sort((a, b) => {
+		const orderA = orderMap.get(a.projectId) ?? Number.MAX_SAFE_INTEGER;
+		const orderB = orderMap.get(b.projectId) ?? Number.MAX_SAFE_INTEGER;
+		return orderA - orderB;
+	});
 }
 
 export function useChartData(
@@ -45,7 +92,7 @@ export function useChartData(
 
 	const rawResponse = query.data?.data;
 
-	const { projectColors } = options;
+	const { projectColors, projectOrder } = options;
 
 	const { chartData, seriesConfig, legendDataByMonth, latestMonth } =
 		useMemo(() => {
@@ -294,15 +341,28 @@ export function useChartData(
 				});
 			}
 
+			// projectOrder に基づいて案件シリーズをソート
+			const sortedAreas = sortAreasByProjectOrder(areas, projectOrder);
+
+			// legendMap の projects も同一順序でソート
+			if (projectOrder && projectOrder.length > 0) {
+				for (const [, monthData] of legendMap) {
+					monthData.projects = sortLegendProjectsByOrder(
+						monthData.projects,
+						projectOrder,
+					);
+				}
+			}
+
 			const latest = months.length > 0 ? months[months.length - 1] : null;
 
 			return {
 				chartData: dataPoints,
-				seriesConfig: { areas, lines },
+				seriesConfig: { areas: sortedAreas, lines },
 				legendDataByMonth: legendMap,
 				latestMonth: latest,
 			};
-		}, [rawResponse, projectColors]);
+		}, [rawResponse, projectColors, projectOrder]);
 
 	return {
 		chartData,

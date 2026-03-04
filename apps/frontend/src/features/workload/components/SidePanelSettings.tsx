@@ -22,6 +22,7 @@ interface SidePanelSettingsProps {
 	selectedProjectIds: Set<number>;
 	onPeriodChange: (from: string | undefined, months: number) => void;
 	onProjectColorsChange?: (colors: Record<number, string>) => void;
+	onProjectOrderChange?: (order: number[]) => void;
 	onProfileApply?: (profile: {
 		chartViewId: number;
 		startYearMonth: string;
@@ -38,6 +39,7 @@ export function SidePanelSettings({
 	selectedProjectIds,
 	onPeriodChange,
 	onProjectColorsChange,
+	onProjectOrderChange,
 	onProfileApply,
 }: SidePanelSettingsProps) {
 	const { data: projData } = useQuery(projectsQueryOptions(businessUnitCodes));
@@ -84,6 +86,10 @@ export function SidePanelSettings({
 	const onProjectColorsChangeRef = useRef(onProjectColorsChange);
 	onProjectColorsChangeRef.current = onProjectColorsChange;
 
+	// onProjectOrderChange の最新参照を保持（useEffect の依存配列を安定化）
+	const onProjectOrderChangeRef = useRef(onProjectOrderChange);
+	onProjectOrderChangeRef.current = onProjectOrderChange;
+
 	// 選択案件の変更を監視し、projOrder / projColors を差分更新する
 	useEffect(() => {
 		const selectedIds = new Set(
@@ -124,6 +130,11 @@ export function SidePanelSettings({
 			return updated;
 		});
 	}, [selectedIdsKey]);
+
+	// projOrder の変更を親に通知（全変更契機を一箇所でカバー）
+	useEffect(() => {
+		onProjectOrderChangeRef.current?.(projOrder);
+	}, [projOrder]);
 
 	// キャパシティ表示設定
 	const [capVisible, setCapVisible] = useState<Record<number, boolean>>({});

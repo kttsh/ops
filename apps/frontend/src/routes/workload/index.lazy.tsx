@@ -74,6 +74,13 @@ function WorkloadPage() {
 		[],
 	);
 
+	// 案件並び順（SidePanelSettings ↔ useChartData の橋渡し）
+	const [projectOrder, setProjectOrder] = useState<number[]>([]);
+
+	const handleProjectOrderChange = useCallback((order: number[]) => {
+		setProjectOrder(order);
+	}, []);
+
 	// プロファイル適用
 	const handleProfileApply = useCallback(
 		(profile: {
@@ -132,7 +139,7 @@ function WorkloadPage() {
 		isFetching,
 		isError,
 		refetch,
-	} = useChartData(chartDataParamsWithProjects, { projectColors });
+	} = useChartData(chartDataParamsWithProjects, { projectColors, projectOrder });
 
 	const {
 		dispatch: legendDispatch,
@@ -186,6 +193,7 @@ function WorkloadPage() {
 							selectedProjectIds={selectedProjectIds}
 							onPeriodChange={setPeriod}
 							onProjectColorsChange={handleProjectColorsChange}
+							onProjectOrderChange={handleProjectOrderChange}
 							onProfileApply={handleProfileApply}
 						/>
 					}
