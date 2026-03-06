@@ -160,7 +160,7 @@ function WorkloadChartInner({
 			className={
 				fullHeight
 					? "relative h-full flex-1 w-full"
-					: "relative h-[400px] w-full"
+					: "relative h-[500px] w-full"
 			}
 			style={{ contain: "content" }}
 		>

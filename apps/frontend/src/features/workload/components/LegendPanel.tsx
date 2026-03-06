@@ -28,7 +28,7 @@ function LegendPanelInner({
 }: LegendPanelProps) {
 	if (!data) {
 		return (
-			<div className="flex h-full w-72 flex-col border-l border-border bg-background p-4">
+			<div className="flex h-[500px] w-72 flex-col border-l border-border bg-background p-4">
 				<p className="text-sm text-muted-foreground">データなし</p>
 			</div>
 		);
@@ -48,7 +48,7 @@ function LegendPanelInner({
 	};
 
 	return (
-		<div className="flex h-full w-72 flex-col border-l border-border bg-background">
+		<div className="flex h-[500px] w-72 flex-col border-l border-border bg-background">
 			{/* ヘッダー */}
 			<div className="flex items-center justify-between px-4 py-3">
 				<span className="text-sm font-semibold">{data.month}</span>
