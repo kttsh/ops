@@ -222,11 +222,29 @@ function WorkloadPage() {
 
 					{/* データ表示 */}
 					{hasBusinessUnits && !isError && !isLoading && (
-						<div className="grid grid-cols-1 gap-6 p-6 h-full">
+						<div
+							className={
+								filters.view === "both"
+									? "grid grid-cols-1 gap-6 p-6"
+									: "flex flex-col gap-6 p-6 h-full"
+							}
+						>
 							{/* チャート + 凡例カード */}
 							{showChart && (
-								<div className="rounded-3xl bg-card border border-border shadow-sm p-6">
-									<div className="flex">
+								<div
+									className={
+										filters.view === "chart"
+											? "rounded-3xl bg-card border border-border shadow-sm p-6 flex-1 flex flex-col"
+											: "rounded-3xl bg-card border border-border shadow-sm p-6"
+									}
+								>
+									<div
+										className={
+											filters.view === "chart"
+												? "flex flex-1"
+												: "flex"
+										}
+									>
 										<div className="flex-1">
 											<WorkloadChart
 												data={chartData}
@@ -234,6 +252,7 @@ function WorkloadPage() {
 												activeMonth={activeMonth}
 												dispatch={legendDispatch}
 												isFetching={isFetching}
+												fullHeight={filters.view === "chart"}
 											/>
 										</div>
 										<LegendPanel

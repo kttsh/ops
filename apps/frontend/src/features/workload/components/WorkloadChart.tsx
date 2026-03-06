@@ -28,6 +28,7 @@ interface WorkloadChartProps {
 	activeMonth: string | null;
 	dispatch: React.Dispatch<LegendAction>;
 	isFetching?: boolean;
+	fullHeight?: boolean;
 }
 
 function WorkloadChartInner({
@@ -36,6 +37,7 @@ function WorkloadChartInner({
 	activeMonth,
 	dispatch,
 	isFetching,
+	fullHeight,
 }: WorkloadChartProps) {
 	const rafRef = useRef<number | null>(null);
 
@@ -154,7 +156,14 @@ function WorkloadChartInner({
 	);
 
 	return (
-		<div className="relative h-[400px] w-full" style={{ contain: "content" }}>
+		<div
+			className={
+				fullHeight
+					? "relative h-full flex-1 w-full"
+					: "relative h-[400px] w-full"
+			}
+			style={{ contain: "content" }}
+		>
 			<div className="absolute top-1 right-1 z-10">
 				<ChartFullscreenDialog title="山積グラフ">
 					{chartContent}
