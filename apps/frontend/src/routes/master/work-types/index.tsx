@@ -1,20 +1,18 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useMemo } from "react";
 import { DataTable } from "@/components/shared/DataTable";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 import type { WorkType } from "@/features/work-types";
 import {
-	ApiError,
-	useRestoreWorkType,
-	workTypeQueryOptions,
+	workTypeKeys,
 	workTypeSearchSchema,
 	workTypesQueryOptions,
 } from "@/features/work-types";
 import { createColumns } from "@/features/work-types/components/columns";
+import { WorkTypeDetailSheet } from "@/features/work-types/components/WorkTypeDetailSheet";
+import { useMasterSheet } from "@/hooks/useMasterSheet";
 
 export const Route = createFileRoute("/master/work-types/")({
 	validateSearch: workTypeSearchSchema,
@@ -25,7 +23,7 @@ function WorkTypeListPage() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
 	const queryClient = useQueryClient();
-	const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
+	const sheet = useMasterSheet<WorkType>();
 
 	const { data, isLoading, isError, error } = useQuery(
 		workTypesQueryOptions({
@@ -33,16 +31,17 @@ function WorkTypeListPage() {
 		}),
 	);
 
-	const restoreMutation = useRestoreWorkType();
-
 	const columns = useMemo(
 		() =>
 			createColumns({
 				onRestore: search.includeDisabled
-					? (code) => setRestoreTarget(code)
+					? (code) => {
+							const entity = data?.data?.find((wt) => wt.workTypeCode === code);
+							if (entity) sheet.openView(entity);
+						}
 					: undefined,
 			}),
-		[search.includeDisabled],
+		[search.includeDisabled, data?.data, sheet.openView],
 	);
 
 	const handleSearchChange = (value: string) => {
@@ -53,25 +52,12 @@ function WorkTypeListPage() {
 		navigate({ search: (prev) => ({ ...prev, includeDisabled: value }) });
 	};
 
-	const handleRowHover = useCallback(
-		(row: WorkType) => {
-			queryClient.ensureQueryData(workTypeQueryOptions(row.workTypeCode));
-		},
-		[queryClient],
-	);
+	const handleMutationSuccess = () => {
+		queryClient.invalidateQueries({ queryKey: workTypeKeys.lists() });
+	};
 
-	const handleRestore = async () => {
-		if (!restoreTarget) return;
-		try {
-			await restoreMutation.mutateAsync(restoreTarget);
-			toast.success("復元しました");
-			setRestoreTarget(null);
-		} catch (err) {
-			if (err instanceof ApiError) {
-				toast.error(err.message, { duration: Infinity });
-			}
-			setRestoreTarget(null);
-		}
+	const handleSheetOpenChange = (open: boolean) => {
+		if (!open) sheet.close();
 	};
 
 	return (
@@ -85,20 +71,14 @@ function WorkTypeListPage() {
 						onSearchChange={handleSearchChange}
 						includeDisabled={search.includeDisabled}
 						onIncludeDisabledChange={handleIncludeDisabledChange}
-						newItemHref="/master/work-types/new"
+						onNewItemClick={sheet.openCreate}
 					/>
 
 					<DataTable
 						columns={columns}
 						data={data?.data ?? []}
 						globalFilter={search.search}
-						onRowClick={(row: WorkType) =>
-							navigate({
-								to: "/master/work-types/$workTypeCode",
-								params: { workTypeCode: row.workTypeCode },
-							})
-						}
-						onRowHover={handleRowHover}
+						onRowClick={(row: WorkType) => sheet.openView(row)}
 						isLoading={isLoading}
 						isError={isError}
 						errorMessage={error?.message}
@@ -109,12 +89,14 @@ function WorkTypeListPage() {
 				</div>
 			</div>
 
-			<RestoreConfirmDialog
-				open={!!restoreTarget}
-				onOpenChange={(open) => !open && setRestoreTarget(null)}
-				onConfirm={handleRestore}
-				entityLabel="作業種類"
-				isLoading={restoreMutation.isPending}
+			<WorkTypeDetailSheet
+				sheetState={sheet.state}
+				isOpen={sheet.isOpen}
+				onOpenChange={handleSheetOpenChange}
+				openEdit={sheet.switchToEdit}
+				openView={sheet.switchToView}
+				close={sheet.close}
+				onMutationSuccess={handleMutationSuccess}
 			/>
 		</div>
 	);

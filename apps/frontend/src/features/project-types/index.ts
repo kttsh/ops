@@ -15,6 +15,7 @@ export {
 	projectTypesQueryOptions,
 } from "./api/queries";
 // Components
+export { ProjectTypeDetailSheet } from "./components/ProjectTypeDetailSheet";
 export { ProjectTypeForm } from "./components/ProjectTypeForm";
 export type {
 	CreateProjectTypeInput,

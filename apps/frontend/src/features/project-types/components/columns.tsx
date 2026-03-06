@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
 	createDateTimeColumn,
@@ -17,13 +16,7 @@ export function createColumns(options: {
 			accessorKey: "projectTypeCode",
 			header: ({ column }) => <SortableHeader column={column} label="コード" />,
 			cell: ({ row }) => (
-				<Link
-					to="/master/project-types/$projectTypeCode"
-					params={{ projectTypeCode: row.original.projectTypeCode }}
-					className="font-medium text-primary hover:underline"
-				>
-					{row.original.projectTypeCode}
-				</Link>
+				<span className="font-medium">{row.original.projectTypeCode}</span>
 			),
 		},
 		createSortableColumn<ProjectType>({ accessorKey: "name", label: "名称" }),

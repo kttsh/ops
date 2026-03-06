@@ -10,7 +10,8 @@ interface DataTableToolbarProps {
 	onSearchChange: (value: string) => void;
 	includeDisabled: boolean;
 	onIncludeDisabledChange: (value: boolean) => void;
-	newItemHref: string;
+	newItemHref?: string;
+	onNewItemClick?: () => void;
 	searchPlaceholder?: string;
 }
 
@@ -20,6 +21,7 @@ export function DataTableToolbar({
 	includeDisabled,
 	onIncludeDisabledChange,
 	newItemHref,
+	onNewItemClick,
 	searchPlaceholder = "コードまたは名称で検索...",
 }: DataTableToolbarProps) {
 	return (
@@ -48,12 +50,19 @@ export function DataTableToolbar({
 					</Label>
 				</div>
 			</div>
-			<Button asChild>
-				<Link to={newItemHref}>
+			{onNewItemClick ? (
+				<Button onClick={onNewItemClick}>
 					<Plus className="h-4 w-4" />
 					新規登録
-				</Link>
-			</Button>
+				</Button>
+			) : newItemHref ? (
+				<Button asChild>
+					<Link to={newItemHref}>
+						<Plus className="h-4 w-4" />
+						新規登録
+					</Link>
+				</Button>
+			) : null}
 		</div>
 	);
 }

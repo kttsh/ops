@@ -1,20 +1,19 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useMemo } from "react";
 import { DataTable } from "@/components/shared/DataTable";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 import type { BusinessUnit } from "@/features/business-units";
 import {
-	ApiError,
-	businessUnitQueryOptions,
+	businessUnitKeys,
 	businessUnitSearchSchema,
 	businessUnitsQueryOptions,
-	useRestoreBusinessUnit,
 } from "@/features/business-units";
+import { BusinessUnitDetailSheet } from "@/features/business-units/components/BusinessUnitDetailSheet";
 import { createColumns } from "@/features/business-units/components/columns";
+import { useMasterSheet } from "@/hooks/useMasterSheet";
+
 export const Route = createFileRoute("/master/business-units/")({
 	validateSearch: businessUnitSearchSchema,
 	component: BusinessUnitListPage,
@@ -24,7 +23,7 @@ function BusinessUnitListPage() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
 	const queryClient = useQueryClient();
-	const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
+	const sheet = useMasterSheet<BusinessUnit>();
 
 	const { data, isLoading, isError, error } = useQuery(
 		businessUnitsQueryOptions({
@@ -34,16 +33,19 @@ function BusinessUnitListPage() {
 		}),
 	);
 
-	const restoreMutation = useRestoreBusinessUnit();
-
 	const columns = useMemo(
 		() =>
 			createColumns({
 				onRestore: search.includeDisabled
-					? (code) => setRestoreTarget(code)
+					? (code) => {
+							const entity = data?.data?.find(
+								(bu) => bu.businessUnitCode === code,
+							);
+							if (entity) sheet.openView(entity);
+						}
 					: undefined,
 			}),
-		[search.includeDisabled],
+		[search.includeDisabled, data?.data, sheet.openView],
 	);
 
 	const handleSearchChange = (value: string) => {
@@ -64,27 +66,12 @@ function BusinessUnitListPage() {
 		navigate({ search: (prev) => ({ ...prev, pageSize, page: 1 }) });
 	};
 
-	const handleRowHover = useCallback(
-		(row: BusinessUnit) => {
-			queryClient.ensureQueryData(
-				businessUnitQueryOptions(row.businessUnitCode),
-			);
-		},
-		[queryClient],
-	);
+	const handleMutationSuccess = () => {
+		queryClient.invalidateQueries({ queryKey: businessUnitKeys.lists() });
+	};
 
-	const handleRestore = async () => {
-		if (!restoreTarget) return;
-		try {
-			await restoreMutation.mutateAsync(restoreTarget);
-			toast.success("復元しました");
-			setRestoreTarget(null);
-		} catch (err) {
-			if (err instanceof ApiError) {
-				toast.error(err.message, { duration: Infinity });
-			}
-			setRestoreTarget(null);
-		}
+	const handleSheetOpenChange = (open: boolean) => {
+		if (!open) sheet.close();
 	};
 
 	return (
@@ -101,7 +88,7 @@ function BusinessUnitListPage() {
 						onSearchChange={handleSearchChange}
 						includeDisabled={search.includeDisabled}
 						onIncludeDisabledChange={handleIncludeDisabledChange}
-						newItemHref="/master/business-units/new"
+						onNewItemClick={sheet.openCreate}
 					/>
 
 					<DataTable
@@ -116,13 +103,7 @@ function BusinessUnitListPage() {
 						}}
 						onPageChange={handlePageChange}
 						onPageSizeChange={handlePageSizeChange}
-						onRowClick={(row: BusinessUnit) =>
-							navigate({
-								to: "/master/business-units/$businessUnitCode",
-								params: { businessUnitCode: row.businessUnitCode },
-							})
-						}
-						onRowHover={handleRowHover}
+						onRowClick={(row: BusinessUnit) => sheet.openView(row)}
 						isLoading={isLoading}
 						isError={isError}
 						errorMessage={error?.message}
@@ -133,12 +114,14 @@ function BusinessUnitListPage() {
 				</div>
 			</div>
 
-			<RestoreConfirmDialog
-				open={!!restoreTarget}
-				onOpenChange={(open) => !open && setRestoreTarget(null)}
-				onConfirm={handleRestore}
-				entityLabel="ビジネスユニット"
-				isLoading={restoreMutation.isPending}
+			<BusinessUnitDetailSheet
+				sheetState={sheet.state}
+				isOpen={sheet.isOpen}
+				onOpenChange={handleSheetOpenChange}
+				openEdit={sheet.switchToEdit}
+				openView={sheet.switchToView}
+				close={sheet.close}
+				onMutationSuccess={handleMutationSuccess}
 			/>
 		</div>
 	);

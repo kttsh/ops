@@ -1,0 +1,291 @@
+import { Pencil, RotateCcw, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
+import { DetailRow } from "@/components/shared/DetailRow";
+import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
+import { Button } from "@/components/ui/button";
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+} from "@/components/ui/sheet";
+import type { MasterSheetState } from "@/hooks/useMasterSheet";
+import { formatDateTime } from "@/lib/format-utils";
+import { ApiError } from "../api/api-client";
+import {
+	useCreateBusinessUnit,
+	useDeleteBusinessUnit,
+	useRestoreBusinessUnit,
+	useUpdateBusinessUnit,
+} from "../api/mutations";
+import type { BusinessUnit } from "../types";
+import { BusinessUnitForm } from "./BusinessUnitForm";
+
+function getEntityCode(state: MasterSheetState<BusinessUnit>): string {
+	if (state.mode === "view" || state.mode === "edit") {
+		return state.entity.businessUnitCode;
+	}
+	return "";
+}
+
+interface BusinessUnitDetailSheetProps {
+	sheetState: MasterSheetState<BusinessUnit>;
+	isOpen: boolean;
+	onOpenChange: (open: boolean) => void;
+	openEdit: () => void;
+	openView: (updatedEntity?: BusinessUnit) => void;
+	close: () => void;
+	onMutationSuccess: () => void;
+}
+
+export function BusinessUnitDetailSheet({
+	sheetState,
+	isOpen,
+	onOpenChange,
+	openEdit,
+	openView,
+	close,
+	onMutationSuccess,
+}: BusinessUnitDetailSheetProps) {
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+
+	const createMutation = useCreateBusinessUnit();
+	const updateMutation = useUpdateBusinessUnit(getEntityCode(sheetState));
+	const deleteMutation = useDeleteBusinessUnit();
+	const restoreMutation = useRestoreBusinessUnit();
+
+	const handleCreate = async (values: {
+		businessUnitCode: string;
+		name: string;
+		displayOrder: number;
+	}) => {
+		try {
+			await createMutation.mutateAsync(values);
+			toast.success("登録しました");
+			close();
+			onMutationSuccess();
+		} catch (err) {
+			if (err instanceof ApiError) {
+				if (err.problemDetails.status === 409) {
+					toast.error("同一コードのビジネスユニットが既に存在します", {
+						duration: Infinity,
+					});
+				} else if (err.problemDetails.status === 422) {
+					toast.error("入力内容にエラーがあります", { duration: Infinity });
+				} else {
+					toast.error(err.message, { duration: Infinity });
+				}
+			}
+		}
+	};
+
+	const handleUpdate = async (values: {
+		businessUnitCode: string;
+		name: string;
+		displayOrder: number;
+	}) => {
+		try {
+			const result = await updateMutation.mutateAsync({
+				name: values.name,
+				displayOrder: values.displayOrder,
+			});
+			toast.success("保存しました");
+			openView(result.data);
+			onMutationSuccess();
+		} catch (err) {
+			if (err instanceof ApiError) {
+				if (err.problemDetails.status === 404) {
+					toast.error("ビジネスユニットが見つかりません", {
+						duration: Infinity,
+					});
+				} else if (err.problemDetails.status === 422) {
+					toast.error("入力内容にエラーがあります", { duration: Infinity });
+				} else {
+					toast.error(err.message, { duration: Infinity });
+				}
+			}
+		}
+	};
+
+	const handleDelete = async () => {
+		if (sheetState.mode !== "view" && sheetState.mode !== "edit") return;
+		try {
+			await deleteMutation.mutateAsync(sheetState.entity.businessUnitCode);
+			toast.success("削除しました");
+			setDeleteDialogOpen(false);
+			close();
+			onMutationSuccess();
+		} catch (err) {
+			if (err instanceof ApiError) {
+				if (err.problemDetails.status === 409) {
+					toast.error(
+						"このビジネスユニットは他のデータから参照されているため削除できません",
+						{ duration: Infinity },
+					);
+				} else if (err.problemDetails.status === 404) {
+					toast.error("ビジネスユニットが見つかりません", {
+						duration: Infinity,
+					});
+				} else {
+					toast.error(err.message, { duration: Infinity });
+				}
+			}
+			setDeleteDialogOpen(false);
+		}
+	};
+
+	const handleRestore = async () => {
+		if (sheetState.mode !== "view" && sheetState.mode !== "edit") return;
+		try {
+			await restoreMutation.mutateAsync(sheetState.entity.businessUnitCode);
+			toast.success("復元しました");
+			setRestoreDialogOpen(false);
+			close();
+			onMutationSuccess();
+		} catch (err) {
+			if (err instanceof ApiError) {
+				toast.error(err.message, { duration: Infinity });
+			}
+			setRestoreDialogOpen(false);
+		}
+	};
+
+	const sheetTitle = () => {
+		switch (sheetState.mode) {
+			case "view":
+				return "ビジネスユニット 詳細";
+			case "edit":
+				return "ビジネスユニット 編集";
+			case "create":
+				return "ビジネスユニット 新規登録";
+			default:
+				return "";
+		}
+	};
+
+	const sheetDescription = () => {
+		switch (sheetState.mode) {
+			case "view":
+				return "ビジネスユニットの詳細を表示しています";
+			case "edit":
+				return "ビジネスユニット情報を編集します";
+			case "create":
+				return "新しいビジネスユニットを登録します";
+			default:
+				return "";
+		}
+	};
+
+	return (
+		<>
+			<Sheet open={isOpen} onOpenChange={onOpenChange}>
+				<SheetContent
+					side="right"
+					className="w-full sm:max-w-lg overflow-y-auto"
+				>
+					<SheetHeader>
+						<SheetTitle>{sheetTitle()}</SheetTitle>
+						<SheetDescription>{sheetDescription()}</SheetDescription>
+					</SheetHeader>
+
+					<div className="mt-6">
+						{sheetState.mode === "view" && (
+							<div className="space-y-6">
+								<div className="space-y-4">
+									<DetailRow
+										label="ビジネスユニットコード"
+										value={sheetState.entity.businessUnitCode}
+									/>
+									<DetailRow label="名称" value={sheetState.entity.name} />
+									<DetailRow
+										label="表示順"
+										value={String(sheetState.entity.displayOrder)}
+									/>
+									<DetailRow
+										label="更新日時"
+										value={formatDateTime(sheetState.entity.updatedAt)}
+									/>
+								</div>
+								<div className="flex gap-3 pt-4">
+									<Button variant="outline" onClick={openEdit}>
+										<Pencil className="h-4 w-4" />
+										編集
+									</Button>
+									{sheetState.entity.deletedAt ? (
+										<Button
+											variant="outline"
+											onClick={() => setRestoreDialogOpen(true)}
+										>
+											<RotateCcw className="h-4 w-4" />
+											復元
+										</Button>
+									) : (
+										<Button
+											variant="destructive"
+											onClick={() => setDeleteDialogOpen(true)}
+										>
+											<Trash2 className="h-4 w-4" />
+											削除
+										</Button>
+									)}
+								</div>
+							</div>
+						)}
+
+						{sheetState.mode === "edit" && (
+							<div className="space-y-4">
+								<BusinessUnitForm
+									mode="edit"
+									defaultValues={{
+										businessUnitCode: sheetState.entity.businessUnitCode,
+										name: sheetState.entity.name,
+										displayOrder: sheetState.entity.displayOrder,
+									}}
+									onSubmit={handleUpdate}
+									isSubmitting={updateMutation.isPending}
+								/>
+								<div className="flex gap-3">
+									<Button variant="outline" onClick={() => openView()}>
+										キャンセル
+									</Button>
+								</div>
+							</div>
+						)}
+
+						{sheetState.mode === "create" && (
+							<BusinessUnitForm
+								mode="create"
+								onSubmit={handleCreate}
+								isSubmitting={createMutation.isPending}
+							/>
+						)}
+					</div>
+				</SheetContent>
+			</Sheet>
+
+			{(sheetState.mode === "view" || sheetState.mode === "edit") && (
+				<>
+					<DeleteConfirmDialog
+						open={deleteDialogOpen}
+						onOpenChange={setDeleteDialogOpen}
+						onConfirm={handleDelete}
+						isDeleting={deleteMutation.isPending}
+						entityLabel="ビジネスユニット"
+						entityName={sheetState.entity.name}
+					/>
+					<RestoreConfirmDialog
+						open={restoreDialogOpen}
+						onOpenChange={setRestoreDialogOpen}
+						onConfirm={handleRestore}
+						entityLabel="ビジネスユニット"
+						isLoading={restoreMutation.isPending}
+					/>
+				</>
+			)}
+		</>
+	);
+}

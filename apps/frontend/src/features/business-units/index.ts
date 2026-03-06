@@ -15,6 +15,7 @@ export {
 	businessUnitsQueryOptions,
 } from "./api/queries";
 // Components
+export { BusinessUnitDetailSheet } from "./components/BusinessUnitDetailSheet";
 export { BusinessUnitForm } from "./components/BusinessUnitForm";
 export type {
 	BusinessUnit,
