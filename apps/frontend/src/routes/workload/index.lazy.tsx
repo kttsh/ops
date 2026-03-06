@@ -139,7 +139,10 @@ function WorkloadPage() {
 		isFetching,
 		isError,
 		refetch,
-	} = useChartData(chartDataParamsWithProjects, { projectColors, projectOrder });
+	} = useChartData(chartDataParamsWithProjects, {
+		projectColors,
+		projectOrder,
+	});
 
 	const {
 		dispatch: legendDispatch,
@@ -240,9 +243,7 @@ function WorkloadPage() {
 								>
 									<div
 										className={
-											filters.view === "chart"
-												? "flex flex-1"
-												: "flex"
+											filters.view === "chart" ? "flex flex-1" : "flex"
 										}
 									>
 										<div className="flex-1">

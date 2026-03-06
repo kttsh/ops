@@ -32,11 +32,7 @@ export function ColorPickerPopover({
 					aria-label="色を選択"
 				/>
 			</PopoverTrigger>
-			<PopoverContent
-				side="bottom"
-				align="start"
-				className="w-auto p-2"
-			>
+			<PopoverContent side="bottom" align="start" className="w-auto p-2">
 				<div className="grid grid-cols-5 gap-1.5">
 					{colors.map((color) => (
 						<button

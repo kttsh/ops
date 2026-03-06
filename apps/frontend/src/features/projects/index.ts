@@ -18,6 +18,9 @@ export {
 } from "./api/queries";
 // Components
 export { ProjectForm } from "./components/ProjectForm";
+// Hooks
+export { useProjectBulkExport } from "./hooks/useProjectBulkExport";
+export { useProjectBulkImport } from "./hooks/useProjectBulkImport";
 export type {
 	CreateProjectInput,
 	PaginatedResponse,

@@ -1,17 +1,22 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Download, Loader2, Upload } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DataTable } from "@/components/shared/DataTable";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
+import { ExcelImportDialog } from "@/components/shared/ExcelImportDialog";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
+import { Button } from "@/components/ui/button";
 import type { Project } from "@/features/projects";
 import {
 	ApiError,
 	projectQueryOptions,
 	projectSearchSchema,
 	projectsQueryOptions,
+	useProjectBulkExport,
+	useProjectBulkImport,
 	useRestoreProject,
 } from "@/features/projects";
 import { createColumns } from "@/features/projects/components/columns";
@@ -26,6 +31,9 @@ function ProjectListPage() {
 	const navigate = Route.useNavigate();
 	const queryClient = useQueryClient();
 	const [restoreTarget, setRestoreTarget] = useState<number | null>(null);
+	const [importDialogOpen, setImportDialogOpen] = useState(false);
+	const { exportToExcel, isExporting } = useProjectBulkExport();
+	const { parseFile, confirmImport, isImporting } = useProjectBulkImport();
 
 	const { data, isLoading, isError, error } = useQuery(
 		projectsQueryOptions({
@@ -92,13 +100,40 @@ function ProjectListPage() {
 
 			<div className="rounded-3xl bg-card border border-border shadow-sm p-6">
 				<div className="space-y-6">
-					<DataTableToolbar
-						search={search.search}
-						onSearchChange={handleSearchChange}
-						includeDisabled={search.includeDisabled}
-						onIncludeDisabledChange={handleIncludeDisabledChange}
-						newItemHref="/master/projects/new"
-					/>
+					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+						<div className="flex-1">
+							<DataTableToolbar
+								search={search.search}
+								onSearchChange={handleSearchChange}
+								includeDisabled={search.includeDisabled}
+								onIncludeDisabledChange={handleIncludeDisabledChange}
+								newItemHref="/master/projects/new"
+							/>
+						</div>
+						<div className="flex items-center gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={exportToExcel}
+								disabled={isExporting}
+							>
+								{isExporting ? (
+									<Loader2 className="h-4 w-4 animate-spin" />
+								) : (
+									<Download className="h-4 w-4" />
+								)}
+								エクスポート
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => setImportDialogOpen(true)}
+							>
+								<Upload className="h-4 w-4" />
+								インポート
+							</Button>
+						</div>
+					</div>
 
 					<DataTable
 						columns={columns}
@@ -126,6 +161,16 @@ function ProjectListPage() {
 					/>
 				</div>
 			</div>
+
+			<ExcelImportDialog
+				open={importDialogOpen}
+				onOpenChange={setImportDialogOpen}
+				title="案件工数 一括インポート"
+				description="エクスポートしたExcelファイルを編集し、工数データを一括更新します。"
+				onFileParsed={parseFile}
+				onConfirm={confirmImport}
+				isImporting={isImporting}
+			/>
 
 			<RestoreConfirmDialog
 				open={restoreTarget !== null}

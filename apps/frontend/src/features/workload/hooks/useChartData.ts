@@ -68,9 +68,10 @@ export function sortAreasByProjectOrder(
 /**
  * 凡例パネル用の案件リストを projectOrder に基づいてソートする。
  */
-export function sortLegendProjectsByOrder<
-	T extends { projectId: number },
->(projects: T[], projectOrder: number[] | undefined): T[] {
+export function sortLegendProjectsByOrder<T extends { projectId: number }>(
+	projects: T[],
+	projectOrder: number[] | undefined,
+): T[] {
 	if (!projectOrder) return projects;
 
 	const orderMap = new Map(projectOrder.map((id, idx) => [id, idx]));

@@ -82,6 +82,42 @@ export function convertYearMonthHeader(header: string): string | null {
 }
 
 // ============================================================
+// Bulk Export/Import Types
+// ============================================================
+
+/** 一括エクスポートシート設定（複数固定列対応） */
+export interface BulkExportSheetConfig {
+	sheetName: string;
+	fixedHeaders: string[];
+	yearMonths: string[];
+	rows: BulkExportRow[];
+}
+
+export interface BulkExportRow {
+	fixedValues: (string | number)[];
+	monthlyValues: number[];
+}
+
+/** 一括インポートパース設定（複数固定列対応） */
+export interface BulkImportParseConfig {
+	fixedColumnCount: number;
+	parseYearMonth: (header: string) => string | null;
+	validateRow: (row: BulkImportRow, rowIndex: number) => ValidationError[];
+}
+
+export interface BulkImportRow {
+	fixedValues: (string | number | null)[];
+	monthlyValues: Map<string, number>;
+}
+
+export interface BulkImportParseResult {
+	rows: BulkImportRow[];
+	yearMonths: string[];
+	errors: ValidationError[];
+	warnings: ValidationError[];
+}
+
+// ============================================================
 // Export functions
 // ============================================================
 
@@ -102,6 +138,31 @@ export async function buildExportWorkbook(
 
 	// カラム幅の設定
 	ws["!cols"] = [{ wch: 20 }, ...config.yearMonths.map(() => ({ wch: 12 }))];
+
+	const wb = XLSX.utils.book_new();
+	XLSX.utils.book_append_sheet(wb, ws, config.sheetName);
+	return wb;
+}
+
+/** 一括エクスポート用ワークブック生成（複数固定列 + 動的年月列） */
+export async function buildBulkExportWorkbook(
+	config: BulkExportSheetConfig,
+): Promise<WorkBook> {
+	const XLSX = await import("xlsx");
+
+	const headerRow = [...config.fixedHeaders, ...config.yearMonths];
+	const dataRows = config.rows.map((row) => [
+		...row.fixedValues,
+		...row.monthlyValues,
+	]);
+
+	const aoa = [headerRow, ...dataRows];
+	const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+	ws["!cols"] = [
+		...config.fixedHeaders.map((_, i) => ({ wch: i === 0 ? 12 : 20 })),
+		...config.yearMonths.map(() => ({ wch: 12 })),
+	];
 
 	const wb = XLSX.utils.book_new();
 	XLSX.utils.book_append_sheet(wb, ws, config.sheetName);
@@ -272,4 +333,158 @@ export function parseImportSheet(
 	}
 
 	return { rows, yearMonths, errors };
+}
+
+// ============================================================
+// Bulk Import functions (複数固定列対応)
+// ============================================================
+
+/** 一括インポート用パース（複数固定列 + 動的年月列 + 重複警告） */
+export function parseBulkImportSheet(
+	headers: string[],
+	rawRows: (string | number | null)[][],
+	config: BulkImportParseConfig,
+): BulkImportParseResult {
+	const errors: ValidationError[] = [];
+	const warnings: ValidationError[] = [];
+	const rows: BulkImportRow[] = [];
+	const yearMonths: string[] = [];
+
+	// ヘッダー検証: 固定列 + 少なくとも1つの年月列が必要
+	const minColumns = config.fixedColumnCount + 1;
+	if (headers.length < minColumns) {
+		errors.push({
+			row: 0,
+			field: "header",
+			message: `ヘッダー行のフォーマットが不正です（最低${minColumns}列必要）`,
+		});
+		return { rows, yearMonths, errors, warnings };
+	}
+
+	// 年月ヘッダーの解析（固定列以降）
+	const seenYearMonths = new Set<string>();
+	for (
+		let colIdx = config.fixedColumnCount;
+		colIdx < headers.length;
+		colIdx++
+	) {
+		const header = headers[colIdx];
+		if (!header || header.trim() === "") continue;
+
+		const ym = config.parseYearMonth(header);
+		if (ym === null) {
+			errors.push({
+				row: 0,
+				column: colIdx,
+				field: "yearMonth",
+				message: `列ヘッダー "${header}" が不正なフォーマットです（YYYY-MM 形式で入力してください）`,
+				value: header,
+			});
+			continue;
+		}
+
+		if (seenYearMonths.has(ym)) {
+			errors.push({
+				row: 0,
+				column: colIdx,
+				field: "yearMonth",
+				message: `年月 "${header}" が重複しています`,
+				value: header,
+			});
+			continue;
+		}
+
+		seenYearMonths.add(ym);
+		yearMonths.push(ym);
+	}
+
+	// 重複キーコード検出用
+	const keyCodeIndexMap = new Map<string | number, number>();
+
+	// データ行の解析
+	for (let rowIdx = 0; rowIdx < rawRows.length; rowIdx++) {
+		const rawRow = rawRows[rowIdx];
+		if (!rawRow || rawRow.length === 0) continue;
+
+		const hasAnyValue = rawRow.some((cell) => cell != null && cell !== "");
+		if (!hasAnyValue) continue;
+
+		// 固定列の抽出
+		const fixedValues: (string | number | null)[] = [];
+		for (let i = 0; i < config.fixedColumnCount; i++) {
+			const val = i < rawRow.length ? rawRow[i] : null;
+			fixedValues.push(val != null ? val : null);
+		}
+
+		// 月別工数の抽出
+		const monthlyValues = new Map<string, number>();
+		for (
+			let colIdx = config.fixedColumnCount;
+			colIdx < headers.length;
+			colIdx++
+		) {
+			const header = headers[colIdx];
+			if (!header || header.trim() === "") continue;
+
+			const ym = config.parseYearMonth(header);
+			if (ym === null || !yearMonths.includes(ym)) continue;
+
+			const rawValue = colIdx < rawRow.length ? rawRow[colIdx] : null;
+
+			if (rawValue == null || rawValue === "") {
+				monthlyValues.set(ym, 0);
+			} else {
+				const numValue =
+					typeof rawValue === "number" ? rawValue : Number(rawValue);
+				if (Number.isNaN(numValue)) {
+					errors.push({
+						row: rowIdx + 1,
+						column: colIdx,
+						field: "manhour",
+						message: "数値以外の値です",
+						value: rawValue as string | number,
+					});
+				} else if (!validateManhour(numValue)) {
+					errors.push({
+						row: rowIdx + 1,
+						column: colIdx,
+						field: "manhour",
+						message: "工数は 0 以上 99,999,999 以下の整数で入力してください",
+						value: numValue,
+					});
+				} else {
+					monthlyValues.set(ym, numValue);
+				}
+			}
+		}
+
+		const importRow: BulkImportRow = { fixedValues, monthlyValues };
+
+		// カスタム行バリデーション
+		const rowErrors = config.validateRow(importRow, rowIdx + 1);
+		errors.push(...rowErrors);
+
+		// 重複キーコードの検出（あと勝ちマージ）
+		const keyCode = fixedValues[0];
+		if (keyCode != null) {
+			const existingIdx = keyCodeIndexMap.get(keyCode);
+			if (existingIdx !== undefined) {
+				warnings.push({
+					row: rowIdx + 1,
+					field: "duplicate",
+					message: `キーコード "${keyCode}" が重複しています（下の行の値で上書きされます）`,
+					value: keyCode,
+				});
+				// あと勝ち: 既存行を上書き
+				rows[existingIdx] = importRow;
+			} else {
+				keyCodeIndexMap.set(keyCode, rows.length);
+				rows.push(importRow);
+			}
+		} else {
+			rows.push(importRow);
+		}
+	}
+
+	return { rows, yearMonths, errors, warnings };
 }

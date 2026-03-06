@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
+import type { AreaSeriesConfig } from "../../types";
 import {
 	sortAreasByProjectOrder,
 	sortLegendProjectsByOrder,
 } from "../useChartData";
-import type { AreaSeriesConfig, LegendMonthData } from "../../types";
 
 describe("sortAreasByProjectOrder", () => {
 	const indirectArea: AreaSeriesConfig = {
@@ -16,10 +16,7 @@ describe("sortAreasByProjectOrder", () => {
 		type: "indirect",
 	};
 
-	const makeProjectArea = (
-		id: number,
-		name: string,
-	): AreaSeriesConfig => ({
+	const makeProjectArea = (id: number, name: string): AreaSeriesConfig => ({
 		dataKey: `project_${id}`,
 		stackId: "workload",
 		fill: "#aaa",

@@ -6,6 +6,7 @@ import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
+import bulk from "@/routes/bulk";
 import businessUnits from "@/routes/businessUnits";
 import capacityScenarios from "@/routes/capacityScenarios";
 import chartColorPalettes from "@/routes/chartColorPalettes";
@@ -78,6 +79,7 @@ app.onError((err, c) => {
 });
 
 // ルートのマウント
+app.route("/bulk", bulk);
 app.route("/business-units", businessUnits);
 app.route("/project-types", projectTypes);
 app.route("/work-types", workTypes);
