@@ -27,23 +27,6 @@ export function createColumns(options: {
 			),
 		},
 		createSortableColumn<WorkType>({ accessorKey: "name", label: "名称" }),
-		{
-			accessorKey: "color",
-			header: "カラー",
-			cell: ({ row }) => {
-				const color = row.original.color;
-				if (!color) return <span className="text-muted-foreground">-</span>;
-				return (
-					<div className="flex items-center gap-2">
-						<div
-							className="w-6 h-6 rounded-full border border-border"
-							style={{ backgroundColor: color }}
-						/>
-						<span className="text-sm text-muted-foreground">{color}</span>
-					</div>
-				);
-			},
-		},
 		createSortableColumn<WorkType>({
 			accessorKey: "displayOrder",
 			label: "表示順",

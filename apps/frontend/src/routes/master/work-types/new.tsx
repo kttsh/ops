@@ -16,7 +16,6 @@ function WorkTypeNewPage() {
 		workTypeCode: string;
 		name: string;
 		displayOrder: number;
-		color: string | null;
 	}) => {
 		try {
 			await createMutation.mutateAsync(values);
@@ -48,7 +47,7 @@ function WorkTypeNewPage() {
 				description="新しい作業種類を登録します"
 			/>
 
-			<div className="rounded-3xl border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+			<div className="rounded-3xl border p-6">
 				<WorkTypeForm
 					mode="create"
 					onSubmit={handleSubmit}

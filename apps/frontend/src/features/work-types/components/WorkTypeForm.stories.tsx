@@ -26,7 +26,6 @@ export const EditMode: Story = {
 			workTypeCode: "WT001",
 			name: "基本設計",
 			displayOrder: 1,
-			color: "#3b82f6",
 		},
 		onSubmit: fn(),
 		isSubmitting: false,

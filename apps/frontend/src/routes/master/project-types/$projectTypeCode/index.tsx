@@ -105,7 +105,7 @@ function ProjectTypeDetailPage() {
 				}
 			/>
 
-			<div className="rounded-3xl border p-6 space-y-4 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+			<div className="rounded-3xl border p-6 space-y-4">
 				<DetailRow label="案件タイプコード" value={pt.projectTypeCode} />
 				<DetailRow label="名称" value={pt.name} />
 				<DetailRow label="表示順" value={String(pt.displayOrder)} />

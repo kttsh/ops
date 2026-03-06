@@ -152,7 +152,7 @@ export function CaseStudySection({
 
 	return (
 		<>
-			<div className="rounded-3xl border overflow-hidden hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+			<div className="rounded-3xl border overflow-hidden">
 				<div className="flex" style={{ minHeight: "400px" }}>
 					{/* サイドバー */}
 					<div className="w-64 shrink-0 border-r border-border overflow-y-auto p-3">

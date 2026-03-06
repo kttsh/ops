@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 			<aside
 				className={cn(
 					"hidden lg:flex lg:flex-col border-r border-sidebar-border bg-sidebar transition-all duration-200 ease-in-out",
-					collapsed ? "lg:w-16" : "lg:w-60",
+					collapsed ? "lg:w-16" : "lg:w-64",
 				)}
 			>
 				<div className="flex h-14 items-center px-6">
@@ -78,7 +78,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 				<main className="flex-1 overflow-y-auto">
 					<div
 						className={cn(
-							"animate-in fade-in duration-300",
+							"",
 							currentPath.startsWith("/workload") ||
 								currentPath.startsWith("/master/indirect-capacity-settings")
 								? "h-full"

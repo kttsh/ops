@@ -181,7 +181,7 @@ export function WorkloadCard({
 	};
 
 	return (
-		<div className="rounded-3xl border hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+		<div className="rounded-3xl border">
 			<div className="flex items-center justify-between border-b px-4 py-3">
 				<div>
 					<h3 className="text-sm font-semibold">工数</h3>

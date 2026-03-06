@@ -90,7 +90,7 @@ function ProjectListPage() {
 		<div className="grid grid-cols-1 gap-6">
 			<PageHeader title="案件" description="案件の一覧を管理します" />
 
-			<div className="rounded-3xl bg-card border border-border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+			<div className="rounded-3xl bg-card border border-border shadow-sm p-6">
 				<div className="space-y-6">
 					<DataTableToolbar
 						search={search.search}

@@ -32,7 +32,7 @@ export function WorkloadChart({ data }: WorkloadChartProps) {
 
 	if (data.length === 0) {
 		return (
-			<div className="rounded-3xl border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+			<div className="rounded-3xl border p-6">
 				<p className="text-sm text-muted-foreground text-center py-8">
 					月次工数データがありません
 				</p>
@@ -93,7 +93,7 @@ export function WorkloadChart({ data }: WorkloadChartProps) {
 	);
 
 	return (
-		<div className="rounded-3xl border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+		<div className="rounded-3xl border p-6">
 			<div className="flex justify-end mb-2">
 				<ChartFullscreenDialog title="月次工数グラフ">
 					{chartContent}

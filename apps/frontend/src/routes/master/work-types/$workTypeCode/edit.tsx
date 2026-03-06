@@ -24,13 +24,11 @@ function WorkTypeEditPage() {
 		workTypeCode: string;
 		name: string;
 		displayOrder: number;
-		color: string | null;
 	}) => {
 		try {
 			await updateMutation.mutateAsync({
 				name: values.name,
 				displayOrder: values.displayOrder,
-				color: values.color,
 			});
 			toast.success("保存しました");
 			navigate({
@@ -90,14 +88,13 @@ function WorkTypeEditPage() {
 				description="作業種類情報を編集します"
 			/>
 
-			<div className="rounded-3xl border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+			<div className="rounded-3xl border p-6">
 				<WorkTypeForm
 					mode="edit"
 					defaultValues={{
 						workTypeCode: wt.workTypeCode,
 						name: wt.name,
 						displayOrder: wt.displayOrder,
-						color: wt.color,
 					}}
 					onSubmit={handleSubmit}
 					isSubmitting={updateMutation.isPending}

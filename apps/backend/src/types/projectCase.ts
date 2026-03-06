@@ -8,15 +8,16 @@ import { paginationQuerySchema } from "@/types/pagination";
 export const createProjectCaseSchema = z.object({
 	caseName: z.string().min(1).max(100),
 	isPrimary: z.boolean().default(false),
-	description: z.string().max(500).optional(),
+	description: z.string().max(500).nullable().optional(),
 	calculationType: z.enum(["MANUAL", "STANDARD"]).default("MANUAL"),
-	standardEffortId: z.number().int().positive().optional(),
+	standardEffortId: z.number().int().positive().nullable().optional(),
 	startYearMonth: z
 		.string()
 		.regex(/^\d{6}$/)
+		.nullable()
 		.optional(),
-	durationMonths: z.number().int().positive().optional(),
-	totalManhour: z.number().int().min(0).optional(),
+	durationMonths: z.number().int().positive().nullable().optional(),
+	totalManhour: z.number().int().min(0).nullable().optional(),
 });
 
 /** 更新用スキーマ */

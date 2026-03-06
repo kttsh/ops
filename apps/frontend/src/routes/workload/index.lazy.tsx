@@ -225,7 +225,7 @@ function WorkloadPage() {
 						<div className="grid grid-cols-1 gap-6 p-6 h-full">
 							{/* チャート + 凡例カード */}
 							{showChart && (
-								<div className="rounded-3xl bg-card border border-border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+								<div className="rounded-3xl bg-card border border-border shadow-sm p-6">
 									<div className="flex">
 										<div className="flex-1">
 											<WorkloadChart
@@ -248,7 +248,7 @@ function WorkloadPage() {
 
 							{/* テーブルカード */}
 							{showTable && (
-								<div className="rounded-3xl bg-card border border-border p-6 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out overflow-hidden">
+								<div className="rounded-3xl bg-card border border-border shadow-sm p-6 overflow-hidden">
 									<WorkloadDataTable
 										rows={tableData.rows}
 										filteredRows={tableData.filteredRows}

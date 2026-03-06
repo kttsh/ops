@@ -102,25 +102,9 @@ function WorkTypeDetailPage() {
 			/>
 
 			{/* Detail card */}
-			<div className="rounded-3xl border p-6 space-y-4 hover:shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05)] transition-all duration-200 ease-in-out">
+			<div className="rounded-3xl border p-6 space-y-4">
 				<DetailRow label="作業種類コード" value={wt.workTypeCode} />
 				<DetailRow label="名称" value={wt.name} />
-				<div className="grid grid-cols-3 gap-4">
-					<dt className="text-sm font-medium text-muted-foreground">カラー</dt>
-					<dd className="col-span-2 text-sm">
-						{wt.color ? (
-							<div className="flex items-center gap-2">
-								<div
-									className="w-6 h-6 rounded-full border border-border"
-									style={{ backgroundColor: wt.color }}
-								/>
-								<span>{wt.color}</span>
-							</div>
-						) : (
-							<span className="text-muted-foreground">未設定</span>
-						)}
-					</dd>
-				</div>
 				<DetailRow label="表示順" value={String(wt.displayOrder)} />
 				<DetailRow label="更新日時" value={formatDateTime(wt.updatedAt)} />
 			</div>
