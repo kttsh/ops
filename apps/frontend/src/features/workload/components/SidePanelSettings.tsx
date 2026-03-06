@@ -12,6 +12,7 @@ import {
 } from "@/features/workload/api/queries";
 import type { BulkUpsertProjectItemInput } from "@/features/workload/types";
 import { CAPACITY_COLORS, PROJECT_TYPE_COLORS } from "@/lib/chart-colors";
+import { ColorPickerPopover } from "./ColorPickerPopover";
 import { PeriodSelector } from "./PeriodSelector";
 import { ProfileManager } from "./ProfileManager";
 
@@ -264,7 +265,7 @@ export function SidePanelSettings({
 			{/* 案件表示設定 */}
 			<div>
 				<h3 className="mb-3 text-sm font-semibold">案件設定</h3>
-				<div className="max-h-80 space-y-2 overflow-y-auto">
+				<div className="space-y-2">
 					{projOrder.map((id, index) => {
 						const proj = projects.find((p) => p.projectId === id);
 						if (!proj) return null;
@@ -273,21 +274,11 @@ export function SidePanelSettings({
 								key={id}
 								className="flex items-center gap-3 rounded-lg border border-border p-2"
 							>
-								<div className="flex gap-1">
-									{PROJECT_TYPE_COLORS.slice(0, 6).map((color) => (
-										<button
-											key={color}
-											type="button"
-											className={`h-4 w-4 rounded-sm border-2 ${
-												projColors[id] === color
-													? "border-primary"
-													: "border-transparent"
-											}`}
-											style={{ backgroundColor: color }}
-											onClick={() => setProjColor(id, color)}
-										/>
-									))}
-								</div>
+								<ColorPickerPopover
+									colors={PROJECT_TYPE_COLORS}
+									value={projColors[id] ?? PROJECT_TYPE_COLORS[0]}
+									onChange={(color) => setProjColor(id, color)}
+								/>
 								<Label className="flex-1 truncate text-sm">{proj.name}</Label>
 								<div className="flex gap-0.5">
 									<Button
@@ -335,26 +326,16 @@ export function SidePanelSettings({
 									}))
 								}
 							/>
-							<div className="flex gap-1">
-								{CAPACITY_COLORS.map((color) => (
-									<button
-										key={color}
-										type="button"
-										className={`h-4 w-4 rounded-full border-2 ${
-											capColors[cs.capacityScenarioId] === color
-												? "border-primary"
-												: "border-transparent"
-										}`}
-										style={{ backgroundColor: color }}
-										onClick={() =>
-											setCapColors((prev) => ({
-												...prev,
-												[cs.capacityScenarioId]: color,
-											}))
-										}
-									/>
-								))}
-							</div>
+							<ColorPickerPopover
+								colors={CAPACITY_COLORS}
+								value={capColors[cs.capacityScenarioId] ?? CAPACITY_COLORS[0]}
+								onChange={(color) =>
+									setCapColors((prev) => ({
+										...prev,
+										[cs.capacityScenarioId]: color,
+									}))
+								}
+							/>
 							<Label className="flex-1 truncate text-sm">
 								{cs.scenarioName}
 							</Label>

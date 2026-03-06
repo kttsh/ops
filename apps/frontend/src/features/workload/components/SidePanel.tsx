@@ -15,7 +15,7 @@ interface SidePanelProps {
 const tabs = [
 	{ value: "projects" as const, label: "案件" },
 	{ value: "indirect" as const, label: "間接作業" },
-	{ value: "settings" as const, label: "設定" },
+	{ value: "settings" as const, label: "チャート設定" },
 ];
 
 export function SidePanel({
