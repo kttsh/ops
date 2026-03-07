@@ -21,7 +21,7 @@ export function WeightDistributionChart({
 	}));
 
 	return (
-		<div className="rounded-3xl border p-6">
+		<div className="rounded-3xl border bg-white p-6">
 			<div className="h-[256px]">
 				<ResponsiveContainer width="100%" height="100%">
 					<AreaChart
