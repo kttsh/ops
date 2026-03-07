@@ -1,8 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-	CAPACITY_COLORS,
-	PROJECT_TYPE_COLORS,
-} from "@/lib/chart-colors";
+import { CAPACITY_COLORS, PROJECT_TYPE_COLORS } from "@/lib/chart-colors";
 
 describe("chart-colors", () => {
 	test("CAPACITY_COLORS の全エントリが PROJECT_TYPE_COLORS と重複しない", () => {

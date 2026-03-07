@@ -51,7 +51,7 @@ function StandardEffortMasterListPage() {
 			businessUnitCode: search.businessUnitCode,
 			projectTypeCode: search.projectTypeCode,
 		}),
-	)
+	);
 
 	const restoreMutation = useRestoreStandardEffortMaster();
 
@@ -85,46 +85,46 @@ function StandardEffortMasterListPage() {
 				ptNameMap,
 			}),
 		[search.includeDisabled, buNameMap, ptNameMap],
-	)
+	);
 
 	const handleSearchChange = (value: string) => {
 		navigate({ search: (prev) => ({ ...prev, search: value, page: 1 }) });
-	}
+	};
 
 	const handleIncludeDisabledChange = (value: boolean) => {
 		navigate({
 			search: (prev) => ({ ...prev, includeDisabled: value, page: 1 }),
-		})
-	}
+		});
+	};
 
 	const handlePageChange = (page: number) => {
 		navigate({ search: (prev) => ({ ...prev, page }) });
-	}
+	};
 
 	const handlePageSizeChange = (pageSize: number) => {
 		navigate({ search: (prev) => ({ ...prev, pageSize, page: 1 }) });
-	}
+	};
 
 	const handleBuFilterChange = (value: string) => {
 		navigate({
 			search: (prev) => ({ ...prev, businessUnitCode: value, page: 1 }),
-		})
-	}
+		});
+	};
 
 	const handlePtFilterChange = (value: string) => {
 		navigate({
 			search: (prev) => ({ ...prev, projectTypeCode: value, page: 1 }),
-		})
-	}
+		});
+	};
 
 	const handleRowHover = useCallback(
 		(row: StandardEffortMaster) => {
 			queryClient.ensureQueryData(
 				standardEffortMasterQueryOptions(row.standardEffortId),
-			)
+			);
 		},
 		[queryClient],
-	)
+	);
 
 	const handleRestore = async () => {
 		if (restoreTarget === null) return;
@@ -138,7 +138,7 @@ function StandardEffortMasterListPage() {
 			}
 			setRestoreTarget(null);
 		}
-	}
+	};
 
 	return (
 		<div className="grid grid-cols-1 gap-6">
@@ -263,5 +263,5 @@ function StandardEffortMasterListPage() {
 				isLoading={restoreMutation.isPending}
 			/>
 		</div>
-	)
+	);
 }

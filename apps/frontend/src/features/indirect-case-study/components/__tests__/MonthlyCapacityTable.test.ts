@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
+import type { MonthlyCapacity } from "../../types";
 import {
 	buildFiscalYearMonths,
 	pivotCapacities,
 } from "../MonthlyCapacityTable";
-import type { MonthlyCapacity } from "../../types";
 
 describe("buildFiscalYearMonths", () => {
 	it("4月始まり12ヶ月のYYYY-MM配列を返す", () => {

@@ -14,8 +14,7 @@ function canCalculateCapacity(
 	selectedCapacityScenarioId: number | null,
 ): boolean {
 	return (
-		selectedHeadcountPlanCaseId !== null &&
-		selectedCapacityScenarioId !== null
+		selectedHeadcountPlanCaseId !== null && selectedCapacityScenarioId !== null
 	);
 }
 

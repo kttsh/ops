@@ -41,7 +41,7 @@ function ProjectListPage() {
 			pageSize: search.pageSize,
 			includeDisabled: search.includeDisabled,
 		}),
-	)
+	);
 
 	const restoreMutation = useRestoreProject();
 
@@ -53,32 +53,32 @@ function ProjectListPage() {
 					: undefined,
 			}),
 		[search.includeDisabled],
-	)
+	);
 
 	const handleSearchChange = (value: string) => {
 		navigate({ search: (prev) => ({ ...prev, search: value, page: 1 }) });
-	}
+	};
 
 	const handleIncludeDisabledChange = (value: boolean) => {
 		navigate({
 			search: (prev) => ({ ...prev, includeDisabled: value, page: 1 }),
-		})
-	}
+		});
+	};
 
 	const handlePageChange = (page: number) => {
 		navigate({ search: (prev) => ({ ...prev, page }) });
-	}
+	};
 
 	const handlePageSizeChange = (pageSize: number) => {
 		navigate({ search: (prev) => ({ ...prev, pageSize, page: 1 }) });
-	}
+	};
 
 	const handleRowHover = useCallback(
 		(row: Project) => {
 			queryClient.ensureQueryData(projectQueryOptions(row.projectId));
 		},
 		[queryClient],
-	)
+	);
 
 	const handleRestore = async () => {
 		if (restoreTarget === null) return;
@@ -92,7 +92,7 @@ function ProjectListPage() {
 			}
 			setRestoreTarget(null);
 		}
-	}
+	};
 
 	return (
 		<div className="grid grid-cols-1 gap-6">
@@ -180,5 +180,5 @@ function ProjectListPage() {
 				isLoading={restoreMutation.isPending}
 			/>
 		</div>
-	)
+	);
 }

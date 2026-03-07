@@ -24,10 +24,7 @@ const mockedService = vi.mocked(chartViewCapacityItemService);
 function createApp() {
 	const app = new Hono();
 
-	app.route(
-		"/chart-views/:chartViewId/capacity-items",
-		chartViewCapacityItems,
-	);
+	app.route("/chart-views/:chartViewId/capacity-items", chartViewCapacityItems);
 
 	app.onError((err, c) => {
 		if (err instanceof HTTPException) {
@@ -100,10 +97,9 @@ describe("chartViewCapacityItems route", () => {
 		test("200 と一覧データを返す", async () => {
 			mockedService.findAll.mockResolvedValue([sampleItem1, sampleItem2]);
 
-			const res = await app.request(
-				"/chart-views/10/capacity-items",
-				{ method: "GET" },
-			);
+			const res = await app.request("/chart-views/10/capacity-items", {
+				method: "GET",
+			});
 
 			expect(res.status).toBe(200);
 			const body = await res.json();
@@ -115,10 +111,9 @@ describe("chartViewCapacityItems route", () => {
 		test("空配列を返す", async () => {
 			mockedService.findAll.mockResolvedValue([]);
 
-			const res = await app.request(
-				"/chart-views/10/capacity-items",
-				{ method: "GET" },
-			);
+			const res = await app.request("/chart-views/10/capacity-items", {
+				method: "GET",
+			});
 
 			expect(res.status).toBe(200);
 			const body = await res.json();
@@ -132,19 +127,17 @@ describe("chartViewCapacityItems route", () => {
 				}),
 			);
 
-			const res = await app.request(
-				"/chart-views/999/capacity-items",
-				{ method: "GET" },
-			);
+			const res = await app.request("/chart-views/999/capacity-items", {
+				method: "GET",
+			});
 
 			expect(res.status).toBe(404);
 		});
 
 		test("chartViewId が不正な場合 422 を返す", async () => {
-			const res = await app.request(
-				"/chart-views/abc/capacity-items",
-				{ method: "GET" },
-			);
+			const res = await app.request("/chart-views/abc/capacity-items", {
+				method: "GET",
+			});
 
 			expect(res.status).toBe(422);
 		});
@@ -155,32 +148,26 @@ describe("chartViewCapacityItems route", () => {
 	// ===========================================================================
 	describe("PUT /chart-views/:chartViewId/capacity-items/bulk", () => {
 		test("200 と更新後データを返す", async () => {
-			mockedService.bulkUpsert.mockResolvedValue([
-				sampleItem1,
-				sampleItem2,
-			]);
+			mockedService.bulkUpsert.mockResolvedValue([sampleItem1, sampleItem2]);
 
-			const res = await app.request(
-				"/chart-views/10/capacity-items/bulk",
-				{
-					method: "PUT",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						items: [
-							{
-								capacityScenarioId: 1,
-								isVisible: true,
-								colorCode: "#dc2626",
-							},
-							{
-								capacityScenarioId: 2,
-								isVisible: false,
-								colorCode: null,
-							},
-						],
-					}),
-				},
-			);
+			const res = await app.request("/chart-views/10/capacity-items/bulk", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					items: [
+						{
+							capacityScenarioId: 1,
+							isVisible: true,
+							colorCode: "#dc2626",
+						},
+						{
+							capacityScenarioId: 2,
+							isVisible: false,
+							colorCode: null,
+						},
+					],
+				}),
+			});
 
 			expect(res.status).toBe(200);
 			const body = await res.json();
@@ -204,14 +191,11 @@ describe("chartViewCapacityItems route", () => {
 		test("空配列で 200 を返す", async () => {
 			mockedService.bulkUpsert.mockResolvedValue([]);
 
-			const res = await app.request(
-				"/chart-views/10/capacity-items/bulk",
-				{
-					method: "PUT",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ items: [] }),
-				},
-			);
+			const res = await app.request("/chart-views/10/capacity-items/bulk", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ items: [] }),
+			});
 
 			expect(res.status).toBe(200);
 			const body = await res.json();
@@ -225,58 +209,49 @@ describe("chartViewCapacityItems route", () => {
 				}),
 			);
 
-			const res = await app.request(
-				"/chart-views/999/capacity-items/bulk",
-				{
-					method: "PUT",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						items: [
-							{
-								capacityScenarioId: 1,
-								isVisible: true,
-								colorCode: null,
-							},
-						],
-					}),
-				},
-			);
+			const res = await app.request("/chart-views/999/capacity-items/bulk", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					items: [
+						{
+							capacityScenarioId: 1,
+							isVisible: true,
+							colorCode: null,
+						},
+					],
+				}),
+			});
 
 			expect(res.status).toBe(404);
 		});
 
 		test("バリデーションエラーで 422 を返す", async () => {
-			const res = await app.request(
-				"/chart-views/10/capacity-items/bulk",
-				{
-					method: "PUT",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						items: [{ capacityScenarioId: -1 }],
-					}),
-				},
-			);
+			const res = await app.request("/chart-views/10/capacity-items/bulk", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					items: [{ capacityScenarioId: -1 }],
+				}),
+			});
 
 			expect(res.status).toBe(422);
 		});
 
 		test("不正な colorCode で 422 を返す", async () => {
-			const res = await app.request(
-				"/chart-views/10/capacity-items/bulk",
-				{
-					method: "PUT",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						items: [
-							{
-								capacityScenarioId: 1,
-								isVisible: true,
-								colorCode: "invalid",
-							},
-						],
-					}),
-				},
-			);
+			const res = await app.request("/chart-views/10/capacity-items/bulk", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					items: [
+						{
+							capacityScenarioId: 1,
+							isVisible: true,
+							colorCode: "invalid",
+						},
+					],
+				}),
+			});
 
 			expect(res.status).toBe(422);
 		});

@@ -1,14 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
-import {
-	useBulkUpdateMonthlyHeadcountPlans,
-} from "@/features/indirect-case-study/api/mutations";
-import {
-	headcountPlanCasesQueryOptions,
-} from "@/features/indirect-case-study/api/queries";
-import type {
-	BulkMonthlyHeadcountInput,
-} from "@/features/indirect-case-study/types";
+import { useBulkUpdateMonthlyHeadcountPlans } from "@/features/indirect-case-study/api/mutations";
+import { headcountPlanCasesQueryOptions } from "@/features/indirect-case-study/api/queries";
+import type { BulkMonthlyHeadcountInput } from "@/features/indirect-case-study/types";
 
 type UseHeadcountPlansPageParams = {
 	businessUnitCode: string;

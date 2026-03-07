@@ -5,7 +5,6 @@ import {
 	capacityScenariosQueryOptions,
 	projectsQueryOptions,
 } from "@/features/workload/api/queries";
-import { CAPACITY_COLORS } from "@/lib/chart-colors";
 import { BusinessUnitSelector } from "@/features/workload/components/BusinessUnitSelector";
 import {
 	BuEmptyState,
@@ -25,6 +24,7 @@ import { useChartData } from "@/features/workload/hooks/useChartData";
 import { useLegendState } from "@/features/workload/hooks/useLegendState";
 import { useTableData } from "@/features/workload/hooks/useTableData";
 import { useWorkloadFilters } from "@/features/workload/hooks/useWorkloadFilters";
+import { CAPACITY_COLORS } from "@/lib/chart-colors";
 
 export const Route = createLazyFileRoute("/workload/")({
 	component: WorkloadPage,
@@ -124,7 +124,7 @@ function WorkloadPage() {
 			setCapVisible(vis);
 			setCapColors(cols);
 		}
-	}, [capacityScenarios]);
+	}, [capacityScenarios, capVisible]);
 
 	// チェックONのシナリオIDのみを抽出
 	const capacityScenarioIds = useMemo(() => {
@@ -201,7 +201,12 @@ function WorkloadPage() {
 			params.capacityScenarioIds = capacityScenarioIds;
 		}
 		return params;
-	}, [chartDataParams, selectedProjectIds, allProjectIds.length, capacityScenarioIds]);
+	}, [
+		chartDataParams,
+		selectedProjectIds,
+		allProjectIds.length,
+		capacityScenarioIds,
+	]);
 
 	const {
 		chartData,

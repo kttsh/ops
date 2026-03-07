@@ -40,12 +40,12 @@ function ProjectEditPage() {
 				totalManhour: values.totalManhour,
 				status: values.status,
 				durationMonths: values.durationMonths ?? undefined,
-			})
+			});
 			toast.success("保存しました");
 			navigate({
 				to: "/projects/$projectId",
 				params: { projectId },
-			})
+			});
 		} catch (err) {
 			if (err instanceof ApiError) {
 				if (err.problemDetails.status === 404) {
@@ -53,7 +53,7 @@ function ProjectEditPage() {
 				} else if (err.problemDetails.status === 409) {
 					toast.error("同一コードの案件が既に存在します", {
 						duration: Infinity,
-					})
+					});
 				} else if (err.problemDetails.status === 422) {
 					toast.error("入力内容にエラーがあります", { duration: Infinity });
 				} else {
@@ -61,28 +61,25 @@ function ProjectEditPage() {
 				}
 			}
 		}
-	}
+	};
 
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center py-16">
 				<p className="text-sm text-muted-foreground">読み込み中...</p>
 			</div>
-		)
+		);
 	}
 
 	if (!data) {
 		return (
 			<div className="flex flex-col items-center justify-center py-16 space-y-4">
 				<p className="text-lg font-medium">案件が見つかりません</p>
-				<Link
-					to="/projects"
-					className="text-sm text-primary hover:underline"
-				>
+				<Link to="/projects" className="text-sm text-primary hover:underline">
 					一覧に戻る
 				</Link>
 			</div>
-		)
+		);
 	}
 
 	const project = data.data;
@@ -121,5 +118,5 @@ function ProjectEditPage() {
 				/>
 			</div>
 		</div>
-	)
+	);
 }

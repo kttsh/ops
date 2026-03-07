@@ -1,10 +1,7 @@
 import { describe, expect, test } from "vitest";
-import {
-	bulkUpsertChartViewCapacityItemSchema,
-	type BulkUpsertCapacityItemInput,
-} from "@/types/chartViewCapacityItem";
 import { toChartViewCapacityItemResponse } from "@/transform/chartViewCapacityItemTransform";
 import type { ChartViewCapacityItemRow } from "@/types/chartViewCapacityItem";
+import { bulkUpsertChartViewCapacityItemSchema } from "@/types/chartViewCapacityItem";
 
 describe("bulkUpsertChartViewCapacityItemSchema", () => {
 	test("正常なリクエストをパースできる", () => {

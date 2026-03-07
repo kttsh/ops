@@ -38,12 +38,9 @@ export { MonthlyCapacityTable } from "./components/MonthlyCapacityTable";
 export { MonthlyHeadcountGrid } from "./components/MonthlyHeadcountGrid";
 export { ResultPanel } from "./components/ResultPanel";
 export { ScenarioFormSheet } from "./components/ScenarioFormSheet";
-// Components
-export { SettingsPanel } from "./components/SettingsPanel";
+// Hooks
 export { useCapacityCalculation } from "./hooks/useCapacityCalculation";
 export { useExcelExport } from "./hooks/useExcelExport";
-// Hooks
-export { useIndirectCaseStudyPage } from "./hooks/useIndirectCaseStudyPage";
 export { useIndirectSimulation } from "./hooks/useIndirectSimulation";
 export { useIndirectWorkCalculation } from "./hooks/useIndirectWorkCalculation";
 export { useIndirectWorkLoadExcelExport } from "./hooks/useIndirectWorkLoadExcelExport";

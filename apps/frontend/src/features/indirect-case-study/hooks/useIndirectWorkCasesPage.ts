@@ -1,14 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
-import {
-	useBulkUpdateIndirectWorkTypeRatios,
-} from "@/features/indirect-case-study/api/mutations";
-import {
-	indirectWorkCasesQueryOptions,
-} from "@/features/indirect-case-study/api/queries";
-import type {
-	BulkIndirectWorkRatioInput,
-} from "@/features/indirect-case-study/types";
+import { useBulkUpdateIndirectWorkTypeRatios } from "@/features/indirect-case-study/api/mutations";
+import { indirectWorkCasesQueryOptions } from "@/features/indirect-case-study/api/queries";
+import type { BulkIndirectWorkRatioInput } from "@/features/indirect-case-study/types";
 
 type UseIndirectWorkCasesPageParams = {
 	businessUnitCode: string;

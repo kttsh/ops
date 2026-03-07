@@ -196,10 +196,7 @@ export function ProfileManager({
 						);
 						const capacityItems = buildCapacityItems();
 						if (capacityItems.length > 0) {
-							await bulkUpsertChartViewCapacityItems(
-								targetId,
-								capacityItems,
-							);
+							await bulkUpsertChartViewCapacityItems(targetId, capacityItems);
 						}
 						toast.success("上書き保存しました");
 						setOverwriteTarget(null);

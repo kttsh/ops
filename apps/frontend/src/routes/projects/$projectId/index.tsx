@@ -58,7 +58,7 @@ function ProjectDetailPage() {
 						{
 							duration: Infinity,
 						},
-					)
+					);
 				} else if (err.problemDetails.status === 404) {
 					toast.error("案件が見つかりません", { duration: Infinity });
 				} else {
@@ -67,14 +67,14 @@ function ProjectDetailPage() {
 			}
 			setDeleteDialogOpen(false);
 		}
-	}
+	};
 
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center py-16">
 				<p className="text-sm text-muted-foreground">読み込み中...</p>
 			</div>
-		)
+		);
 	}
 
 	if (isError || !data) {
@@ -124,7 +124,7 @@ function ProjectDetailPage() {
 				entityName={project.name}
 			/>
 		</div>
-	)
+	);
 }
 
 function ProjectDetailCard({
@@ -141,7 +141,7 @@ function ProjectDetailCard({
 		status: string;
 		durationMonths: number | null;
 		updatedAt: string;
-	}
+	};
 	statusLabel: string;
 }) {
 	return (
@@ -179,5 +179,5 @@ function ProjectDetailCard({
 			/>
 			<DetailRow label="更新日時" value={formatDateTime(project.updatedAt)} />
 		</div>
-	)
+	);
 }

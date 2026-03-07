@@ -27,7 +27,7 @@ function ProjectNewPage() {
 				...values,
 				projectTypeCode: values.projectTypeCode || undefined,
 				durationMonths: values.durationMonths ?? undefined,
-			})
+			});
 			toast.success("保存しました");
 			navigate({ to: "/projects" });
 		} catch (err) {
@@ -35,7 +35,7 @@ function ProjectNewPage() {
 				if (err.problemDetails.status === 409) {
 					toast.error("この案件コードは既に使用されています", {
 						duration: Infinity,
-					})
+					});
 				} else if (err.problemDetails.status === 422) {
 					toast.error("入力内容にエラーがあります", { duration: Infinity });
 				} else {
@@ -43,7 +43,7 @@ function ProjectNewPage() {
 				}
 			}
 		}
-	}
+	};
 
 	return (
 		<div className="grid grid-cols-1 gap-6">
@@ -64,5 +64,5 @@ function ProjectNewPage() {
 				/>
 			</div>
 		</div>
-	)
+	);
 }

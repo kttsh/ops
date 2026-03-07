@@ -8,8 +8,7 @@ import type {
 
 export const chartViewCapacityItemService = {
 	async findAll(chartViewId: number): Promise<ChartViewCapacityItem[]> {
-		const exists =
-			await chartViewCapacityItemData.chartViewExists(chartViewId);
+		const exists = await chartViewCapacityItemData.chartViewExists(chartViewId);
 		if (!exists) {
 			throw new HTTPException(404, {
 				message: `Chart view with ID '${chartViewId}' not found`,
@@ -47,8 +46,7 @@ export const chartViewCapacityItemService = {
 				await chartViewCapacityItemData.capacityScenariosExist(scenarioIds);
 			if (!allExist) {
 				throw new HTTPException(422, {
-					message:
-						"One or more capacity scenario IDs do not exist",
+					message: "One or more capacity scenario IDs do not exist",
 				});
 			}
 		}

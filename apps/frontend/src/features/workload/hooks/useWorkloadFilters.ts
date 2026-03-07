@@ -2,8 +2,8 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 import {
 	type ChartDataParams,
-	type WorkloadSearchParams,
 	saveBusinessUnitsToStorage,
+	type WorkloadSearchParams,
 } from "@/features/workload/types";
 
 export interface UseWorkloadFiltersReturn {

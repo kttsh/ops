@@ -18,7 +18,6 @@ import { Route as ProjectsProjectIdIndexRouteImport } from './routes/projects/$p
 import { Route as MasterWorkTypesIndexRouteImport } from './routes/master/work-types/index'
 import { Route as MasterProjectTypesIndexRouteImport } from './routes/master/project-types/index'
 import { Route as MasterIndirectWorkCasesIndexRouteImport } from './routes/master/indirect-work-cases/index'
-import { Route as MasterIndirectCapacitySettingsIndexRouteImport } from './routes/master/indirect-capacity-settings/index'
 import { Route as MasterHeadcountPlansIndexRouteImport } from './routes/master/headcount-plans/index'
 import { Route as MasterCapacityScenariosIndexRouteImport } from './routes/master/capacity-scenarios/index'
 import { Route as MasterBusinessUnitsIndexRouteImport } from './routes/master/business-units/index'
@@ -77,16 +76,6 @@ const MasterIndirectWorkCasesIndexRoute =
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/master/indirect-work-cases/index.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-const MasterIndirectCapacitySettingsIndexRoute =
-  MasterIndirectCapacitySettingsIndexRouteImport.update({
-    id: '/master/indirect-capacity-settings/',
-    path: '/master/indirect-capacity-settings/',
-    getParentRoute: () => rootRouteImport,
-  } as any).lazy(() =>
-    import('./routes/master/indirect-capacity-settings/index.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -150,7 +139,6 @@ export interface FileRoutesByFullPath {
   '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
   '/master/capacity-scenarios/': typeof MasterCapacityScenariosIndexRoute
   '/master/headcount-plans/': typeof MasterHeadcountPlansIndexRoute
-  '/master/indirect-capacity-settings/': typeof MasterIndirectCapacitySettingsIndexRoute
   '/master/indirect-work-cases/': typeof MasterIndirectWorkCasesIndexRoute
   '/master/project-types/': typeof MasterProjectTypesIndexRoute
   '/master/work-types/': typeof MasterWorkTypesIndexRoute
@@ -169,7 +157,6 @@ export interface FileRoutesByTo {
   '/master/business-units': typeof MasterBusinessUnitsIndexRoute
   '/master/capacity-scenarios': typeof MasterCapacityScenariosIndexRoute
   '/master/headcount-plans': typeof MasterHeadcountPlansIndexRoute
-  '/master/indirect-capacity-settings': typeof MasterIndirectCapacitySettingsIndexRoute
   '/master/indirect-work-cases': typeof MasterIndirectWorkCasesIndexRoute
   '/master/project-types': typeof MasterProjectTypesIndexRoute
   '/master/work-types': typeof MasterWorkTypesIndexRoute
@@ -189,7 +176,6 @@ export interface FileRoutesById {
   '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
   '/master/capacity-scenarios/': typeof MasterCapacityScenariosIndexRoute
   '/master/headcount-plans/': typeof MasterHeadcountPlansIndexRoute
-  '/master/indirect-capacity-settings/': typeof MasterIndirectCapacitySettingsIndexRoute
   '/master/indirect-work-cases/': typeof MasterIndirectWorkCasesIndexRoute
   '/master/project-types/': typeof MasterProjectTypesIndexRoute
   '/master/work-types/': typeof MasterWorkTypesIndexRoute
@@ -210,7 +196,6 @@ export interface FileRouteTypes {
     | '/master/business-units/'
     | '/master/capacity-scenarios/'
     | '/master/headcount-plans/'
-    | '/master/indirect-capacity-settings/'
     | '/master/indirect-work-cases/'
     | '/master/project-types/'
     | '/master/work-types/'
@@ -229,7 +214,6 @@ export interface FileRouteTypes {
     | '/master/business-units'
     | '/master/capacity-scenarios'
     | '/master/headcount-plans'
-    | '/master/indirect-capacity-settings'
     | '/master/indirect-work-cases'
     | '/master/project-types'
     | '/master/work-types'
@@ -248,7 +232,6 @@ export interface FileRouteTypes {
     | '/master/business-units/'
     | '/master/capacity-scenarios/'
     | '/master/headcount-plans/'
-    | '/master/indirect-capacity-settings/'
     | '/master/indirect-work-cases/'
     | '/master/project-types/'
     | '/master/work-types/'
@@ -268,7 +251,6 @@ export interface RootRouteChildren {
   MasterBusinessUnitsIndexRoute: typeof MasterBusinessUnitsIndexRoute
   MasterCapacityScenariosIndexRoute: typeof MasterCapacityScenariosIndexRoute
   MasterHeadcountPlansIndexRoute: typeof MasterHeadcountPlansIndexRoute
-  MasterIndirectCapacitySettingsIndexRoute: typeof MasterIndirectCapacitySettingsIndexRoute
   MasterIndirectWorkCasesIndexRoute: typeof MasterIndirectWorkCasesIndexRoute
   MasterProjectTypesIndexRoute: typeof MasterProjectTypesIndexRoute
   MasterWorkTypesIndexRoute: typeof MasterWorkTypesIndexRoute
@@ -342,13 +324,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MasterIndirectWorkCasesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/master/indirect-capacity-settings/': {
-      id: '/master/indirect-capacity-settings/'
-      path: '/master/indirect-capacity-settings'
-      fullPath: '/master/indirect-capacity-settings/'
-      preLoaderRoute: typeof MasterIndirectCapacitySettingsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/master/headcount-plans/': {
       id: '/master/headcount-plans/'
       path: '/master/headcount-plans'
@@ -412,8 +387,6 @@ const rootRouteChildren: RootRouteChildren = {
   MasterBusinessUnitsIndexRoute: MasterBusinessUnitsIndexRoute,
   MasterCapacityScenariosIndexRoute: MasterCapacityScenariosIndexRoute,
   MasterHeadcountPlansIndexRoute: MasterHeadcountPlansIndexRoute,
-  MasterIndirectCapacitySettingsIndexRoute:
-    MasterIndirectCapacitySettingsIndexRoute,
   MasterIndirectWorkCasesIndexRoute: MasterIndirectWorkCasesIndexRoute,
   MasterProjectTypesIndexRoute: MasterProjectTypesIndexRoute,
   MasterWorkTypesIndexRoute: MasterWorkTypesIndexRoute,

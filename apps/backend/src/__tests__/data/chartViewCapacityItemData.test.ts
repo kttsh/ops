@@ -69,8 +69,16 @@ describe("chartViewCapacityItemData", () => {
 	describe("findAll", () => {
 		test("chartViewId でフィルタされた行を返す", async () => {
 			const rows = [
-				{ chart_view_capacity_item_id: 1, chart_view_id: 10, capacity_scenario_id: 1 },
-				{ chart_view_capacity_item_id: 2, chart_view_id: 10, capacity_scenario_id: 2 },
+				{
+					chart_view_capacity_item_id: 1,
+					chart_view_id: 10,
+					capacity_scenario_id: 1,
+				},
+				{
+					chart_view_capacity_item_id: 2,
+					chart_view_id: 10,
+					capacity_scenario_id: 2,
+				},
 			];
 			mockQuery.mockResolvedValue({ recordset: rows });
 
@@ -103,8 +111,16 @@ describe("chartViewCapacityItemData", () => {
 			mockQuery.mockResolvedValueOnce({ rowsAffected: [0] });
 			// findAll クエリ（戻り値）
 			const rows = [
-				{ chart_view_capacity_item_id: 1, chart_view_id: 10, capacity_scenario_id: 1 },
-				{ chart_view_capacity_item_id: 2, chart_view_id: 10, capacity_scenario_id: 2 },
+				{
+					chart_view_capacity_item_id: 1,
+					chart_view_id: 10,
+					capacity_scenario_id: 1,
+				},
+				{
+					chart_view_capacity_item_id: 2,
+					chart_view_id: 10,
+					capacity_scenario_id: 2,
+				},
 			];
 			mockQuery.mockResolvedValueOnce({ recordset: rows });
 
@@ -188,7 +204,9 @@ describe("chartViewCapacityItemData", () => {
 		test("全シナリオが存在する場合 true を返す", async () => {
 			mockQuery.mockResolvedValue({ recordset: [{ cnt: 2 }] });
 
-			const result = await chartViewCapacityItemData.capacityScenariosExist([1, 2]);
+			const result = await chartViewCapacityItemData.capacityScenariosExist([
+				1, 2,
+			]);
 
 			expect(result).toBe(true);
 		});
@@ -196,7 +214,9 @@ describe("chartViewCapacityItemData", () => {
 		test("一部が存在しない場合 false を返す", async () => {
 			mockQuery.mockResolvedValue({ recordset: [{ cnt: 1 }] });
 
-			const result = await chartViewCapacityItemData.capacityScenariosExist([1, 999]);
+			const result = await chartViewCapacityItemData.capacityScenariosExist([
+				1, 999,
+			]);
 
 			expect(result).toBe(false);
 		});

@@ -113,10 +113,7 @@ app.route(
 	chartViewIndirectWorkItems,
 );
 app.route("/chart-views/:chartViewId/project-items", chartViewProjectItems);
-app.route(
-	"/chart-views/:chartViewId/capacity-items",
-	chartViewCapacityItems,
-);
+app.route("/chart-views/:chartViewId/capacity-items", chartViewCapacityItems);
 app.route("/chart-color-palettes", chartColorPalettes);
 app.route("/chart-color-settings", chartColorSettings);
 app.route("/chart-stack-order-settings", chartStackOrderSettings);

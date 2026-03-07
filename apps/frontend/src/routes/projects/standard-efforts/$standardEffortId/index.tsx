@@ -42,7 +42,7 @@ function StandardEffortMasterDetailPage() {
 
 	const { data, isLoading, isError } = useQuery(
 		standardEffortMasterQueryOptions(id),
-	)
+	);
 	const buQuery = useQuery(businessUnitsForSelectQueryOptions());
 	const ptQuery = useQuery(projectTypesForSelectQueryOptions());
 	const deleteMutation = useDeleteStandardEffortMaster();
@@ -60,18 +60,18 @@ function StandardEffortMasterDetailPage() {
 					toast.error(
 						"このパターンは他のデータから参照されているため削除できません",
 						{ duration: Infinity },
-					)
+					);
 				} else if (err.problemDetails.status === 404) {
 					toast.error("標準工数パターンが見つかりません", {
 						duration: Infinity,
-					})
+					});
 				} else {
 					toast.error(err.message, { duration: Infinity });
 				}
 			}
 			setDeleteDialogOpen(false);
 		}
-	}
+	};
 
 	const handleRestore = async () => {
 		try {
@@ -84,7 +84,7 @@ function StandardEffortMasterDetailPage() {
 			}
 			setRestoreDialogOpen(false);
 		}
-	}
+	};
 
 	const handleSave = async (values: UpdateStandardEffortMasterInput) => {
 		try {
@@ -95,24 +95,24 @@ function StandardEffortMasterDetailPage() {
 				if (err.problemDetails.status === 409) {
 					toast.error("同一パターン名が既に存在します", {
 						duration: Infinity,
-					})
+					});
 				} else if (err.problemDetails.status === 404) {
 					toast.error("標準工数パターンが見つかりません", {
 						duration: Infinity,
-					})
+					});
 				} else {
 					toast.error(err.message, { duration: Infinity });
 				}
 			}
 		}
-	}
+	};
 
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center py-16">
 				<p className="text-sm text-muted-foreground">読み込み中...</p>
 			</div>
-		)
+		);
 	}
 
 	if (isError || !data) {
@@ -121,7 +121,7 @@ function StandardEffortMasterDetailPage() {
 				entityName="標準工数パターン"
 				backTo="/projects/standard-efforts"
 			/>
-		)
+		);
 	}
 
 	const master = data.data;
@@ -194,5 +194,5 @@ function StandardEffortMasterDetailPage() {
 				isLoading={restoreMutation.isPending}
 			/>
 		</div>
-	)
+	);
 }

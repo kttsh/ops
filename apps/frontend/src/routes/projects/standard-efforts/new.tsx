@@ -20,7 +20,7 @@ function StandardEffortMasterNewPage() {
 		try {
 			await createMutation.mutateAsync(
 				values as CreateStandardEffortMasterInput,
-			)
+			);
 			toast.success("保存しました");
 			navigate({ to: "/projects/standard-efforts" });
 		} catch (err) {
@@ -28,7 +28,7 @@ function StandardEffortMasterNewPage() {
 				if (err.problemDetails.status === 409) {
 					toast.error("同一パターン名が既に存在します", {
 						duration: Infinity,
-					})
+					});
 				} else if (err.problemDetails.status === 422) {
 					toast.error("入力内容にエラーがあります", { duration: Infinity });
 				} else {
@@ -36,7 +36,7 @@ function StandardEffortMasterNewPage() {
 				}
 			}
 		}
-	}
+	};
 
 	return (
 		<div className="grid grid-cols-1 gap-6">
@@ -60,5 +60,5 @@ function StandardEffortMasterNewPage() {
 				/>
 			</div>
 		</div>
-	)
+	);
 }

@@ -3,7 +3,6 @@ import {
 	BarChart3,
 	Briefcase,
 	Building2,
-	Calculator,
 	ChevronRight,
 	Clock,
 	FolderKanban,
@@ -34,10 +33,10 @@ const menuItems = [
 		],
 	},
 	{
-		label: "案件・間接作業管理",
+		label: "案件管理",
 		children: [
 			{
-				label: "案件",
+				label: "案件一覧",
 				href: "/projects",
 				icon: Briefcase,
 			},
@@ -46,16 +45,21 @@ const menuItems = [
 				href: "/projects/standard-efforts",
 				icon: TrendingUp,
 			},
+		],
+	},
+	{
+		label: "間接作業管理",
+		children: [
 			{
-				label: "間接作業・キャパシティ",
-				href: "/master/indirect-capacity-settings",
-				icon: Calculator,
-			},
-			{
-				label: "間接作業シミュレーション",
+				label: "シミュレーション",
 				href: "/indirect/simulation",
 				icon: Play,
 			},
+		],
+	},
+	{
+		label: "マスタ管理",
+		children: [
 			{
 				label: "人員計画ケース",
 				href: "/master/headcount-plans",
@@ -71,11 +75,6 @@ const menuItems = [
 				href: "/master/indirect-work-cases",
 				icon: ListChecks,
 			},
-		],
-	},
-	{
-		label: "マスタ管理",
-		children: [
 			{
 				label: "案件タイプ",
 				href: "/master/project-types",

@@ -69,9 +69,9 @@ describe("chartViewCapacityItemService", () => {
 		test("チャートビューが存在しない場合、404 を投げる", async () => {
 			mockData.chartViewExists.mockResolvedValue(false);
 
-			await expect(
-				chartViewCapacityItemService.findAll(999),
-			).rejects.toThrow(HTTPException);
+			await expect(chartViewCapacityItemService.findAll(999)).rejects.toThrow(
+				HTTPException,
+			);
 			try {
 				await chartViewCapacityItemService.findAll(999);
 			} catch (e) {
