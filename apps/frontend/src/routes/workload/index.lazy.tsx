@@ -81,6 +81,25 @@ function WorkloadPage() {
 		setProjectOrder(order);
 	}, []);
 
+	// 間接作業色設定（SidePanelIndirect ↔ useChartData の橋渡し）
+	const [indirectColors, setIndirectColors] = useState<
+		Record<string, string>
+	>({});
+
+	const handleIndirectColorsChange = useCallback(
+		(colors: Record<string, string>) => {
+			setIndirectColors(colors);
+		},
+		[],
+	);
+
+	// 間接作業並び順（SidePanelIndirect ↔ useChartData の橋渡し）
+	const [indirectOrder, setIndirectOrder] = useState<string[]>([]);
+
+	const handleIndirectOrderChange = useCallback((order: string[]) => {
+		setIndirectOrder(order);
+	}, []);
+
 	// プロファイル適用
 	const handleProfileApply = useCallback(
 		(profile: {
@@ -142,6 +161,8 @@ function WorkloadPage() {
 	} = useChartData(chartDataParamsWithProjects, {
 		projectColors,
 		projectOrder,
+		indirectWorkTypeColors: indirectColors,
+		indirectWorkTypeOrder: indirectOrder,
 	});
 
 	const {
@@ -187,7 +208,12 @@ function WorkloadPage() {
 							onSelectionChange={handleProjectSelectionChange}
 						/>
 					}
-					indirectContent={<SidePanelIndirect />}
+					indirectContent={
+						<SidePanelIndirect
+							onColorsChange={handleIndirectColorsChange}
+							onOrderChange={handleIndirectOrderChange}
+						/>
+					}
 					settingsContent={
 						<SidePanelSettings
 							from={filters.from}

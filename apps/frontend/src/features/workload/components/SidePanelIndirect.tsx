@@ -19,7 +19,15 @@ interface IndirectWorkTypeSettingsItem {
 	displayOrder: number;
 }
 
-export function SidePanelIndirect() {
+interface SidePanelIndirectProps {
+	onColorsChange?: (colors: Record<string, string>) => void;
+	onOrderChange?: (order: string[]) => void;
+}
+
+export function SidePanelIndirect({
+	onColorsChange,
+	onOrderChange,
+}: SidePanelIndirectProps = {}) {
 	const { data: workTypesData } = useQuery(
 		workTypesQueryOptions({ includeDisabled: false }),
 	);
@@ -65,10 +73,11 @@ export function SidePanelIndirect() {
 						stackOrder: it.displayOrder,
 					})),
 				);
+				onOrderChange?.(updated.map((it) => it.workTypeCode));
 				return updated;
 			});
 		},
-		[orderMutation],
+		[orderMutation, onOrderChange],
 	);
 
 	const moveUp = useCallback(
@@ -87,10 +96,11 @@ export function SidePanelIndirect() {
 						stackOrder: it.displayOrder,
 					})),
 				);
+				onOrderChange?.(reordered.map((it) => it.workTypeCode));
 				return reordered;
 			});
 		},
-		[orderMutation],
+		[orderMutation, onOrderChange],
 	);
 
 	const moveDown = useCallback(
@@ -109,10 +119,11 @@ export function SidePanelIndirect() {
 						stackOrder: it.displayOrder,
 					})),
 				);
+				onOrderChange?.(reordered.map((it) => it.workTypeCode));
 				return reordered;
 			});
 		},
-		[orderMutation],
+		[orderMutation, onOrderChange],
 	);
 
 	const setColor = useCallback(
@@ -128,10 +139,13 @@ export function SidePanelIndirect() {
 						colorCode: it.color,
 					})),
 				);
+				onColorsChange?.(
+					Object.fromEntries(updated.map((it) => [it.workTypeCode, it.color])),
+				);
 				return updated;
 			});
 		},
-		[colorMutation],
+		[colorMutation, onColorsChange],
 	);
 
 	const resetColors = useCallback(() => {
@@ -147,9 +161,12 @@ export function SidePanelIndirect() {
 					colorCode: it.color,
 				})),
 			);
+			onColorsChange?.(
+				Object.fromEntries(updated.map((it) => [it.workTypeCode, it.color])),
+			);
 			return updated;
 		});
-	}, [colorMutation]);
+	}, [colorMutation, onColorsChange]);
 
 	return (
 		<div className="space-y-4">

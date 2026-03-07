@@ -33,6 +33,8 @@ export interface UseChartDataReturn {
 interface UseChartDataOptions {
 	projectColors?: Record<number, string>;
 	projectOrder?: number[];
+	indirectWorkTypeColors?: Record<string, string>;
+	indirectWorkTypeOrder?: string[];
 }
 
 /**
@@ -82,6 +84,76 @@ export function sortLegendProjectsByOrder<T extends { projectId: number }>(
 	});
 }
 
+/**
+ * 間接作業シリーズを indirectWorkTypeOrder に基づいてソートする。
+ * 案件シリーズ（type: "project"）の位置は維持し、間接作業シリーズのみを並び替える。
+ * 未分類シリーズ（indirect_wt_unclassified）は常に間接シリーズの末尾に配置。
+ */
+export function sortAreasByIndirectOrder(
+	areas: AreaSeriesConfig[],
+	indirectWorkTypeOrder: string[] | undefined,
+): AreaSeriesConfig[] {
+	if (!indirectWorkTypeOrder) return areas;
+
+	const projectAreas = areas.filter((a) => a.type === "project");
+	const indirectAreas = areas.filter((a) => a.type === "indirect");
+
+	const unclassified = indirectAreas.filter(
+		(a) => a.dataKey === "indirect_wt_unclassified",
+	);
+	const classified = indirectAreas.filter(
+		(a) => a.dataKey !== "indirect_wt_unclassified",
+	);
+
+	const orderMap = new Map(
+		indirectWorkTypeOrder.map((code, idx) => [code, idx]),
+	);
+
+	classified.sort((a, b) => {
+		const codeA = a.dataKey.replace("indirect_wt_", "");
+		const codeB = b.dataKey.replace("indirect_wt_", "");
+		const orderA = orderMap.get(codeA) ?? Number.MAX_SAFE_INTEGER;
+		const orderB = orderMap.get(codeB) ?? Number.MAX_SAFE_INTEGER;
+		return orderA - orderB;
+	});
+
+	return [...classified, ...unclassified, ...projectAreas];
+}
+
+/**
+ * 凡例パネル用の間接作業リストを indirectWorkTypeOrder に基づいてソートする。
+ * 未分類（workTypeCode === "unclassified"）は常に末尾に配置。
+ */
+export function sortLegendIndirectByOrder<
+	T extends { workTypeCode: string },
+>(
+	indirectWorkTypes: T[],
+	indirectWorkTypeOrder: string[] | undefined,
+): T[] {
+	if (!indirectWorkTypeOrder) return indirectWorkTypes;
+
+	const unclassified = indirectWorkTypes.filter(
+		(i) => i.workTypeCode === "unclassified",
+	);
+	const classified = indirectWorkTypes.filter(
+		(i) => i.workTypeCode !== "unclassified",
+	);
+
+	const orderMap = new Map(
+		indirectWorkTypeOrder
+			.filter((code) => code !== "unclassified")
+			.map((code, idx) => [code, idx]),
+	);
+
+	classified.sort((a, b) => {
+		const orderA = orderMap.get(a.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
+		const orderB = orderMap.get(b.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
+		return orderA - orderB;
+	});
+
+	return [...classified, ...unclassified];
+}
+
 export function useChartData(
 	params: ChartDataParams | null,
 	options: UseChartDataOptions = {},
@@ -93,7 +165,12 @@ export function useChartData(
 
 	const rawResponse = query.data?.data;
 
-	const { projectColors, projectOrder } = options;
+	const {
+		projectColors,
+		projectOrder,
+		indirectWorkTypeColors,
+		indirectWorkTypeOrder,
+	} = options;
 
 	const { chartData, seriesConfig, legendDataByMonth, latestMonth } =
 		useMemo(() => {
@@ -144,11 +221,14 @@ export function useChartData(
 			let wtIdx = 0;
 			for (const [workTypeCode, workTypeName] of workTypeMap) {
 				const key = `indirect_wt_${workTypeCode}`;
+				const color =
+					indirectWorkTypeColors?.[workTypeCode] ??
+					INDIRECT_COLORS[wtIdx % INDIRECT_COLORS.length];
 				areas.push({
 					dataKey: key,
 					stackId: "workload",
-					fill: INDIRECT_COLORS[wtIdx % INDIRECT_COLORS.length],
-					stroke: INDIRECT_COLORS[wtIdx % INDIRECT_COLORS.length],
+					fill: color,
+					stroke: color,
 					fillOpacity: 0.7,
 					name: workTypeName,
 					type: "indirect",
@@ -342,15 +422,27 @@ export function useChartData(
 				});
 			}
 
-			// projectOrder に基づいて案件シリーズをソート
-			const sortedAreas = sortAreasByProjectOrder(areas, projectOrder);
+			// projectOrder / indirectWorkTypeOrder に基づいてシリーズをソート
+			const projectSorted = sortAreasByProjectOrder(areas, projectOrder);
+			const sortedAreas = sortAreasByIndirectOrder(
+				projectSorted,
+				indirectWorkTypeOrder,
+			);
 
-			// legendMap の projects も同一順序でソート
+			// legendMap の projects / indirectWorkTypes も同一順序でソート
 			if (projectOrder && projectOrder.length > 0) {
 				for (const [, monthData] of legendMap) {
 					monthData.projects = sortLegendProjectsByOrder(
 						monthData.projects,
 						projectOrder,
+					);
+				}
+			}
+			if (indirectWorkTypeOrder && indirectWorkTypeOrder.length > 0) {
+				for (const [, monthData] of legendMap) {
+					monthData.indirectWorkTypes = sortLegendIndirectByOrder(
+						monthData.indirectWorkTypes,
+						indirectWorkTypeOrder,
 					);
 				}
 			}
@@ -363,7 +455,13 @@ export function useChartData(
 				legendDataByMonth: legendMap,
 				latestMonth: latest,
 			};
-		}, [rawResponse, projectColors, projectOrder]);
+		}, [
+			rawResponse,
+			projectColors,
+			projectOrder,
+			indirectWorkTypeColors,
+			indirectWorkTypeOrder,
+		]);
 
 	return {
 		chartData,
