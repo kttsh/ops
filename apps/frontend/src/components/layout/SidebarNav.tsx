@@ -7,6 +7,7 @@ import {
 	ChevronRight,
 	FolderKanban,
 	Palette,
+	TrendingUp,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -50,6 +51,11 @@ const menuItems = [
 				label: "作業種類",
 				href: "/master/work-types",
 				icon: Palette,
+			},
+			{
+				label: "標準工数パターン",
+				href: "/master/standard-effort-masters",
+				icon: TrendingUp,
 			},
 			{
 				label: "間接作業・キャパシティ",

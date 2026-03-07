@@ -96,3 +96,30 @@ export type StandardEffortWeight = {
 export type StandardEffortMasterDetail = StandardEffortMasterSummary & {
 	weights: StandardEffortWeight[];
 };
+
+// --- Bulk Import/Export ---
+
+/** Bulk import item schema */
+export const bulkImportItemSchema = z.object({
+	standardEffortId: z.number().int().positive(),
+	weights: z.array(weightItemSchema).min(1),
+});
+
+/** Bulk import request schema */
+export const bulkImportStandardEffortSchema = z.object({
+	items: z.array(bulkImportItemSchema).min(1),
+});
+
+export type BulkImportItem = z.infer<typeof bulkImportItemSchema>;
+export type BulkImportStandardEffort = z.infer<
+	typeof bulkImportStandardEffortSchema
+>;
+
+/** Bulk export row type */
+export type StandardEffortExportRow = {
+	standardEffortId: number;
+	name: string;
+	businessUnitCode: string;
+	projectTypeCode: string;
+	weights: Array<{ progressRate: number; weight: number }>;
+};

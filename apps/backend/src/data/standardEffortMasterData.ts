@@ -311,6 +311,118 @@ export const standardEffortMasterData = {
 		return result.recordset[0];
 	},
 
+	async findAllForExport(
+		businessUnitCode?: string,
+	): Promise<{ masters: StandardEffortMasterRow[]; weights: StandardEffortWeightRow[] }> {
+		const pool = await getPool();
+
+		const whereClauses = ["m.deleted_at IS NULL"];
+		if (businessUnitCode) {
+			whereClauses.push("m.business_unit_code = @businessUnitCode");
+		}
+		const whereClause = `WHERE ${whereClauses.join(" AND ")}`;
+
+		const request = pool.request();
+		if (businessUnitCode) {
+			request.input("businessUnitCode", sql.VarChar, businessUnitCode);
+		}
+
+		const mastersResult = await request.query<StandardEffortMasterRow>(
+			`SELECT standard_effort_id, business_unit_code, project_type_code, name, created_at, updated_at, deleted_at
+       FROM standard_effort_masters m
+       ${whereClause}
+       ORDER BY standard_effort_id ASC`,
+		);
+
+		if (mastersResult.recordset.length === 0) {
+			return { masters: [], weights: [] };
+		}
+
+		const masterIds = mastersResult.recordset.map(
+			(m) => m.standard_effort_id,
+		);
+		const idList = masterIds.join(",");
+
+		const weightsResult = await pool.request().query<StandardEffortWeightRow>(
+			`SELECT standard_effort_weight_id, standard_effort_id, progress_rate, weight, created_at, updated_at
+       FROM standard_effort_weights
+       WHERE standard_effort_id IN (${idList})
+       ORDER BY standard_effort_id ASC, progress_rate ASC`,
+		);
+
+		return {
+			masters: mastersResult.recordset,
+			weights: weightsResult.recordset,
+		};
+	},
+
+	async bulkUpdateWeights(
+		items: Array<{ standardEffortId: number; weights: Array<{ progressRate: number; weight: number }> }>,
+	): Promise<{ updatedMasters: number; updatedWeights: number }> {
+		const pool = await getPool();
+		const transaction = new sql.Transaction(pool);
+
+		try {
+			await transaction.begin();
+
+			let updatedMasters = 0;
+			let updatedWeights = 0;
+
+			for (const item of items) {
+				// Verify master exists
+				const checkResult = await transaction
+					.request()
+					.input("id", sql.Int, item.standardEffortId)
+					.query<{ cnt: number }>(
+						`SELECT COUNT(*) as cnt FROM standard_effort_masters WHERE standard_effort_id = @id AND deleted_at IS NULL`,
+					);
+
+				if (checkResult.recordset[0].cnt === 0) {
+					await transaction.rollback();
+					return { updatedMasters: -1, updatedWeights: item.standardEffortId };
+				}
+
+				// Delete existing weights
+				await transaction
+					.request()
+					.input("masterId", sql.Int, item.standardEffortId)
+					.query(
+						`DELETE FROM standard_effort_weights WHERE standard_effort_id = @masterId`,
+					);
+
+				// Insert new weights
+				for (const w of item.weights) {
+					await transaction
+						.request()
+						.input("masterId", sql.Int, item.standardEffortId)
+						.input("progressRate", sql.Int, w.progressRate)
+						.input("weight", sql.Int, w.weight)
+						.query(
+							`INSERT INTO standard_effort_weights (standard_effort_id, progress_rate, weight)
+               VALUES (@masterId, @progressRate, @weight)`,
+						);
+					updatedWeights++;
+				}
+
+				// Update timestamp
+				await transaction
+					.request()
+					.input("id", sql.Int, item.standardEffortId)
+					.query(
+						`UPDATE standard_effort_masters SET updated_at = GETDATE() WHERE standard_effort_id = @id`,
+					);
+
+				updatedMasters++;
+			}
+
+			await transaction.commit();
+			return { updatedMasters, updatedWeights };
+		} catch (err) {
+			await transaction.rollback();
+			throw err;
+		}
+	},
+
 	async hasReferences(id: number): Promise<boolean> {
 		const pool = await getPool();
 		const result = await pool

@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { standardEffortMasterService } from "@/services/standardEffortMasterService";
 import {
+	bulkImportStandardEffortSchema,
 	createStandardEffortMasterSchema,
 	standardEffortMasterListQuerySchema,
 	updateStandardEffortMasterSchema,
@@ -61,6 +62,22 @@ const app = new Hono()
 		await standardEffortMasterService.delete(id);
 		return c.body(null, 204);
 	})
+	.get("/actions/export", async (c) => {
+		const businessUnitCode = c.req.query("filter[businessUnitCode]");
+		const result = await standardEffortMasterService.getExportData(
+			businessUnitCode || undefined,
+		);
+		return c.json(result, 200);
+	})
+	.post(
+		"/actions/import",
+		validate("json", bulkImportStandardEffortSchema),
+		async (c) => {
+			const body = c.req.valid("json");
+			const result = await standardEffortMasterService.bulkImport(body.items);
+			return c.json(result, 200);
+		},
+	)
 	.post("/:id/actions/restore", async (c) => {
 		const id = parseIntParam(c.req.param("id"), "id");
 		const restored = await standardEffortMasterService.restore(id);

@@ -12,11 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkloadIndexRouteImport } from './routes/workload/index'
 import { Route as MasterWorkTypesIndexRouteImport } from './routes/master/work-types/index'
+import { Route as MasterStandardEffortMastersIndexRouteImport } from './routes/master/standard-effort-masters/index'
 import { Route as MasterProjectsIndexRouteImport } from './routes/master/projects/index'
 import { Route as MasterProjectTypesIndexRouteImport } from './routes/master/project-types/index'
 import { Route as MasterIndirectCapacitySettingsIndexRouteImport } from './routes/master/indirect-capacity-settings/index'
 import { Route as MasterBusinessUnitsIndexRouteImport } from './routes/master/business-units/index'
+import { Route as MasterStandardEffortMastersNewRouteImport } from './routes/master/standard-effort-masters/new'
 import { Route as MasterProjectsNewRouteImport } from './routes/master/projects/new'
+import { Route as MasterStandardEffortMastersStandardEffortIdIndexRouteImport } from './routes/master/standard-effort-masters/$standardEffortId/index'
 import { Route as MasterProjectsProjectIdIndexRouteImport } from './routes/master/projects/$projectId/index'
 import { Route as MasterProjectsProjectIdEditRouteImport } from './routes/master/projects/$projectId/edit'
 
@@ -37,6 +40,12 @@ const MasterWorkTypesIndexRoute = MasterWorkTypesIndexRouteImport.update({
   path: '/master/work-types/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MasterStandardEffortMastersIndexRoute =
+  MasterStandardEffortMastersIndexRouteImport.update({
+    id: '/master/standard-effort-masters/',
+    path: '/master/standard-effort-masters/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterProjectsIndexRoute = MasterProjectsIndexRouteImport.update({
   id: '/master/projects/',
   path: '/master/projects/',
@@ -63,11 +72,23 @@ const MasterBusinessUnitsIndexRoute =
     path: '/master/business-units/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const MasterStandardEffortMastersNewRoute =
+  MasterStandardEffortMastersNewRouteImport.update({
+    id: '/master/standard-effort-masters/new',
+    path: '/master/standard-effort-masters/new',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterProjectsNewRoute = MasterProjectsNewRouteImport.update({
   id: '/master/projects/new',
   path: '/master/projects/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MasterStandardEffortMastersStandardEffortIdIndexRoute =
+  MasterStandardEffortMastersStandardEffortIdIndexRouteImport.update({
+    id: '/master/standard-effort-masters/$standardEffortId/',
+    path: '/master/standard-effort-masters/$standardEffortId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MasterProjectsProjectIdIndexRoute =
   MasterProjectsProjectIdIndexRouteImport.update({
     id: '/master/projects/$projectId/',
@@ -85,38 +106,47 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/workload/': typeof WorkloadIndexRoute
   '/master/projects/new': typeof MasterProjectsNewRoute
+  '/master/standard-effort-masters/new': typeof MasterStandardEffortMastersNewRoute
   '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
   '/master/indirect-capacity-settings/': typeof MasterIndirectCapacitySettingsIndexRoute
   '/master/project-types/': typeof MasterProjectTypesIndexRoute
   '/master/projects/': typeof MasterProjectsIndexRoute
+  '/master/standard-effort-masters/': typeof MasterStandardEffortMastersIndexRoute
   '/master/work-types/': typeof MasterWorkTypesIndexRoute
   '/master/projects/$projectId/edit': typeof MasterProjectsProjectIdEditRoute
   '/master/projects/$projectId/': typeof MasterProjectsProjectIdIndexRoute
+  '/master/standard-effort-masters/$standardEffortId/': typeof MasterStandardEffortMastersStandardEffortIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/workload': typeof WorkloadIndexRoute
   '/master/projects/new': typeof MasterProjectsNewRoute
+  '/master/standard-effort-masters/new': typeof MasterStandardEffortMastersNewRoute
   '/master/business-units': typeof MasterBusinessUnitsIndexRoute
   '/master/indirect-capacity-settings': typeof MasterIndirectCapacitySettingsIndexRoute
   '/master/project-types': typeof MasterProjectTypesIndexRoute
   '/master/projects': typeof MasterProjectsIndexRoute
+  '/master/standard-effort-masters': typeof MasterStandardEffortMastersIndexRoute
   '/master/work-types': typeof MasterWorkTypesIndexRoute
   '/master/projects/$projectId/edit': typeof MasterProjectsProjectIdEditRoute
   '/master/projects/$projectId': typeof MasterProjectsProjectIdIndexRoute
+  '/master/standard-effort-masters/$standardEffortId': typeof MasterStandardEffortMastersStandardEffortIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/workload/': typeof WorkloadIndexRoute
   '/master/projects/new': typeof MasterProjectsNewRoute
+  '/master/standard-effort-masters/new': typeof MasterStandardEffortMastersNewRoute
   '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
   '/master/indirect-capacity-settings/': typeof MasterIndirectCapacitySettingsIndexRoute
   '/master/project-types/': typeof MasterProjectTypesIndexRoute
   '/master/projects/': typeof MasterProjectsIndexRoute
+  '/master/standard-effort-masters/': typeof MasterStandardEffortMastersIndexRoute
   '/master/work-types/': typeof MasterWorkTypesIndexRoute
   '/master/projects/$projectId/edit': typeof MasterProjectsProjectIdEditRoute
   '/master/projects/$projectId/': typeof MasterProjectsProjectIdIndexRoute
+  '/master/standard-effort-masters/$standardEffortId/': typeof MasterStandardEffortMastersStandardEffortIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -124,50 +154,62 @@ export interface FileRouteTypes {
     | '/'
     | '/workload/'
     | '/master/projects/new'
+    | '/master/standard-effort-masters/new'
     | '/master/business-units/'
     | '/master/indirect-capacity-settings/'
     | '/master/project-types/'
     | '/master/projects/'
+    | '/master/standard-effort-masters/'
     | '/master/work-types/'
     | '/master/projects/$projectId/edit'
     | '/master/projects/$projectId/'
+    | '/master/standard-effort-masters/$standardEffortId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/workload'
     | '/master/projects/new'
+    | '/master/standard-effort-masters/new'
     | '/master/business-units'
     | '/master/indirect-capacity-settings'
     | '/master/project-types'
     | '/master/projects'
+    | '/master/standard-effort-masters'
     | '/master/work-types'
     | '/master/projects/$projectId/edit'
     | '/master/projects/$projectId'
+    | '/master/standard-effort-masters/$standardEffortId'
   id:
     | '__root__'
     | '/'
     | '/workload/'
     | '/master/projects/new'
+    | '/master/standard-effort-masters/new'
     | '/master/business-units/'
     | '/master/indirect-capacity-settings/'
     | '/master/project-types/'
     | '/master/projects/'
+    | '/master/standard-effort-masters/'
     | '/master/work-types/'
     | '/master/projects/$projectId/edit'
     | '/master/projects/$projectId/'
+    | '/master/standard-effort-masters/$standardEffortId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   WorkloadIndexRoute: typeof WorkloadIndexRoute
   MasterProjectsNewRoute: typeof MasterProjectsNewRoute
+  MasterStandardEffortMastersNewRoute: typeof MasterStandardEffortMastersNewRoute
   MasterBusinessUnitsIndexRoute: typeof MasterBusinessUnitsIndexRoute
   MasterIndirectCapacitySettingsIndexRoute: typeof MasterIndirectCapacitySettingsIndexRoute
   MasterProjectTypesIndexRoute: typeof MasterProjectTypesIndexRoute
   MasterProjectsIndexRoute: typeof MasterProjectsIndexRoute
+  MasterStandardEffortMastersIndexRoute: typeof MasterStandardEffortMastersIndexRoute
   MasterWorkTypesIndexRoute: typeof MasterWorkTypesIndexRoute
   MasterProjectsProjectIdEditRoute: typeof MasterProjectsProjectIdEditRoute
   MasterProjectsProjectIdIndexRoute: typeof MasterProjectsProjectIdIndexRoute
+  MasterStandardEffortMastersStandardEffortIdIndexRoute: typeof MasterStandardEffortMastersStandardEffortIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -191,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/master/work-types'
       fullPath: '/master/work-types/'
       preLoaderRoute: typeof MasterWorkTypesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/standard-effort-masters/': {
+      id: '/master/standard-effort-masters/'
+      path: '/master/standard-effort-masters'
+      fullPath: '/master/standard-effort-masters/'
+      preLoaderRoute: typeof MasterStandardEffortMastersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/master/projects/': {
@@ -221,11 +270,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MasterBusinessUnitsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/master/standard-effort-masters/new': {
+      id: '/master/standard-effort-masters/new'
+      path: '/master/standard-effort-masters/new'
+      fullPath: '/master/standard-effort-masters/new'
+      preLoaderRoute: typeof MasterStandardEffortMastersNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/master/projects/new': {
       id: '/master/projects/new'
       path: '/master/projects/new'
       fullPath: '/master/projects/new'
       preLoaderRoute: typeof MasterProjectsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/standard-effort-masters/$standardEffortId/': {
+      id: '/master/standard-effort-masters/$standardEffortId/'
+      path: '/master/standard-effort-masters/$standardEffortId'
+      fullPath: '/master/standard-effort-masters/$standardEffortId/'
+      preLoaderRoute: typeof MasterStandardEffortMastersStandardEffortIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/master/projects/$projectId/': {
@@ -249,14 +312,18 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   WorkloadIndexRoute: WorkloadIndexRoute,
   MasterProjectsNewRoute: MasterProjectsNewRoute,
+  MasterStandardEffortMastersNewRoute: MasterStandardEffortMastersNewRoute,
   MasterBusinessUnitsIndexRoute: MasterBusinessUnitsIndexRoute,
   MasterIndirectCapacitySettingsIndexRoute:
     MasterIndirectCapacitySettingsIndexRoute,
   MasterProjectTypesIndexRoute: MasterProjectTypesIndexRoute,
   MasterProjectsIndexRoute: MasterProjectsIndexRoute,
+  MasterStandardEffortMastersIndexRoute: MasterStandardEffortMastersIndexRoute,
   MasterWorkTypesIndexRoute: MasterWorkTypesIndexRoute,
   MasterProjectsProjectIdEditRoute: MasterProjectsProjectIdEditRoute,
   MasterProjectsProjectIdIndexRoute: MasterProjectsProjectIdIndexRoute,
+  MasterStandardEffortMastersStandardEffortIdIndexRoute:
+    MasterStandardEffortMastersStandardEffortIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

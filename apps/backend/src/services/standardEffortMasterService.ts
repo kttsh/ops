@@ -7,7 +7,9 @@ import {
 	toSummaryResponse,
 } from "@/transform/standardEffortMasterTransform";
 import type {
+	BulkImportItem,
 	CreateStandardEffortMaster,
+	StandardEffortExportRow,
 	StandardEffortMasterDetail,
 	StandardEffortMasterSummary,
 	UpdateStandardEffortMaster,
@@ -126,6 +128,47 @@ export const standardEffortMasterService = {
 		}
 
 		await standardEffortMasterData.softDelete(id);
+	},
+
+	async getExportData(
+		businessUnitCode?: string,
+	): Promise<{ data: StandardEffortExportRow[] }> {
+		const { masters, weights } =
+			await standardEffortMasterData.findAllForExport(businessUnitCode);
+
+		const weightsByMasterId = new Map<
+			number,
+			Array<{ progressRate: number; weight: number }>
+		>();
+		for (const w of weights) {
+			const list = weightsByMasterId.get(w.standard_effort_id) ?? [];
+			list.push({ progressRate: w.progress_rate, weight: w.weight });
+			weightsByMasterId.set(w.standard_effort_id, list);
+		}
+
+		const data: StandardEffortExportRow[] = masters.map((m) => ({
+			standardEffortId: m.standard_effort_id,
+			name: m.name,
+			businessUnitCode: m.business_unit_code,
+			projectTypeCode: m.project_type_code,
+			weights: weightsByMasterId.get(m.standard_effort_id) ?? [],
+		}));
+
+		return { data };
+	},
+
+	async bulkImport(
+		items: BulkImportItem[],
+	): Promise<{ data: { updatedMasters: number; updatedWeights: number } }> {
+		const result = await standardEffortMasterData.bulkUpdateWeights(items);
+
+		if (result.updatedMasters === -1) {
+			throw new HTTPException(422, {
+				message: `Standard effort master with ID '${result.updatedWeights}' not found`,
+			});
+		}
+
+		return { data: result };
 	},
 
 	async restore(id: number): Promise<StandardEffortMasterDetail> {

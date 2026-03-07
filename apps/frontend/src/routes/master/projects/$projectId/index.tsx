@@ -145,7 +145,7 @@ function ProjectDetailCard({
 	statusLabel: string;
 }) {
 	return (
-		<div className="rounded-3xl border p-6 space-y-4">
+		<div className="rounded-3xl border bg-white p-6 space-y-4">
 			<DetailRow label="案件コード" value={project.projectCode} />
 			<DetailRow label="名称" value={project.name} />
 			<DetailRow label="事業部" value={project.businessUnitName} />

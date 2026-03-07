@@ -103,7 +103,7 @@ function ProjectEditPage() {
 				description="案件情報を編集します"
 			/>
 
-			<div className="rounded-3xl border p-6">
+			<div className="rounded-3xl border bg-white p-6">
 				<ProjectForm
 					mode="edit"
 					defaultValues={{

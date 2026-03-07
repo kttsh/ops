@@ -32,6 +32,8 @@ export function FormTextField({
 	labelSuffix,
 	inputProps,
 }: FormTextFieldProps) {
+	const isNumeric = type === "number";
+
 	return (
 		<FieldWrapper
 			label={label}
@@ -42,11 +44,16 @@ export function FormTextField({
 		>
 			<Input
 				id={field.name}
-				type={type}
+				type={isNumeric ? "text" : type}
+				inputMode={isNumeric ? "numeric" : undefined}
 				value={field.state.value}
 				onChange={(e) => {
-					if (type === "number") {
-						field.handleChange(Number(e.target.value));
+					if (isNumeric) {
+						const half = e.target.value.replace(/[０-９]/g, (ch) =>
+							String.fromCharCode(ch.charCodeAt(0) - 0xfee0),
+						);
+						const cleaned = half.replace(/[^0-9]/g, "");
+						field.handleChange(cleaned === "" ? 0 : Number(cleaned));
 					} else {
 						field.handleChange(e.target.value);
 					}
