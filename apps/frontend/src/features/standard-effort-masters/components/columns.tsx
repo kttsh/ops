@@ -34,12 +34,9 @@ export function createColumns(options: {
 		},
 		{
 			id: "businessUnitName",
-			header: ({ column }) => (
-				<SortableHeader column={column} label="事業部" />
-			),
+			header: ({ column }) => <SortableHeader column={column} label="事業部" />,
 			accessorFn: (row) =>
-				options.buNameMap.get(row.businessUnitCode) ??
-				row.businessUnitCode,
+				options.buNameMap.get(row.businessUnitCode) ?? row.businessUnitCode,
 		},
 		{
 			id: "projectTypeName",
@@ -47,8 +44,7 @@ export function createColumns(options: {
 				<SortableHeader column={column} label="案件タイプ" />
 			),
 			accessorFn: (row) =>
-				options.ptNameMap.get(row.projectTypeCode) ??
-				row.projectTypeCode,
+				options.ptNameMap.get(row.projectTypeCode) ?? row.projectTypeCode,
 		},
 		createStatusColumn<StandardEffortMaster>(),
 		createDateTimeColumn<StandardEffortMaster>({

@@ -29,13 +29,7 @@ export function WeightDistributionChart({
 						margin={{ top: 8, right: 8, left: 8, bottom: 0 }}
 					>
 						<defs>
-							<linearGradient
-								id="weightGradient"
-								x1="0"
-								y1="0"
-								x2="0"
-								y2="1"
-							>
+							<linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
 								<stop
 									offset="0%"
 									stopColor="var(--color-primary)"
@@ -52,10 +46,7 @@ export function WeightDistributionChart({
 						<XAxis dataKey="label" tick={{ fontSize: 12 }} />
 						<YAxis tick={{ fontSize: 12 }} />
 						<Tooltip
-							formatter={(value) => [
-								`${String(value)}`,
-								"重み",
-							]}
+							formatter={(value) => [`${String(value)}`, "重み"]}
 							labelFormatter={(label) => `進捗率: ${String(label)}`}
 							contentStyle={{
 								backdropFilter: "blur(8px)",

@@ -311,9 +311,10 @@ export const standardEffortMasterData = {
 		return result.recordset[0];
 	},
 
-	async findAllForExport(
-		businessUnitCode?: string,
-	): Promise<{ masters: StandardEffortMasterRow[]; weights: StandardEffortWeightRow[] }> {
+	async findAllForExport(businessUnitCode?: string): Promise<{
+		masters: StandardEffortMasterRow[];
+		weights: StandardEffortWeightRow[];
+	}> {
 		const pool = await getPool();
 
 		const whereClauses = ["m.deleted_at IS NULL"];
@@ -338,9 +339,7 @@ export const standardEffortMasterData = {
 			return { masters: [], weights: [] };
 		}
 
-		const masterIds = mastersResult.recordset.map(
-			(m) => m.standard_effort_id,
-		);
+		const masterIds = mastersResult.recordset.map((m) => m.standard_effort_id);
 		const idList = masterIds.join(",");
 
 		const weightsResult = await pool.request().query<StandardEffortWeightRow>(
@@ -357,7 +356,10 @@ export const standardEffortMasterData = {
 	},
 
 	async bulkUpdateWeights(
-		items: Array<{ standardEffortId: number; weights: Array<{ progressRate: number; weight: number }> }>,
+		items: Array<{
+			standardEffortId: number;
+			weights: Array<{ progressRate: number; weight: number }>;
+		}>,
 	): Promise<{ updatedMasters: number; updatedWeights: number }> {
 		const pool = await getPool();
 		const transaction = new sql.Transaction(pool);

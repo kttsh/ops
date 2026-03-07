@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Trash2, RotateCcw } from "lucide-react";
+import { RotateCcw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/shared/DeleteConfirmDialog";
@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
+import type { UpdateStandardEffortMasterInput } from "@/features/standard-effort-masters";
 import {
 	ApiError,
 	businessUnitsForSelectQueryOptions,
@@ -19,7 +20,6 @@ import {
 	useUpdateStandardEffortMaster,
 } from "@/features/standard-effort-masters";
 import { StandardEffortMasterDetail } from "@/features/standard-effort-masters/components/StandardEffortMasterDetail";
-import type { UpdateStandardEffortMasterInput } from "@/features/standard-effort-masters";
 
 export const Route = createFileRoute(
 	"/master/standard-effort-masters/$standardEffortId/",
@@ -146,28 +146,26 @@ function StandardEffortMasterDetailPage() {
 				]}
 				title={master.name}
 				actions={
-					<>
-						{isDeleted ? (
-							<>
-								<StatusBadge isDeleted />
-								<Button
-									variant="outline"
-									onClick={() => setRestoreDialogOpen(true)}
-								>
-									<RotateCcw className="h-4 w-4" />
-									復元
-								</Button>
-							</>
-						) : (
+					isDeleted ? (
+						<>
+							<StatusBadge isDeleted />
 							<Button
-								variant="destructive"
-								onClick={() => setDeleteDialogOpen(true)}
+								variant="outline"
+								onClick={() => setRestoreDialogOpen(true)}
 							>
-								<Trash2 className="h-4 w-4" />
-								削除
+								<RotateCcw className="h-4 w-4" />
+								復元
 							</Button>
-						)}
-					</>
+						</>
+					) : (
+						<Button
+							variant="destructive"
+							onClick={() => setDeleteDialogOpen(true)}
+						>
+							<Trash2 className="h-4 w-4" />
+							削除
+						</Button>
+					)
 				}
 			/>
 

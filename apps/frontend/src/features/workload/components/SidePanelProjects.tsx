@@ -140,7 +140,7 @@ export function SidePanelProjects({
 					return (
 						<div
 							key={project.projectId}
-							className="flex w-full items-start gap-3 rounded-lg border border-border p-3 text-sm transition-colors hover:bg-accent"
+							className="flex w-full items-start gap-3 rounded-lg border border-border bg-white p-3 text-sm transition-colors hover:bg-accent"
 						>
 							<button
 								type="button"

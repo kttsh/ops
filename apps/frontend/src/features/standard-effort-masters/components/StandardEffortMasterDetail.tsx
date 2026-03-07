@@ -90,9 +90,7 @@ export function StandardEffortMasterDetail({
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				{/* 読み取り専用の重みテーブル */}
 				<div className="rounded-3xl border bg-white p-6">
-					<h3 className="text-sm font-medium mb-4">
-						重み配分（進捗率ごと）
-					</h3>
+					<h3 className="text-sm font-medium mb-4">重み配分（進捗率ごと）</h3>
 					<div className="max-h-[480px] overflow-y-auto">
 						<table className="w-full text-sm">
 							<thead className="sticky top-0 bg-background">
@@ -107,9 +105,7 @@ export function StandardEffortMasterDetail({
 							</thead>
 							<tbody>
 								{PROGRESS_RATES.map((rate) => {
-									const w = data.weights.find(
-										(w) => w.progressRate === rate,
-									);
+									const w = data.weights.find((w) => w.progressRate === rate);
 									return (
 										<tr key={rate} className="border-t">
 											<td className="px-3 py-1.5 text-muted-foreground tabular-nums">

@@ -10,16 +10,16 @@ import {
 	businessUnitsForSelectQueryOptions,
 	projectTypesForSelectQueryOptions,
 } from "@/features/standard-effort-masters/api/queries";
+import type {
+	CreateStandardEffortMasterInput,
+	UpdateStandardEffortMasterInput,
+	WeightInput,
+} from "@/features/standard-effort-masters/types";
 import {
 	createStandardEffortMasterSchema,
 	DEFAULT_WEIGHTS,
 	PROGRESS_RATES,
 	updateStandardEffortMasterSchema,
-} from "@/features/standard-effort-masters/types";
-import type {
-	CreateStandardEffortMasterInput,
-	UpdateStandardEffortMasterInput,
-	WeightInput,
 } from "@/features/standard-effort-masters/types";
 import { WeightDistributionChart } from "./WeightDistributionChart";
 
@@ -153,9 +153,7 @@ export function StandardEffortMasterForm({
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				{/* 重みテーブル */}
 				<div className="rounded-3xl border p-6">
-					<h3 className="text-sm font-medium mb-4">
-						重み配分（進捗率ごと）
-					</h3>
+					<h3 className="text-sm font-medium mb-4">重み配分（進捗率ごと）</h3>
 					<div className="max-h-[480px] overflow-y-auto">
 						<table className="w-full text-sm">
 							<thead className="sticky top-0 bg-background">
