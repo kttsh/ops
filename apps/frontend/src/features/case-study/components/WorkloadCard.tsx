@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useBulkUpsertProjectLoads } from "@/features/case-study/api/mutations";
 import type { ProjectCase, ProjectLoad } from "@/features/case-study/types";
+import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 
 interface WorkloadCardProps {
 	projectCase: ProjectCase;
@@ -246,11 +247,15 @@ export function WorkloadCard({
 								<td key={ym} className="px-2 py-1 text-center">
 									{isEditing ? (
 										<Input
-											type="number"
+											type="text"
+											inputMode="numeric"
 											value={editedValues.get(ym) ?? 0}
-											onChange={(e) =>
-												handleValueChange(ym, Number(e.target.value))
-											}
+											onChange={(e) => {
+												const normalized = normalizeNumericInput(
+													e.target.value,
+												);
+												handleValueChange(ym, Number(normalized));
+											}}
 											onBlur={(e) => handleBlur(ym, e.target.value)}
 											min={0}
 											max={99999999}

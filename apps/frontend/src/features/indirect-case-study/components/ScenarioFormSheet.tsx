@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { getErrorMessage } from "@/lib/form-utils";
+import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 
 type ScenarioFormValues = {
 	scenarioName: string;
@@ -155,10 +156,18 @@ export function ScenarioFormSheet({
 								</Label>
 								<Input
 									id={field.name}
-									type="number"
+									type="text"
+									inputMode="decimal"
 									step="0.01"
 									value={field.state.value}
-									onChange={(e) => field.handleChange(Number(e.target.value))}
+									onChange={(e) => {
+										const normalized = normalizeNumericInput(e.target.value, {
+											allowDecimal: true,
+										});
+										field.handleChange(
+											normalized === "" ? 0 : Number(normalized),
+										);
+									}}
 									onBlur={field.handleBlur}
 								/>
 								{field.state.meta.errors.length > 0 && (

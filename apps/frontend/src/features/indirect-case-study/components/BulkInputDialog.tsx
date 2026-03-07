@@ -18,6 +18,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 
 interface BulkInputDialogProps {
 	open: boolean;
@@ -73,12 +74,14 @@ export function BulkInputDialog({
 					<div className="space-y-2">
 						<Label>人員数</Label>
 						<Input
-							type="number"
+							type="text"
+							inputMode="numeric"
 							min={0}
 							step={1}
 							value={headcount}
 							onChange={(e) => {
-								const val = parseInt(e.target.value, 10);
+								const normalized = normalizeNumericInput(e.target.value);
+								const val = parseInt(normalized, 10);
 								setHeadcount(Number.isNaN(val) ? 0 : Math.max(0, val));
 							}}
 						/>

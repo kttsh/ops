@@ -2,6 +2,7 @@ import type { AnyFieldApi } from "@tanstack/react-form";
 import type React from "react";
 import { FieldWrapper } from "@/components/shared/FieldWrapper";
 import { Input } from "@/components/ui/input";
+import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 
 interface FormTextFieldProps {
 	/** TanStack Form の field オブジェクト（form.Field render prop から取得） */
@@ -15,7 +16,7 @@ interface FormTextFieldProps {
 	/** 無効状態 */
 	disabled?: boolean;
 	/** Input の type 属性 */
-	type?: "text" | "number";
+	type?: "text" | "number" | "decimal";
 	/** Label 横のカスタムコンテンツ */
 	labelSuffix?: React.ReactNode;
 	/** Input の追加属性（min, max, step, maxLength 等） */
@@ -32,7 +33,8 @@ export function FormTextField({
 	labelSuffix,
 	inputProps,
 }: FormTextFieldProps) {
-	const isNumeric = type === "number";
+	const isNumeric = type === "number" || type === "decimal";
+	const allowDecimal = type === "decimal";
 
 	return (
 		<FieldWrapper
@@ -45,14 +47,15 @@ export function FormTextField({
 			<Input
 				id={field.name}
 				type={isNumeric ? "text" : type}
-				inputMode={isNumeric ? "numeric" : undefined}
+				inputMode={
+					isNumeric ? (allowDecimal ? "decimal" : "numeric") : undefined
+				}
 				value={field.state.value}
 				onChange={(e) => {
 					if (isNumeric) {
-						const half = e.target.value.replace(/[０-９]/g, (ch) =>
-							String.fromCharCode(ch.charCodeAt(0) - 0xfee0),
-						);
-						const cleaned = half.replace(/[^0-9]/g, "");
+						const cleaned = normalizeNumericInput(e.target.value, {
+							allowDecimal,
+						});
 						field.handleChange(cleaned === "" ? 0 : Number(cleaned));
 					} else {
 						field.handleChange(e.target.value);

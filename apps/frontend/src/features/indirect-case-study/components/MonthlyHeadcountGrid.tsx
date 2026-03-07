@@ -16,6 +16,7 @@ import type {
 	BulkMonthlyHeadcountInput,
 	MonthlyHeadcountPlan,
 } from "@/features/indirect-case-study/types";
+import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 import { BulkInputDialog } from "./BulkInputDialog";
 
 interface MonthlyHeadcountGridProps {
@@ -188,12 +189,14 @@ export function MonthlyHeadcountGrid({
 								{MONTH_LABELS[i]}
 							</Label>
 							<Input
-								type="number"
+								type="text"
+								inputMode="numeric"
 								min={0}
 								step={1}
 								value={localData[ym] ?? 0}
 								onChange={(e) => {
-									const val = parseInt(e.target.value, 10);
+									const normalized = normalizeNumericInput(e.target.value);
+									const val = parseInt(normalized, 10);
 									handleChange(ym, Number.isNaN(val) ? 0 : Math.max(0, val));
 								}}
 								className="h-8 text-sm"

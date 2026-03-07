@@ -21,6 +21,7 @@ import {
 	createProjectSchema,
 	PROJECT_STATUSES,
 } from "@/features/projects/types";
+import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 
 type ProjectFormValues = {
 	projectCode: string;
@@ -202,7 +203,7 @@ export function ProjectForm({
 						field={field}
 						label="総工数"
 						required
-						type="number"
+						type="decimal"
 						placeholder="例: 100"
 						inputProps={{ min: 0, step: "0.1" }}
 					/>
@@ -275,10 +276,11 @@ export function ProjectForm({
 					>
 						<Input
 							id={field.name}
-							type="number"
+							type="text"
+							inputMode="numeric"
 							value={field.state.value ?? ""}
 							onChange={(e) => {
-								const val = e.target.value;
+								const val = normalizeNumericInput(e.target.value);
 								field.handleChange(val === "" ? null : Number(val));
 							}}
 							onBlur={field.handleBlur}

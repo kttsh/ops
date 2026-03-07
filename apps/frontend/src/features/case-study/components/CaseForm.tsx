@@ -13,6 +13,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { getErrorMessage } from "@/lib/form-utils";
+import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 import { standardEffortMastersQueryOptions } from "../api/queries";
 import type { CreateProjectCaseInput } from "../types";
 import { createProjectCaseSchema } from "../types";
@@ -287,13 +288,13 @@ export function CaseForm({
 							<Label htmlFor="durationMonths">期間月数</Label>
 							<Input
 								id="durationMonths"
-								type="number"
+								type="text"
+								inputMode="numeric"
 								value={field.state.value ?? ""}
-								onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-									field.handleChange(
-										e.target.value === "" ? null : Number(e.target.value),
-									)
-								}
+								onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+									const val = normalizeNumericInput(e.target.value);
+									field.handleChange(val === "" ? null : Number(val));
+								}}
 								onBlur={field.handleBlur}
 								placeholder="月数"
 								min={1}
@@ -313,13 +314,15 @@ export function CaseForm({
 							<Label htmlFor="totalManhour">総工数</Label>
 							<Input
 								id="totalManhour"
-								type="number"
+								type="text"
+								inputMode="decimal"
 								value={field.state.value ?? ""}
-								onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-									field.handleChange(
-										e.target.value === "" ? null : Number(e.target.value),
-									)
-								}
+								onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+									const val = normalizeNumericInput(e.target.value, {
+										allowDecimal: true,
+									});
+									field.handleChange(val === "" ? null : Number(val));
+								}}
 								onBlur={field.handleBlur}
 								placeholder="工数"
 								min={0}

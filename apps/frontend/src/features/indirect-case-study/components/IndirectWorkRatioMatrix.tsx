@@ -9,6 +9,7 @@ import type {
 } from "@/features/indirect-case-study/types";
 import { workTypesQueryOptions } from "@/features/work-types/api/queries";
 import type { WorkType } from "@/features/work-types/types";
+import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 
 interface IndirectWorkRatioMatrixProps {
 	indirectWorkCaseId: number;
@@ -132,13 +133,18 @@ export function IndirectWorkRatioMatrix({
 									return (
 										<td key={fy} className="py-1.5 px-1">
 											<Input
-												type="number"
+												type="text"
+												inputMode="decimal"
 												min={0}
 												max={100}
 												step={0.1}
 												value={localData[key] ?? 0}
 												onChange={(e) => {
-													const val = parseFloat(e.target.value);
+													const normalized = normalizeNumericInput(
+														e.target.value,
+														{ allowDecimal: true },
+													);
+													const val = parseFloat(normalized);
 													handleChange(
 														fy,
 														wt.workTypeCode,

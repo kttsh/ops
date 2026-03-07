@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 
 interface PeriodSelectorProps {
 	from: string | undefined;
@@ -97,12 +98,15 @@ export function PeriodSelector({
 				<div>
 					<Label className="text-xs">期間（ヶ月）</Label>
 					<Input
-						type="number"
+						type="text"
+						inputMode="numeric"
 						min={1}
 						max={60}
 						placeholder="36"
 						value={monthsInput}
-						onChange={(e) => setMonthsInput(e.target.value)}
+						onChange={(e) =>
+							setMonthsInput(normalizeNumericInput(e.target.value))
+						}
 						onBlur={apply}
 						className="mt-1 h-8 text-sm"
 					/>
