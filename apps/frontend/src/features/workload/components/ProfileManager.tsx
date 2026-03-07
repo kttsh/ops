@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { fetchChartViewProjectItems } from "@/features/workload/api/api-client";
+import {
+	bulkUpsertChartViewCapacityItems,
+	fetchChartViewCapacityItems,
+	fetchChartViewProjectItems,
+} from "@/features/workload/api/api-client";
 import {
 	useBulkUpsertChartViewProjectItems,
 	useCreateChartView,
@@ -23,8 +27,10 @@ import {
 } from "@/features/workload/api/mutations";
 import { chartViewsQueryOptions } from "@/features/workload/api/queries";
 import type {
+	BulkUpsertCapacityItemInput,
 	BulkUpsertProjectItemInput,
 	ChartView,
+	ChartViewCapacityItem,
 } from "@/features/workload/types";
 
 interface ProfileManagerProps {
@@ -33,12 +39,15 @@ interface ProfileManagerProps {
 	endYearMonth: string;
 	projectItems: BulkUpsertProjectItemInput[];
 	businessUnitCodes: string[];
+	capVisible?: Record<number, boolean>;
+	capColors?: Record<number, string>;
 	onApply?: (profile: {
 		chartViewId: number;
 		startYearMonth: string;
 		endYearMonth: string;
 		projectItems: BulkUpsertProjectItemInput[];
 		businessUnitCodes: string[] | null;
+		capacityItems?: ChartViewCapacityItem[];
 	}) => void;
 }
 
@@ -48,6 +57,8 @@ export function ProfileManager({
 	endYearMonth,
 	projectItems,
 	businessUnitCodes,
+	capVisible,
+	capColors,
 	onApply,
 }: ProfileManagerProps) {
 	const { data: viewsData } = useQuery(chartViewsQueryOptions());
@@ -64,6 +75,14 @@ export function ProfileManager({
 		null,
 	);
 
+	const buildCapacityItems = useCallback((): BulkUpsertCapacityItemInput[] => {
+		return Object.entries(capVisible ?? {}).map(([id, visible]) => ({
+			capacityScenarioId: Number(id),
+			isVisible: visible,
+			colorCode: capColors?.[Number(id)] ?? null,
+		}));
+	}, [capVisible, capColors]);
+
 	const handleSave = useCallback(() => {
 		if (!newName.trim()) return;
 		createMutation.mutate(
@@ -75,19 +94,28 @@ export function ProfileManager({
 				businessUnitCodes,
 			},
 			{
-				onSuccess: (result) => {
+				onSuccess: async (result) => {
 					const chartViewId = result.data.chartViewId;
-					bulkUpsertMutation.mutate(
-						{ chartViewId, items: projectItems },
-						{
-							onSuccess: () => {
-								setNewName("");
+					try {
+						bulkUpsertMutation.mutate(
+							{ chartViewId, items: projectItems },
+							{
+								onError: () => {
+									toast.error("プロジェクトアイテムの保存に失敗しました");
+								},
 							},
-							onError: () => {
-								toast.error("プロジェクトアイテムの保存に失敗しました");
-							},
-						},
-					);
+						);
+						const capacityItems = buildCapacityItems();
+						if (capacityItems.length > 0) {
+							await bulkUpsertChartViewCapacityItems(
+								chartViewId,
+								capacityItems,
+							);
+						}
+						setNewName("");
+					} catch {
+						toast.error("キャパシティアイテムの保存に失敗しました");
+					}
 				},
 			},
 		);
@@ -100,6 +128,7 @@ export function ProfileManager({
 		endYearMonth,
 		projectItems,
 		businessUnitCodes,
+		buildCapacityItems,
 	]);
 
 	const handleDelete = useCallback(
@@ -116,32 +145,27 @@ export function ProfileManager({
 		async (view: ChartView) => {
 			setActiveViewId(view.chartViewId);
 			try {
-				const result = await fetchChartViewProjectItems(view.chartViewId);
-				const items = result.data;
-				if (items.length > 0) {
-					onApply?.({
-						chartViewId: view.chartViewId,
-						startYearMonth: view.startYearMonth,
-						endYearMonth: view.endYearMonth,
-						projectItems: items.map((item) => ({
-							projectId: item.projectId,
-							projectCaseId: item.projectCaseId,
-							displayOrder: item.displayOrder,
-							isVisible: item.isVisible,
-							color: item.color,
-						})),
-						businessUnitCodes: view.businessUnitCodes,
-					});
-				} else {
-					// 旧プロファイル：期間設定のみ復元
-					onApply?.({
-						chartViewId: view.chartViewId,
-						startYearMonth: view.startYearMonth,
-						endYearMonth: view.endYearMonth,
-						projectItems: [],
-						businessUnitCodes: view.businessUnitCodes,
-					});
-				}
+				const [projectItemsRes, capacityItemsRes] = await Promise.all([
+					fetchChartViewProjectItems(view.chartViewId),
+					fetchChartViewCapacityItems(view.chartViewId).catch(() => ({
+						data: [] as ChartViewCapacityItem[],
+					})),
+				]);
+				const items = projectItemsRes.data;
+				onApply?.({
+					chartViewId: view.chartViewId,
+					startYearMonth: view.startYearMonth,
+					endYearMonth: view.endYearMonth,
+					projectItems: items.map((item) => ({
+						projectId: item.projectId,
+						projectCaseId: item.projectCaseId,
+						displayOrder: item.displayOrder,
+						isVisible: item.isVisible,
+						color: item.color,
+					})),
+					businessUnitCodes: view.businessUnitCodes,
+					capacityItems: capacityItemsRes.data,
+				});
 			} catch (error) {
 				console.error("プロファイル読み込みエラー:", error);
 				toast.error("プロファイルの読み込みに失敗しました");
@@ -160,20 +184,29 @@ export function ProfileManager({
 				input: { chartType, startYearMonth, endYearMonth, businessUnitCodes },
 			},
 			{
-				onSuccess: () => {
-					bulkUpsertMutation.mutate(
-						{ chartViewId: targetId, items: projectItems },
-						{
-							onSuccess: () => {
-								toast.success("上書き保存しました");
-								setOverwriteTarget(null);
+				onSuccess: async () => {
+					try {
+						bulkUpsertMutation.mutate(
+							{ chartViewId: targetId, items: projectItems },
+							{
+								onError: () => {
+									toast.error("プロジェクトアイテムの上書きに失敗しました");
+								},
 							},
-							onError: () => {
-								toast.error("プロジェクトアイテムの上書きに失敗しました");
-								setOverwriteTarget(null);
-							},
-						},
-					);
+						);
+						const capacityItems = buildCapacityItems();
+						if (capacityItems.length > 0) {
+							await bulkUpsertChartViewCapacityItems(
+								targetId,
+								capacityItems,
+							);
+						}
+						toast.success("上書き保存しました");
+						setOverwriteTarget(null);
+					} catch {
+						toast.error("キャパシティアイテムの上書きに失敗しました");
+						setOverwriteTarget(null);
+					}
 				},
 				onError: () => {
 					toast.error("上書き保存に失敗しました");
@@ -190,6 +223,7 @@ export function ProfileManager({
 		endYearMonth,
 		projectItems,
 		businessUnitCodes,
+		buildCapacityItems,
 	]);
 
 	return (

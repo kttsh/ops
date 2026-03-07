@@ -13,6 +13,7 @@ import chartColorPalettes from "@/routes/chartColorPalettes";
 import chartColorSettings from "@/routes/chartColorSettings";
 import chartData from "@/routes/chartData";
 import chartStackOrderSettings from "@/routes/chartStackOrderSettings";
+import chartViewCapacityItems from "@/routes/chartViewCapacityItems";
 import chartViewIndirectWorkItems from "@/routes/chartViewIndirectWorkItems";
 import chartViewProjectItems from "@/routes/chartViewProjectItems";
 import chartViews from "@/routes/chartViews";
@@ -112,6 +113,10 @@ app.route(
 	chartViewIndirectWorkItems,
 );
 app.route("/chart-views/:chartViewId/project-items", chartViewProjectItems);
+app.route(
+	"/chart-views/:chartViewId/capacity-items",
+	chartViewCapacityItems,
+);
 app.route("/chart-color-palettes", chartColorPalettes);
 app.route("/chart-color-settings", chartColorSettings);
 app.route("/chart-stack-order-settings", chartStackOrderSettings);

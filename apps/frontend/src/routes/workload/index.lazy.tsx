@@ -1,7 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { projectsQueryOptions } from "@/features/workload/api/queries";
+import {
+	capacityScenariosQueryOptions,
+	projectsQueryOptions,
+} from "@/features/workload/api/queries";
+import { CAPACITY_COLORS } from "@/lib/chart-colors";
 import { BusinessUnitSelector } from "@/features/workload/components/BusinessUnitSelector";
 import {
 	BuEmptyState,
@@ -100,6 +104,35 @@ function WorkloadPage() {
 		setIndirectOrder(order);
 	}, []);
 
+	// キャパシティ表示状態（SidePanelSettings ↔ useChartData の橋渡し）
+	const { data: csData } = useQuery(capacityScenariosQueryOptions());
+	const capacityScenarios = csData?.data ?? [];
+
+	const [capVisible, setCapVisible] = useState<Record<number, boolean>>({});
+	const [capColors, setCapColors] = useState<Record<number, string>>({});
+
+	// キャパシティシナリオ一覧の取得結果をもとに全シナリオをデフォルトONで初期化
+	useEffect(() => {
+		if (capacityScenarios.length > 0 && Object.keys(capVisible).length === 0) {
+			const vis: Record<number, boolean> = {};
+			const cols: Record<number, string> = {};
+			capacityScenarios.forEach((cs, i) => {
+				vis[cs.capacityScenarioId] = true;
+				cols[cs.capacityScenarioId] =
+					CAPACITY_COLORS[i % CAPACITY_COLORS.length];
+			});
+			setCapVisible(vis);
+			setCapColors(cols);
+		}
+	}, [capacityScenarios]);
+
+	// チェックONのシナリオIDのみを抽出
+	const capacityScenarioIds = useMemo(() => {
+		return Object.entries(capVisible)
+			.filter(([, visible]) => visible)
+			.map(([id]) => Number(id));
+	}, [capVisible]);
+
 	// プロファイル適用
 	const handleProfileApply = useCallback(
 		(profile: {
@@ -114,6 +147,11 @@ function WorkloadPage() {
 				color: string | null;
 			}>;
 			businessUnitCodes: string[] | null;
+			capacityItems?: Array<{
+				capacityScenarioId: number;
+				isVisible: boolean;
+				colorCode: string | null;
+			}>;
 		}) => {
 			// startYearMonth と endYearMonth から months を計算
 			const startY = parseInt(profile.startYearMonth.slice(0, 4), 10);
@@ -131,22 +169,39 @@ function WorkloadPage() {
 			} else {
 				setPeriod(profile.startYearMonth, months);
 			}
+
+			// キャパシティ設定の復元
+			if (profile.capacityItems && profile.capacityItems.length > 0) {
+				const vis: Record<number, boolean> = {};
+				const cols: Record<number, string> = {};
+				for (const item of profile.capacityItems) {
+					vis[item.capacityScenarioId] = item.isVisible;
+					if (item.colorCode) {
+						cols[item.capacityScenarioId] = item.colorCode;
+					}
+				}
+				setCapVisible(vis);
+				setCapColors(cols);
+			}
+			// else: キャパシティ設定なし → 現在の状態を維持（後方互換）
 		},
 		[setPeriod, setPeriodAndBusinessUnits],
 	);
 
-	// chartDataParams に selectedProjectIds を含める
-	const chartDataParamsWithProjects = useMemo(() => {
+	// chartDataParams に selectedProjectIds と capacityScenarioIds を含める
+	const chartDataParamsWithFilters = useMemo(() => {
 		if (!chartDataParams) return null;
 		if (selectedProjectIds.size === 0) return null;
+		const params = { ...chartDataParams };
 		// 全選択時は projectIds を送信しない（全件取得と同じ）
-		if (selectedProjectIds.size === allProjectIds.length)
-			return chartDataParams;
-		return {
-			...chartDataParams,
-			projectIds: Array.from(selectedProjectIds),
-		};
-	}, [chartDataParams, selectedProjectIds, allProjectIds.length]);
+		if (selectedProjectIds.size < allProjectIds.length) {
+			params.projectIds = Array.from(selectedProjectIds);
+		}
+		if (capacityScenarioIds.length > 0) {
+			params.capacityScenarioIds = capacityScenarioIds;
+		}
+		return params;
+	}, [chartDataParams, selectedProjectIds, allProjectIds.length, capacityScenarioIds]);
 
 	const {
 		chartData,
@@ -158,11 +213,12 @@ function WorkloadPage() {
 		isFetching,
 		isError,
 		refetch,
-	} = useChartData(chartDataParamsWithProjects, {
+	} = useChartData(chartDataParamsWithFilters, {
 		projectColors,
 		projectOrder,
 		indirectWorkTypeColors: indirectColors,
 		indirectWorkTypeOrder: indirectOrder,
+		capacityColors: capColors,
 	});
 
 	const {
@@ -223,6 +279,10 @@ function WorkloadPage() {
 							onPeriodChange={setPeriod}
 							onProjectColorsChange={handleProjectColorsChange}
 							onProjectOrderChange={handleProjectOrderChange}
+							capVisible={capVisible}
+							capColors={capColors}
+							onCapVisibleChange={setCapVisible}
+							onCapColorsChange={setCapColors}
 							onProfileApply={handleProfileApply}
 						/>
 					}

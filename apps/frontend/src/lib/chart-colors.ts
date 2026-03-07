@@ -31,12 +31,12 @@ export const INDIRECT_COLORS = [
 	"#525252",
 ] as const;
 
-/** キャパシティライン用ブルーパレット（4色） */
+/** キャパシティライン用ウォームパレット（4色） */
 export const CAPACITY_COLORS = [
-	"#2563eb",
-	"#3b82f6",
-	"#60a5fa",
-	"#93c5fd",
+	"#dc2626",
+	"#ea580c",
+	"#d97706",
+	"#b91c1c",
 ] as const;
 
 /** 未分類エリア用カラー */

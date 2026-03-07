@@ -75,7 +75,6 @@ const mockLines: LineSeriesConfig[] = [
 	{
 		dataKey: "capacity-1",
 		stroke: "#ef4444",
-		strokeDasharray: "5 5",
 		name: "キャパシティ",
 	},
 ];

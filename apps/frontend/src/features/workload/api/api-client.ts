@@ -1,4 +1,5 @@
 import type {
+	BulkUpsertCapacityItemInput,
 	BulkUpsertProjectItemInput,
 	BusinessUnit,
 	CapacityScenario,
@@ -9,6 +10,7 @@ import type {
 	ChartStackOrderSetting,
 	ChartStackOrderSettingInput,
 	ChartView,
+	ChartViewCapacityItem,
 	ChartViewProjectItem,
 	CreateChartViewInput,
 	IndirectWorkCase,
@@ -259,4 +261,32 @@ export async function bulkUpsertChartViewProjectItems(
 		},
 	);
 	return handleResponse<{ data: ChartViewProjectItem[] }>(response);
+}
+
+// ============================================================
+// Chart View Capacity Items
+// ============================================================
+
+export async function fetchChartViewCapacityItems(
+	chartViewId: number,
+): Promise<{ data: ChartViewCapacityItem[] }> {
+	const response = await fetch(
+		`${API_BASE_URL}/chart-views/${chartViewId}/capacity-items`,
+	);
+	return handleResponse<{ data: ChartViewCapacityItem[] }>(response);
+}
+
+export async function bulkUpsertChartViewCapacityItems(
+	chartViewId: number,
+	items: BulkUpsertCapacityItemInput[],
+): Promise<{ data: ChartViewCapacityItem[] }> {
+	const response = await fetch(
+		`${API_BASE_URL}/chart-views/${chartViewId}/capacity-items/bulk`,
+		{
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ items }),
+		},
+	);
+	return handleResponse<{ data: ChartViewCapacityItem[] }>(response);
 }

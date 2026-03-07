@@ -25,6 +25,7 @@ export {
 } from "./api/queries";
 export type {
 	AreaSeriesConfig,
+	BulkUpsertCapacityItemInput,
 	BulkUpsertProjectItemInput,
 	BusinessUnit,
 	CapacityAggregation,
@@ -37,6 +38,7 @@ export type {
 	ChartStackOrderSetting,
 	ChartStackOrderSettingInput,
 	ChartView,
+	ChartViewCapacityItem,
 	ChartViewProjectItem,
 	CreateChartViewInput,
 	IndirectWorkCase,

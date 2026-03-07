@@ -204,6 +204,23 @@ export type BulkUpsertProjectItemInput = {
 	color: string | null;
 };
 
+export type ChartViewCapacityItem = {
+	chartViewCapacityItemId: number;
+	chartViewId: number;
+	capacityScenarioId: number;
+	scenarioName: string | null;
+	isVisible: boolean;
+	colorCode: string | null;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type BulkUpsertCapacityItemInput = {
+	capacityScenarioId: number;
+	isVisible: boolean;
+	colorCode: string | null;
+};
+
 // ============================================================
 // チャート描画用型
 // ============================================================
@@ -221,7 +238,7 @@ export type AreaSeriesConfig = {
 export type LineSeriesConfig = {
 	dataKey: string;
 	stroke: string;
-	strokeDasharray: string;
+	strokeDasharray?: string;
 	name: string;
 };
 

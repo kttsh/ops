@@ -35,6 +35,7 @@ interface UseChartDataOptions {
 	projectOrder?: number[];
 	indirectWorkTypeColors?: Record<string, string>;
 	indirectWorkTypeOrder?: string[];
+	capacityColors?: Record<number, string>;
 }
 
 /**
@@ -170,6 +171,7 @@ export function useChartData(
 		projectOrder,
 		indirectWorkTypeColors,
 		indirectWorkTypeOrder,
+		capacityColors,
 	} = options;
 
 	const { chartData, seriesConfig, legendDataByMonth, latestMonth } =
@@ -271,8 +273,9 @@ export function useChartData(
 				const key = `capacity_${cap.capacityScenarioId}`;
 				lines.push({
 					dataKey: key,
-					stroke: CAPACITY_COLORS[idx % CAPACITY_COLORS.length],
-					strokeDasharray: "5 5",
+					stroke:
+						capacityColors?.[cap.capacityScenarioId] ??
+						CAPACITY_COLORS[idx % CAPACITY_COLORS.length],
 					name: cap.scenarioName,
 				});
 			});
@@ -461,6 +464,7 @@ export function useChartData(
 			projectOrder,
 			indirectWorkTypeColors,
 			indirectWorkTypeOrder,
+			capacityColors,
 		]);
 
 	return {

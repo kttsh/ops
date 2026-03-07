@@ -24,6 +24,10 @@ interface SidePanelSettingsProps {
 	onPeriodChange: (from: string | undefined, months: number) => void;
 	onProjectColorsChange?: (colors: Record<number, string>) => void;
 	onProjectOrderChange?: (order: number[]) => void;
+	capVisible?: Record<number, boolean>;
+	capColors?: Record<number, string>;
+	onCapVisibleChange?: (capVisible: Record<number, boolean>) => void;
+	onCapColorsChange?: (capColors: Record<number, string>) => void;
 	onProfileApply?: (profile: {
 		chartViewId: number;
 		startYearMonth: string;
@@ -41,6 +45,10 @@ export function SidePanelSettings({
 	onPeriodChange,
 	onProjectColorsChange,
 	onProjectOrderChange,
+	capVisible = {},
+	capColors = {},
+	onCapVisibleChange,
+	onCapColorsChange,
 	onProfileApply,
 }: SidePanelSettingsProps) {
 	const { data: projData } = useQuery(projectsQueryOptions(businessUnitCodes));
@@ -136,21 +144,6 @@ export function SidePanelSettings({
 	useEffect(() => {
 		onProjectOrderChangeRef.current?.(projOrder);
 	}, [projOrder]);
-
-	// キャパシティ表示設定
-	const [capVisible, setCapVisible] = useState<Record<number, boolean>>({});
-	const [capColors, setCapColors] = useState<Record<number, string>>({});
-
-	if (capacityScenarios.length > 0 && Object.keys(capColors).length === 0) {
-		const vis: Record<number, boolean> = {};
-		const cols: Record<number, string> = {};
-		capacityScenarios.forEach((cs, i) => {
-			vis[cs.capacityScenarioId] = true;
-			cols[cs.capacityScenarioId] = CAPACITY_COLORS[i % CAPACITY_COLORS.length];
-		});
-		setCapVisible(vis);
-		setCapColors(cols);
-	}
 
 	const moveProjUp = (index: number) => {
 		if (index === 0) return;
@@ -320,20 +313,20 @@ export function SidePanelSettings({
 							<Switch
 								checked={capVisible[cs.capacityScenarioId] ?? true}
 								onCheckedChange={(checked) =>
-									setCapVisible((prev) => ({
-										...prev,
+									onCapVisibleChange?.({
+										...capVisible,
 										[cs.capacityScenarioId]: checked,
-									}))
+									})
 								}
 							/>
 							<ColorPickerPopover
 								colors={CAPACITY_COLORS}
 								value={capColors[cs.capacityScenarioId] ?? CAPACITY_COLORS[0]}
 								onChange={(color) =>
-									setCapColors((prev) => ({
-										...prev,
+									onCapColorsChange?.({
+										...capColors,
 										[cs.capacityScenarioId]: color,
-									}))
+									})
 								}
 							/>
 							<Label className="flex-1 truncate text-sm">
@@ -353,6 +346,8 @@ export function SidePanelSettings({
 				endYearMonth={endYearMonth}
 				projectItems={profileProjectItems}
 				businessUnitCodes={businessUnitCodes}
+				capVisible={capVisible}
+				capColors={capColors}
 				onApply={handleProfileApply}
 			/>
 		</div>

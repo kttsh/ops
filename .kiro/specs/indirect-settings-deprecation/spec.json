@@ -1,9 +1,9 @@
 {
-	"feature_name": "capacity-line-display-fix",
+	"feature_name": "indirect-settings-deprecation",
 	"created_at": "2026-03-08T00:00:00+09:00",
 	"updated_at": "2026-03-08T00:00:00+09:00",
 	"language": "ja",
-	"phase": "implemented",
+	"phase": "tasks-generated",
 	"approvals": {
 		"requirements": {
 			"generated": true,
