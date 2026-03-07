@@ -82,9 +82,9 @@ function WorkloadPage() {
 	}, []);
 
 	// 間接作業色設定（SidePanelIndirect ↔ useChartData の橋渡し）
-	const [indirectColors, setIndirectColors] = useState<
-		Record<string, string>
-	>({});
+	const [indirectColors, setIndirectColors] = useState<Record<string, string>>(
+		{},
+	);
 
 	const handleIndirectColorsChange = useCallback(
 		(colors: Record<string, string>) => {

@@ -105,10 +105,7 @@ describe("sortLegendProjectsByOrder", () => {
 });
 
 describe("sortAreasByIndirectOrder", () => {
-	const makeIndirectArea = (
-		code: string,
-		name: string,
-	): AreaSeriesConfig => ({
+	const makeIndirectArea = (code: string, name: string): AreaSeriesConfig => ({
 		dataKey: `indirect_wt_${code}`,
 		stackId: "workload",
 		fill: "#ccc",

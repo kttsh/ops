@@ -124,9 +124,7 @@ export function sortAreasByIndirectOrder(
  * 凡例パネル用の間接作業リストを indirectWorkTypeOrder に基づいてソートする。
  * 未分類（workTypeCode === "unclassified"）は常に末尾に配置。
  */
-export function sortLegendIndirectByOrder<
-	T extends { workTypeCode: string },
->(
+export function sortLegendIndirectByOrder<T extends { workTypeCode: string }>(
 	indirectWorkTypes: T[],
 	indirectWorkTypeOrder: string[] | undefined,
 ): T[] {
