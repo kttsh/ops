@@ -18,10 +18,10 @@ import {
 } from "@/features/projects";
 import { formatDateTime } from "@/lib/format-utils";
 
-export const Route = createFileRoute("/master/projects/$projectId/")({
+export const Route = createFileRoute("/projects/$projectId/")({
 	component: ProjectDetailPage,
 	notFoundComponent: () => (
-		<NotFoundState entityName="案件" backTo="/master/projects" />
+		<NotFoundState entityName="案件" backTo="/projects" />
 	),
 });
 
@@ -49,7 +49,7 @@ function ProjectDetailPage() {
 		try {
 			await deleteMutation.mutateAsync(id);
 			toast.success("削除しました");
-			navigate({ to: "/master/projects" });
+			navigate({ to: "/projects" });
 		} catch (err) {
 			if (err instanceof ApiError) {
 				if (err.problemDetails.status === 409) {
@@ -58,7 +58,7 @@ function ProjectDetailPage() {
 						{
 							duration: Infinity,
 						},
-					);
+					)
 				} else if (err.problemDetails.status === 404) {
 					toast.error("案件が見つかりません", { duration: Infinity });
 				} else {
@@ -67,18 +67,18 @@ function ProjectDetailPage() {
 			}
 			setDeleteDialogOpen(false);
 		}
-	};
+	}
 
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center py-16">
 				<p className="text-sm text-muted-foreground">読み込み中...</p>
 			</div>
-		);
+		)
 	}
 
 	if (isError || !data) {
-		return <NotFoundState entityName="案件" backTo="/master/projects" />;
+		return <NotFoundState entityName="案件" backTo="/projects" />;
 	}
 
 	const project = data.data;
@@ -88,13 +88,13 @@ function ProjectDetailPage() {
 		<div className="grid grid-cols-1 gap-6">
 			<PageHeader
 				breadcrumbs={[
-					{ label: "案件一覧", href: "/master/projects" },
+					{ label: "案件一覧", href: "/projects" },
 					{ label: project.name },
 				]}
 				title={project.name}
 				actions={
 					<>
-						<Link to="/master/projects/$projectId/edit" params={{ projectId }}>
+						<Link to="/projects/$projectId/edit" params={{ projectId }}>
 							<Button variant="outline">
 								<Pencil className="h-4 w-4" />
 								編集
@@ -124,7 +124,7 @@ function ProjectDetailPage() {
 				entityName={project.name}
 			/>
 		</div>
-	);
+	)
 }
 
 function ProjectDetailCard({
@@ -141,7 +141,7 @@ function ProjectDetailCard({
 		status: string;
 		durationMonths: number | null;
 		updatedAt: string;
-	};
+	}
 	statusLabel: string;
 }) {
 	return (
@@ -179,5 +179,5 @@ function ProjectDetailCard({
 			/>
 			<DetailRow label="更新日時" value={formatDateTime(project.updatedAt)} />
 		</div>
-	);
+	)
 }

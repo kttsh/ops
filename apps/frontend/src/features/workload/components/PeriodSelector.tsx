@@ -92,7 +92,7 @@ export function PeriodSelector({
 						value={fromInput}
 						onChange={(e) => setFromInput(e.target.value)}
 						onBlur={apply}
-						className="mt-1 h-8 text-sm"
+						className="mt-1 h-8 bg-white text-sm"
 					/>
 				</div>
 				<div>
@@ -108,7 +108,7 @@ export function PeriodSelector({
 							setMonthsInput(normalizeNumericInput(e.target.value))
 						}
 						onBlur={apply}
-						className="mt-1 h-8 text-sm"
+						className="mt-1 h-8 bg-white text-sm"
 					/>
 				</div>
 			</div>

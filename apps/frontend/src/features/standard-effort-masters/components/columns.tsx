@@ -22,7 +22,7 @@ export function createColumns(options: {
 			),
 			cell: ({ row }) => (
 				<Link
-					to="/master/standard-effort-masters/$standardEffortId"
+					to="/projects/standard-efforts/$standardEffortId"
 					params={{
 						standardEffortId: String(row.original.standardEffortId),
 					}}

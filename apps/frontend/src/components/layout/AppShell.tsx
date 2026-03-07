@@ -80,7 +80,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 						className={cn(
 							"",
 							currentPath.startsWith("/workload") ||
-								currentPath.startsWith("/master/indirect-capacity-settings")
+								currentPath.startsWith("/master/indirect-capacity-settings") ||
+								currentPath.startsWith("/master/headcount-plans") ||
+								currentPath.startsWith("/master/capacity-scenarios") ||
+								currentPath.startsWith("/master/indirect-work-cases")
 								? "h-full"
 								: currentPath.startsWith("/master")
 									? "h-full px-6 py-8"

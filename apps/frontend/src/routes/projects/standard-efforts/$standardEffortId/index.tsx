@@ -22,13 +22,13 @@ import {
 import { StandardEffortMasterDetail } from "@/features/standard-effort-masters/components/StandardEffortMasterDetail";
 
 export const Route = createFileRoute(
-	"/master/standard-effort-masters/$standardEffortId/",
+	"/projects/standard-efforts/$standardEffortId/",
 )({
 	component: StandardEffortMasterDetailPage,
 	notFoundComponent: () => (
 		<NotFoundState
 			entityName="標準工数パターン"
-			backTo="/master/standard-effort-masters"
+			backTo="/projects/standard-efforts"
 		/>
 	),
 });
@@ -42,7 +42,7 @@ function StandardEffortMasterDetailPage() {
 
 	const { data, isLoading, isError } = useQuery(
 		standardEffortMasterQueryOptions(id),
-	);
+	)
 	const buQuery = useQuery(businessUnitsForSelectQueryOptions());
 	const ptQuery = useQuery(projectTypesForSelectQueryOptions());
 	const deleteMutation = useDeleteStandardEffortMaster();
@@ -53,25 +53,25 @@ function StandardEffortMasterDetailPage() {
 		try {
 			await deleteMutation.mutateAsync(id);
 			toast.success("削除しました");
-			navigate({ to: "/master/standard-effort-masters" });
+			navigate({ to: "/projects/standard-efforts" });
 		} catch (err) {
 			if (err instanceof ApiError) {
 				if (err.problemDetails.status === 409) {
 					toast.error(
 						"このパターンは他のデータから参照されているため削除できません",
 						{ duration: Infinity },
-					);
+					)
 				} else if (err.problemDetails.status === 404) {
 					toast.error("標準工数パターンが見つかりません", {
 						duration: Infinity,
-					});
+					})
 				} else {
 					toast.error(err.message, { duration: Infinity });
 				}
 			}
 			setDeleteDialogOpen(false);
 		}
-	};
+	}
 
 	const handleRestore = async () => {
 		try {
@@ -84,7 +84,7 @@ function StandardEffortMasterDetailPage() {
 			}
 			setRestoreDialogOpen(false);
 		}
-	};
+	}
 
 	const handleSave = async (values: UpdateStandardEffortMasterInput) => {
 		try {
@@ -95,33 +95,33 @@ function StandardEffortMasterDetailPage() {
 				if (err.problemDetails.status === 409) {
 					toast.error("同一パターン名が既に存在します", {
 						duration: Infinity,
-					});
+					})
 				} else if (err.problemDetails.status === 404) {
 					toast.error("標準工数パターンが見つかりません", {
 						duration: Infinity,
-					});
+					})
 				} else {
 					toast.error(err.message, { duration: Infinity });
 				}
 			}
 		}
-	};
+	}
 
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center py-16">
 				<p className="text-sm text-muted-foreground">読み込み中...</p>
 			</div>
-		);
+		)
 	}
 
 	if (isError || !data) {
 		return (
 			<NotFoundState
 				entityName="標準工数パターン"
-				backTo="/master/standard-effort-masters"
+				backTo="/projects/standard-efforts"
 			/>
-		);
+		)
 	}
 
 	const master = data.data;
@@ -140,7 +140,7 @@ function StandardEffortMasterDetailPage() {
 				breadcrumbs={[
 					{
 						label: "標準工数パターン一覧",
-						href: "/master/standard-effort-masters",
+						href: "/projects/standard-efforts",
 					},
 					{ label: master.name },
 				]}
@@ -194,5 +194,5 @@ function StandardEffortMasterDetailPage() {
 				isLoading={restoreMutation.isPending}
 			/>
 		</div>
-	);
+	)
 }

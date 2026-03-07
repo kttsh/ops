@@ -321,8 +321,30 @@ export type LegendAction =
 // URL Search Params スキーマ
 // ============================================================
 
+const STORAGE_KEY_BU = "workload-bu";
+
+function getStoredBusinessUnits(): string[] {
+	try {
+		const stored = localStorage.getItem(STORAGE_KEY_BU);
+		return stored ? JSON.parse(stored) : [];
+	} catch {
+		return [];
+	}
+}
+
+export function saveBusinessUnitsToStorage(codes: string[]): void {
+	try {
+		localStorage.setItem(STORAGE_KEY_BU, JSON.stringify(codes));
+	} catch {
+		// ignore
+	}
+}
+
 export const workloadSearchSchema = z.object({
-	bu: z.array(z.string()).catch([]).default([]),
+	bu: z
+		.array(z.string())
+		.catch([])
+		.default(() => getStoredBusinessUnits()),
 	from: z
 		.string()
 		.regex(/^\d{6}$/)

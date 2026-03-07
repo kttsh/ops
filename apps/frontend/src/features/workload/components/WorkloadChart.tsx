@@ -108,9 +108,9 @@ function WorkloadChartInner({
 				<Tooltip content={() => null} />
 
 				{/* 間接作業 → 案件タイプ の順でエリア描画 */}
-				{seriesConfig.areas.map((area) => (
+				{seriesConfig.areas.map((area, index) => (
 					<Area
-						key={area.dataKey}
+						key={`${index}_${area.dataKey}`}
 						type="monotone"
 						dataKey={area.dataKey}
 						stackId={area.stackId}

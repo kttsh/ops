@@ -38,14 +38,16 @@ describe("sortAreasByProjectOrder", () => {
 		expect(result).toEqual(areas);
 	});
 
-	it("projectOrder に基づいて案件シリーズのみをソートする", () => {
+	it("projectOrder に基づいて案件シリーズを逆順ソートする（先頭=チャート上部）", () => {
 		const areas = [indirectArea, projA, projB, projC];
 		const result = sortAreasByProjectOrder(areas, [3, 1, 2]);
+		// チャートのスタック順: 配列先頭=下、末尾=上
+		// projectOrder[0]=3 がチャート上部（配列末尾）に来る
 		expect(result.map((a) => a.dataKey)).toEqual([
 			"indirect_wt_001",
-			"project_3",
-			"project_1",
 			"project_2",
+			"project_1",
+			"project_3",
 		]);
 	});
 
@@ -53,19 +55,20 @@ describe("sortAreasByProjectOrder", () => {
 		const areas = [indirectArea, projA, projB];
 		const result = sortAreasByProjectOrder(areas, [2, 1]);
 		expect(result[0].type).toBe("indirect");
-		expect(result[1].dataKey).toBe("project_2");
-		expect(result[2].dataKey).toBe("project_1");
+		// 逆順: projectOrder[0]=2 がチャート上部（配列末尾）
+		expect(result[1].dataKey).toBe("project_1");
+		expect(result[2].dataKey).toBe("project_2");
 	});
 
-	it("projectOrder に含まれない案件は末尾に配置される", () => {
+	it("projectOrder に含まれない案件はチャート下層に配置される", () => {
 		const areas = [indirectArea, projA, projB, projC];
-		// projC (id=3) は projectOrder に含まれない
+		// projC (id=3) は projectOrder に含まれない → チャート最下層（配列先頭側）
 		const result = sortAreasByProjectOrder(areas, [2, 1]);
 		expect(result.map((a) => a.dataKey)).toEqual([
 			"indirect_wt_001",
-			"project_2",
-			"project_1",
 			"project_3",
+			"project_1",
+			"project_2",
 		]);
 	});
 

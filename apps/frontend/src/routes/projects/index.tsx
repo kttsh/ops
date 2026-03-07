@@ -6,74 +6,44 @@ import { toast } from "sonner";
 import { DataTable } from "@/components/shared/DataTable";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
 import { ExcelImportDialog } from "@/components/shared/ExcelImportDialog";
-import { FieldWrapper } from "@/components/shared/FieldWrapper";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { QuerySelect } from "@/components/shared/QuerySelect";
 import { RestoreConfirmDialog } from "@/components/shared/RestoreConfirmDialog";
 import { Button } from "@/components/ui/button";
-import type { StandardEffortMaster } from "@/features/standard-effort-masters";
+import type { Project } from "@/features/projects";
 import {
 	ApiError,
-	businessUnitsForSelectQueryOptions,
-	createColumns,
-	projectTypesForSelectQueryOptions,
-	standardEffortMasterQueryOptions,
-	standardEffortMasterSearchSchema,
-	standardEffortMastersQueryOptions,
-	useRestoreStandardEffortMaster,
-	useStandardEffortBulkExport,
-	useStandardEffortBulkImport,
-} from "@/features/standard-effort-masters";
+	projectQueryOptions,
+	projectSearchSchema,
+	projectsQueryOptions,
+	useProjectBulkExport,
+	useProjectBulkImport,
+	useRestoreProject,
+} from "@/features/projects";
+import { createColumns } from "@/features/projects/components/columns";
 
-export const Route = createFileRoute("/master/standard-effort-masters/")({
-	validateSearch: standardEffortMasterSearchSchema,
-	component: StandardEffortMasterListPage,
+export const Route = createFileRoute("/projects/")({
+	validateSearch: projectSearchSchema,
+	component: ProjectListPage,
 });
 
-function StandardEffortMasterListPage() {
+function ProjectListPage() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
 	const queryClient = useQueryClient();
 	const [restoreTarget, setRestoreTarget] = useState<number | null>(null);
 	const [importDialogOpen, setImportDialogOpen] = useState(false);
-	const { exportToExcel, isExporting } = useStandardEffortBulkExport();
-	const { parseFile, confirmImport, isImporting } =
-		useStandardEffortBulkImport();
-
-	const buQuery = useQuery(businessUnitsForSelectQueryOptions());
-	const ptQuery = useQuery(projectTypesForSelectQueryOptions());
+	const { exportToExcel, isExporting } = useProjectBulkExport();
+	const { parseFile, confirmImport, isImporting } = useProjectBulkImport();
 
 	const { data, isLoading, isError, error } = useQuery(
-		standardEffortMastersQueryOptions({
+		projectsQueryOptions({
 			page: search.page,
 			pageSize: search.pageSize,
 			includeDisabled: search.includeDisabled,
-			businessUnitCode: search.businessUnitCode,
-			projectTypeCode: search.projectTypeCode,
 		}),
-	);
+	)
 
-	const restoreMutation = useRestoreStandardEffortMaster();
-
-	const buNameMap = useMemo(() => {
-		const map = new Map<string, string>();
-		if (buQuery.data) {
-			for (const bu of buQuery.data) {
-				map.set(bu.value, bu.label);
-			}
-		}
-		return map;
-	}, [buQuery.data]);
-
-	const ptNameMap = useMemo(() => {
-		const map = new Map<string, string>();
-		if (ptQuery.data) {
-			for (const pt of ptQuery.data) {
-				map.set(pt.value, pt.label);
-			}
-		}
-		return map;
-	}, [ptQuery.data]);
+	const restoreMutation = useRestoreProject();
 
 	const columns = useMemo(
 		() =>
@@ -81,50 +51,34 @@ function StandardEffortMasterListPage() {
 				onRestore: search.includeDisabled
 					? (id) => setRestoreTarget(id)
 					: undefined,
-				buNameMap,
-				ptNameMap,
 			}),
-		[search.includeDisabled, buNameMap, ptNameMap],
-	);
+		[search.includeDisabled],
+	)
 
 	const handleSearchChange = (value: string) => {
 		navigate({ search: (prev) => ({ ...prev, search: value, page: 1 }) });
-	};
+	}
 
 	const handleIncludeDisabledChange = (value: boolean) => {
 		navigate({
 			search: (prev) => ({ ...prev, includeDisabled: value, page: 1 }),
-		});
-	};
+		})
+	}
 
 	const handlePageChange = (page: number) => {
 		navigate({ search: (prev) => ({ ...prev, page }) });
-	};
+	}
 
 	const handlePageSizeChange = (pageSize: number) => {
 		navigate({ search: (prev) => ({ ...prev, pageSize, page: 1 }) });
-	};
-
-	const handleBuFilterChange = (value: string) => {
-		navigate({
-			search: (prev) => ({ ...prev, businessUnitCode: value, page: 1 }),
-		});
-	};
-
-	const handlePtFilterChange = (value: string) => {
-		navigate({
-			search: (prev) => ({ ...prev, projectTypeCode: value, page: 1 }),
-		});
-	};
+	}
 
 	const handleRowHover = useCallback(
-		(row: StandardEffortMaster) => {
-			queryClient.ensureQueryData(
-				standardEffortMasterQueryOptions(row.standardEffortId),
-			);
+		(row: Project) => {
+			queryClient.ensureQueryData(projectQueryOptions(row.projectId));
 		},
 		[queryClient],
-	);
+	)
 
 	const handleRestore = async () => {
 		if (restoreTarget === null) return;
@@ -138,34 +92,29 @@ function StandardEffortMasterListPage() {
 			}
 			setRestoreTarget(null);
 		}
-	};
+	}
 
 	return (
 		<div className="grid grid-cols-1 gap-6">
-			<PageHeader
-				title="標準工数パターン"
-				description="標準工数パターンの一覧を管理します"
-			/>
+			<PageHeader title="案件" description="案件の一覧を管理します" />
 
 			<div className="rounded-3xl bg-card border border-border shadow-sm p-6">
 				<div className="space-y-6">
-					<div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="flex-1">
 							<DataTableToolbar
 								search={search.search}
 								onSearchChange={handleSearchChange}
 								includeDisabled={search.includeDisabled}
 								onIncludeDisabledChange={handleIncludeDisabledChange}
-								newItemHref="/master/standard-effort-masters/new"
+								newItemHref="/projects/new"
 							/>
 						</div>
 						<div className="flex items-center gap-2">
 							<Button
 								variant="outline"
 								size="sm"
-								onClick={() =>
-									exportToExcel(search.businessUnitCode || undefined)
-								}
+								onClick={exportToExcel}
 								disabled={isExporting}
 							>
 								{isExporting ? (
@@ -186,34 +135,6 @@ function StandardEffortMasterListPage() {
 						</div>
 					</div>
 
-					{/* BU/PT フィルタ */}
-					<div className="flex flex-wrap gap-4">
-						<div className="w-48">
-							<FieldWrapper label="事業部フィルタ">
-								<QuerySelect
-									value={search.businessUnitCode}
-									onValueChange={handleBuFilterChange}
-									placeholder="すべて"
-									queryResult={buQuery}
-									allowEmpty
-									emptyLabel="すべて"
-								/>
-							</FieldWrapper>
-						</div>
-						<div className="w-48">
-							<FieldWrapper label="案件タイプフィルタ">
-								<QuerySelect
-									value={search.projectTypeCode}
-									onValueChange={handlePtFilterChange}
-									placeholder="すべて"
-									queryResult={ptQuery}
-									allowEmpty
-									emptyLabel="すべて"
-								/>
-							</FieldWrapper>
-						</div>
-					</div>
-
 					<DataTable
 						columns={columns}
 						data={data?.data ?? []}
@@ -226,21 +147,17 @@ function StandardEffortMasterListPage() {
 						}}
 						onPageChange={handlePageChange}
 						onPageSizeChange={handlePageSizeChange}
-						onRowClick={(row: StandardEffortMaster) =>
+						onRowClick={(row: Project) =>
 							navigate({
-								to: "/master/standard-effort-masters/$standardEffortId",
-								params: {
-									standardEffortId: String(row.standardEffortId),
-								},
+								to: "/projects/$projectId",
+								params: { projectId: String(row.projectId) },
 							})
 						}
 						onRowHover={handleRowHover}
 						isLoading={isLoading}
 						isError={isError}
 						errorMessage={error?.message}
-						rowClassName={(row: StandardEffortMaster) =>
-							row.deletedAt ? "opacity-50" : ""
-						}
+						rowClassName={(row: Project) => (row.deletedAt ? "opacity-50" : "")}
 					/>
 				</div>
 			</div>
@@ -248,8 +165,8 @@ function StandardEffortMasterListPage() {
 			<ExcelImportDialog
 				open={importDialogOpen}
 				onOpenChange={setImportDialogOpen}
-				title="標準工数パターン 一括インポート"
-				description="エクスポートしたExcelファイルを編集し、重みデータを一括更新します。"
+				title="案件工数 一括インポート"
+				description="エクスポートしたExcelファイルを編集し、工数データを一括更新します。"
 				onFileParsed={parseFile}
 				onConfirm={confirmImport}
 				isImporting={isImporting}
@@ -259,9 +176,9 @@ function StandardEffortMasterListPage() {
 				open={restoreTarget !== null}
 				onOpenChange={(open) => !open && setRestoreTarget(null)}
 				onConfirm={handleRestore}
-				entityLabel="標準工数パターン"
+				entityLabel="案件"
 				isLoading={restoreMutation.isPending}
 			/>
 		</div>
-	);
+	)
 }

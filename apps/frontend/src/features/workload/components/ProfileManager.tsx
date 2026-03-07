@@ -202,7 +202,7 @@ export function ProfileManager({
 					placeholder="プロファイル名"
 					value={newName}
 					onChange={(e) => setNewName(e.target.value)}
-					className="h-8 text-sm"
+					className="h-8 bg-white text-sm"
 				/>
 				<Button
 					variant="outline"
@@ -227,8 +227,8 @@ export function ProfileManager({
 						key={view.chartViewId}
 						className={`flex items-center justify-between rounded-lg border px-3 py-2 ${
 							activeViewId === view.chartViewId
-								? "border-primary bg-primary/5"
-								: "border-border"
+								? "border-primary bg-white"
+								: "border-border bg-white"
 						}`}
 					>
 						<button

@@ -1,8 +1,9 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
-import type {
-	ChartDataParams,
-	WorkloadSearchParams,
+import {
+	type ChartDataParams,
+	type WorkloadSearchParams,
+	saveBusinessUnitsToStorage,
 } from "@/features/workload/types";
 
 export interface UseWorkloadFiltersReturn {
@@ -26,6 +27,7 @@ export function useWorkloadFilters(): UseWorkloadFiltersReturn {
 
 	const setBusinessUnits = useCallback(
 		(codes: string[]) => {
+			saveBusinessUnitsToStorage(codes);
 			navigate({ search: (prev) => ({ ...prev, bu: codes }) });
 		},
 		[navigate],
@@ -40,6 +42,7 @@ export function useWorkloadFilters(): UseWorkloadFiltersReturn {
 
 	const setPeriodAndBusinessUnits = useCallback(
 		(from: string | undefined, months: number, businessUnitCodes: string[]) => {
+			saveBusinessUnitsToStorage(businessUnitCodes);
 			navigate({
 				search: (prev) => ({ ...prev, from, months, bu: businessUnitCodes }),
 			});

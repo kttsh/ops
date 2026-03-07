@@ -46,9 +46,7 @@ export function sortAreasByProjectOrder(
 	projectOrder: number[] | undefined,
 ): AreaSeriesConfig[] {
 	if (!projectOrder || projectOrder.length === 0) {
-		// projectOrder 未指定 or 空の場合は元の順序を維持
-		// ただし空配列の場合も元順序維持（全て indexOf === -1 になるため）
-		if (!projectOrder) return areas;
+		return areas;
 	}
 
 	const indirectAreas = areas.filter((a) => a.type === "indirect");
@@ -63,6 +61,10 @@ export function sortAreasByProjectOrder(
 		const orderB = orderMap.get(idB) ?? Number.MAX_SAFE_INTEGER;
 		return orderA - orderB;
 	});
+
+	// チャートのスタック順（配列先頭=下、末尾=上）と
+	// 凡例・設定パネルの表示順（先頭=上）を一致させるため逆順にする
+	projectAreas.reverse();
 
 	return [...indirectAreas, ...projectAreas];
 }

@@ -30,7 +30,7 @@ export function createColumns(options: {
 			header: ({ column }) => <SortableHeader column={column} label="名称" />,
 			cell: ({ row }) => (
 				<Link
-					to="/master/projects/$projectId"
+					to="/projects/$projectId"
 					params={{ projectId: String(row.original.projectId) }}
 					className="font-medium text-primary hover:underline"
 				>

@@ -7,6 +7,7 @@ import {
 	ChevronRight,
 	FolderKanban,
 	Palette,
+	Play,
 	TrendingUp,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -30,18 +31,33 @@ const menuItems = [
 		],
 	},
 	{
-		label: "マスタ管理",
+		label: "案件・間接作業管理",
 		children: [
 			{
-				label: "ビジネスユニット",
-				href: "/master/business-units",
-				icon: Building2,
-			},
-			{
 				label: "案件",
-				href: "/master/projects",
+				href: "/projects",
 				icon: Briefcase,
 			},
+			{
+				label: "標準工数パターン",
+				href: "/projects/standard-efforts",
+				icon: TrendingUp,
+			},
+			{
+				label: "間接作業・キャパシティ",
+				href: "/master/indirect-capacity-settings",
+				icon: Calculator,
+			},
+			{
+				label: "間接作業シミュレーション",
+				href: "/indirect/simulation",
+				icon: Play,
+			},
+		],
+	},
+	{
+		label: "マスタ管理",
+		children: [
 			{
 				label: "案件タイプ",
 				href: "/master/project-types",
@@ -53,14 +69,9 @@ const menuItems = [
 				icon: Palette,
 			},
 			{
-				label: "標準工数パターン",
-				href: "/master/standard-effort-masters",
-				icon: TrendingUp,
-			},
-			{
-				label: "間接作業・キャパシティ",
-				href: "/master/indirect-capacity-settings",
-				icon: Calculator,
+				label: "ビジネスユニット",
+				href: "/master/business-units",
+				icon: Building2,
 			},
 		],
 	},
@@ -69,6 +80,8 @@ const menuItems = [
 interface SidebarNavProps {
 	collapsed: boolean;
 }
+
+const allHrefs = menuItems.flatMap((g) => g.children.map((c) => c.href));
 
 export function SidebarNav({ collapsed }: SidebarNavProps) {
 	const routerState = useRouterState();
@@ -87,7 +100,14 @@ export function SidebarNav({ collapsed }: SidebarNavProps) {
 					)}
 					<div className="flex flex-col gap-1">
 						{group.children.map((item) => {
-							const isActive = currentPath.startsWith(item.href);
+							const isActive =
+								currentPath.startsWith(item.href) &&
+								!allHrefs.some(
+									(h) =>
+										h !== item.href &&
+										h.length > item.href.length &&
+										currentPath.startsWith(h),
+								);
 							const linkElement = (
 								<Link
 									key={item.href}

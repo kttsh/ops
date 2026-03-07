@@ -272,7 +272,7 @@ export function SidePanelSettings({
 						return (
 							<div
 								key={id}
-								className="flex items-center gap-3 rounded-lg border border-border p-2"
+								className="flex items-center gap-3 rounded-lg border border-border bg-white p-2"
 							>
 								<ColorPickerPopover
 									colors={PROJECT_TYPE_COLORS}
@@ -315,7 +315,7 @@ export function SidePanelSettings({
 					{capacityScenarios.map((cs) => (
 						<div
 							key={cs.capacityScenarioId}
-							className="flex items-center gap-3 rounded-lg border border-border p-2"
+							className="flex items-center gap-3 rounded-lg border border-border bg-white p-2"
 						>
 							<Switch
 								checked={capVisible[cs.capacityScenarioId] ?? true}
