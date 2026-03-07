@@ -5,10 +5,13 @@ import {
 	Building2,
 	Calculator,
 	ChevronRight,
+	Clock,
 	FolderKanban,
+	ListChecks,
 	Palette,
 	Play,
 	TrendingUp,
+	Users,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -52,6 +55,21 @@ const menuItems = [
 				label: "間接作業シミュレーション",
 				href: "/indirect/simulation",
 				icon: Play,
+			},
+			{
+				label: "人員計画ケース",
+				href: "/master/headcount-plans",
+				icon: Users,
+			},
+			{
+				label: "キャパシティシナリオ",
+				href: "/master/capacity-scenarios",
+				icon: Clock,
+			},
+			{
+				label: "間接作業ケース",
+				href: "/master/indirect-work-cases",
+				icon: ListChecks,
 			},
 		],
 	},

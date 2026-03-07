@@ -57,4 +57,4 @@ export type {
 	UpdateChartViewInput,
 	WorkloadSearchParams,
 } from "./types";
-export { workloadSearchSchema } from "./types";
+export { saveBusinessUnitsToStorage, workloadSearchSchema } from "./types";
