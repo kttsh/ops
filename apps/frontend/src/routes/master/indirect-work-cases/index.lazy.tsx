@@ -1,17 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { Building2, Loader2, Save } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { UnsavedChangesDialog } from "@/components/shared/UnsavedChangesDialog";
 import { Button } from "@/components/ui/button";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
+	BusinessUnitSingleSelector,
 	IndirectWorkCaseList,
 	IndirectWorkRatioMatrix,
 } from "@/features/indirect-case-study";
@@ -70,36 +64,26 @@ function IndirectWorkCasesPage() {
 			{/* ヘッダー */}
 			<div className="flex items-center justify-between border-b border-border px-4 py-2">
 				<h1 className="text-lg font-semibold">間接作業ケース</h1>
-				<div className="flex items-center gap-2">
-					<Building2 className="h-4 w-4 text-muted-foreground" />
-					<Select value={selectedBu} onValueChange={handleBuChange}>
-						<SelectTrigger className="w-[200px] h-8">
-							<SelectValue placeholder="BUを選択" />
-						</SelectTrigger>
-						<SelectContent>
-							{businessUnits.map((bu) => (
-								<SelectItem
-									key={bu.businessUnitCode}
-									value={bu.businessUnitCode}
-								>
-									{bu.name}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-					<Button
-						size="sm"
-						onClick={page.saveRatios}
-						disabled={!page.isDirty || page.isSaving}
-					>
-						{page.isSaving ? (
-							<Loader2 className="mr-1 h-4 w-4 animate-spin" />
-						) : (
-							<Save className="mr-1 h-4 w-4" />
-						)}
-						保存
-					</Button>
-				</div>
+				<Button
+					size="sm"
+					onClick={page.saveRatios}
+					disabled={!page.isDirty || page.isSaving}
+				>
+					{page.isSaving ? (
+						<Loader2 className="mr-1 h-4 w-4 animate-spin" />
+					) : (
+						<Save className="mr-1 h-4 w-4" />
+					)}
+					保存
+				</Button>
+			</div>
+
+			{/* BU選択行 */}
+			<div className="border-b border-border px-4 py-3">
+				<BusinessUnitSingleSelector
+					selectedCode={selectedBu}
+					onChange={handleBuChange}
+				/>
 			</div>
 
 			{/* メインコンテンツ - 2カラムレイアウト */}
