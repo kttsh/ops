@@ -66,7 +66,7 @@ const menuItems = [
 				icon: Users,
 			},
 			{
-				label: "キャパシティシナリオ",
+				label: "稼働時間",
 				href: "/master/capacity-scenarios",
 				icon: Clock,
 			},

@@ -92,11 +92,7 @@ const MasterCapacityScenariosIndexRoute =
     id: '/master/capacity-scenarios/',
     path: '/master/capacity-scenarios/',
     getParentRoute: () => rootRouteImport,
-  } as any).lazy(() =>
-    import('./routes/master/capacity-scenarios/index.lazy').then(
-      (d) => d.Route,
-    ),
-  )
+  } as any)
 const MasterBusinessUnitsIndexRoute =
   MasterBusinessUnitsIndexRouteImport.update({
     id: '/master/business-units/',

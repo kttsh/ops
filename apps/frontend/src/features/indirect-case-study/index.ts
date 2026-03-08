@@ -30,12 +30,12 @@ export {
 } from "./api/queries";
 export { BusinessUnitSingleSelector } from "./components/BusinessUnitSingleSelector";
 export { CalculationResultTable } from "./components/CalculationResultTable";
+export { CapacityScenarioDetailSheet } from "./components/CapacityScenarioDetailSheet";
 export { CapacityScenarioList } from "./components/CapacityScenarioList";
 export { CaseFormSheet } from "./components/CaseFormSheet";
 export { HeadcountPlanCaseList } from "./components/HeadcountPlanCaseList";
 export { IndirectWorkCaseList } from "./components/IndirectWorkCaseList";
 export { IndirectWorkRatioMatrix } from "./components/IndirectWorkRatioMatrix";
-export { MonthlyCapacityTable } from "./components/MonthlyCapacityTable";
 export { MonthlyHeadcountGrid } from "./components/MonthlyHeadcountGrid";
 export { ResultPanel } from "./components/ResultPanel";
 export { ScenarioFormSheet } from "./components/ScenarioFormSheet";
