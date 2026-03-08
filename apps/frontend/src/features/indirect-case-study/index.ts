@@ -28,6 +28,7 @@ export {
 	monthlyCapacitiesQueryOptions,
 	monthlyHeadcountPlansQueryOptions,
 } from "./api/queries";
+export { BusinessUnitSingleSelector } from "./components/BusinessUnitSingleSelector";
 export { CalculationResultTable } from "./components/CalculationResultTable";
 export { CapacityScenarioList } from "./components/CapacityScenarioList";
 export { CaseFormSheet } from "./components/CaseFormSheet";

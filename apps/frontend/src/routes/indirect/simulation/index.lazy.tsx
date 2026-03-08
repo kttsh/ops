@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { Building2, Calculator, Loader2, Play } from "lucide-react";
+import { Calculator, Loader2, Play } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { BusinessUnitSingleSelector } from "@/features/indirect-case-study/components/BusinessUnitSingleSelector";
 import { ResultPanel } from "@/features/indirect-case-study/components/ResultPanel";
 import { useIndirectSimulation } from "@/features/indirect-case-study/hooks/useIndirectSimulation";
 import { workTypesQueryOptions } from "@/features/work-types/api/queries";
@@ -98,59 +99,51 @@ function IndirectSimulationPage() {
 	return (
 		<div className="flex h-full flex-col">
 			{/* ヘッダー */}
-			<div className="flex items-center justify-between border-b border-border px-4 py-2">
-				<h1 className="text-lg font-semibold">間接作業シミュレーション</h1>
-				<div className="flex items-center gap-2">
-					<Building2 className="h-4 w-4 text-muted-foreground" />
-					<Select value={selectedBu} onValueChange={handleBuChange}>
-						<SelectTrigger className="w-[200px] h-8">
-							<SelectValue placeholder="BUを選択" />
-						</SelectTrigger>
-						<SelectContent>
-							{businessUnits.map((bu) => (
-								<SelectItem
-									key={bu.businessUnitCode}
-									value={bu.businessUnitCode}
-								>
-									{bu.name}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</div>
+			<div className="flex items-center border-b border-border px-4 py-2">
+				<h1 className="text-lg font-semibold">間接工数計算</h1>
 			</div>
 
-			{/* メインコンテンツ - 2カラム */}
-			<div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6 p-6">
-				{/* 左パネル: 選択コントロール */}
-				<div className="overflow-y-auto rounded-3xl bg-card border border-border shadow-sm p-6 space-y-6">
-					<SelectSection
-						label="人員計画ケース"
-						disabled={noBu || sim.isLoadingCases}
-						value={sim.selectedHeadcountPlanCaseId}
-						onValueChange={(v) =>
-							sim.setSelectedHeadcountPlanCaseId(v ? Number(v) : null)
-						}
-						placeholder="ケースを選択"
-						items={sim.headcountCases.map((c) => ({
-							value: String(c.headcountPlanCaseId),
-							label: c.caseName,
-						}))}
-					/>
+			{/* BU選択行 */}
+			<div className="border-b border-border px-4 py-3">
+				<BusinessUnitSingleSelector
+					selectedCode={selectedBu}
+					onChange={handleBuChange}
+				/>
+			</div>
 
-					<SelectSection
-						label="キャパシティシナリオ"
-						disabled={noBu || sim.isLoadingCases}
-						value={sim.selectedCapacityScenarioId}
-						onValueChange={(v) =>
-							sim.setSelectedCapacityScenarioId(v ? Number(v) : null)
-						}
-						placeholder="シナリオを選択"
-						items={sim.capacityScenarios.map((s) => ({
-							value: String(s.capacityScenarioId),
-							label: s.scenarioName,
-						}))}
-					/>
+			{/* メインコンテンツ - 上下レイアウト */}
+			<div className="flex-1 overflow-y-auto space-y-6 p-6">
+				{/* 上パネル: 選択コントロール */}
+				<div className="rounded-3xl bg-card border border-border shadow-sm p-6 space-y-6">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<SelectSection
+							label="人員計画ケース"
+							disabled={noBu || sim.isLoadingCases}
+							value={sim.selectedHeadcountPlanCaseId}
+							onValueChange={(v) =>
+								sim.setSelectedHeadcountPlanCaseId(v ? Number(v) : null)
+							}
+							placeholder="ケースを選択"
+							items={sim.headcountCases.map((c) => ({
+								value: String(c.headcountPlanCaseId),
+								label: c.caseName,
+							}))}
+						/>
+
+						<SelectSection
+							label="キャパシティシナリオ"
+							disabled={noBu || sim.isLoadingCases}
+							value={sim.selectedCapacityScenarioId}
+							onValueChange={(v) =>
+								sim.setSelectedCapacityScenarioId(v ? Number(v) : null)
+							}
+							placeholder="シナリオを選択"
+							items={sim.capacityScenarios.map((s) => ({
+								value: String(s.capacityScenarioId),
+								label: s.scenarioName,
+							}))}
+						/>
+					</div>
 
 					<Button
 						className="w-full"
@@ -193,8 +186,8 @@ function IndirectSimulationPage() {
 					</div>
 				</div>
 
-				{/* 右パネル: 結果表示 */}
-				<div className="overflow-y-auto rounded-3xl bg-card border border-border shadow-sm p-6">
+				{/* 下パネル: 結果表示 */}
+				<div className="rounded-3xl bg-card border border-border shadow-sm p-6">
 					<ResultPanel
 						capacityResult={sim.capacityResult}
 						indirectWorkResult={sim.indirectWorkResult}

@@ -51,7 +51,7 @@ const menuItems = [
 		label: "間接作業管理",
 		children: [
 			{
-				label: "シミュレーション",
+				label: "間接工数計算",
 				href: "/indirect/simulation",
 				icon: Play,
 			},
