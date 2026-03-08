@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { DataTable } from "@/components/shared/DataTable";
 import { DataTableToolbar } from "@/components/shared/DataTableToolbar";
-import { PageHeader } from "@/components/shared/PageHeader";
 import type { WorkType } from "@/features/work-types";
 import {
 	workTypeKeys,
@@ -61,31 +60,37 @@ function WorkTypeListPage() {
 	};
 
 	return (
-		<div className="grid grid-cols-1 gap-6">
-			<PageHeader title="作業種類" description="作業種類の一覧を管理します" />
+		<div className="flex h-full flex-col">
+			{/* ヘッダー */}
+			<div className="flex items-center justify-between border-b border-border px-4 py-2">
+				<h1 className="text-lg font-semibold">作業種類</h1>
+			</div>
 
-			<div className="rounded-3xl bg-card border border-border shadow-sm p-6">
-				<div className="space-y-6">
-					<DataTableToolbar
-						search={search.search}
-						onSearchChange={handleSearchChange}
-						includeDisabled={search.includeDisabled}
-						onIncludeDisabledChange={handleIncludeDisabledChange}
-						onNewItemClick={sheet.openCreate}
-					/>
+			{/* メインコンテンツ */}
+			<div className="flex-1 overflow-auto p-4">
+				<div className="rounded-xl bg-card border border-border shadow-sm p-4">
+					<div className="space-y-4">
+						<DataTableToolbar
+							search={search.search}
+							onSearchChange={handleSearchChange}
+							includeDisabled={search.includeDisabled}
+							onIncludeDisabledChange={handleIncludeDisabledChange}
+							onNewItemClick={sheet.openCreate}
+						/>
 
-					<DataTable
-						columns={columns}
-						data={data?.data ?? []}
-						globalFilter={search.search}
-						onRowClick={(row: WorkType) => sheet.openView(row)}
-						isLoading={isLoading}
-						isError={isError}
-						errorMessage={error?.message}
-						rowClassName={(row: WorkType) =>
-							row.deletedAt ? "opacity-50" : ""
-						}
-					/>
+						<DataTable
+							columns={columns}
+							data={data?.data ?? []}
+							globalFilter={search.search}
+							onRowClick={(row: WorkType) => sheet.openView(row)}
+							isLoading={isLoading}
+							isError={isError}
+							errorMessage={error?.message}
+							rowClassName={(row: WorkType) =>
+								row.deletedAt ? "opacity-50" : ""
+							}
+						/>
+					</div>
 				</div>
 			</div>
 

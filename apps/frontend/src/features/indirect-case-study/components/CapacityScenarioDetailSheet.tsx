@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import type { MasterSheetState } from "@/hooks/useMasterSheet";
-import { formatDateTime } from "@/lib/format-utils";
 import { getErrorMessage } from "@/lib/form-utils";
+import { formatDateTime } from "@/lib/format-utils";
 import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 import {
 	useCreateCapacityScenario,
@@ -90,8 +90,7 @@ function ScenarioForm({
 				name="scenarioName"
 				validators={{
 					onChange: ({ value }) => {
-						if (!value || value.length === 0)
-							return "名前を入力してください";
+						if (!value || value.length === 0) return "名前を入力してください";
 						if (value.length > 100)
 							return "名前は100文字以内で入力してください";
 						return undefined;
