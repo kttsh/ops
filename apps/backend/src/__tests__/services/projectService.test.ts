@@ -8,6 +8,7 @@ const mockProjectData = {
 	findById: vi.fn(),
 	findByIdIncludingDeleted: vi.fn(),
 	findByProjectCode: vi.fn(),
+	findCaseSummariesByProjectIds: vi.fn(),
 	create: vi.fn(),
 	update: vi.fn(),
 	softDelete: vi.fn(),
@@ -78,6 +79,7 @@ const sampleResponse = {
 	createdAt: "2026-01-01T00:00:00.000Z",
 	updatedAt: "2026-01-15T00:00:00.000Z",
 	deletedAt: null,
+	cases: [],
 };
 
 describe("projectService", () => {
@@ -97,6 +99,7 @@ describe("projectService", () => {
 				items: [sampleRow],
 				totalCount: 1,
 			});
+			mockProjectData.findCaseSummariesByProjectIds.mockResolvedValue([]);
 
 			const result = await projectService.findAll({
 				page: 1,
@@ -113,6 +116,7 @@ describe("projectService", () => {
 				items: [],
 				totalCount: 0,
 			});
+			mockProjectData.findCaseSummariesByProjectIds.mockResolvedValue([]);
 
 			await projectService.findAll({
 				page: 2,
@@ -145,6 +149,76 @@ describe("projectService", () => {
 
 			expect(result.items).toEqual([]);
 			expect(result.totalCount).toBe(0);
+			// 空の場合はケースサマリのクエリを実行しない
+			expect(
+				mockProjectData.findCaseSummariesByProjectIds,
+			).not.toHaveBeenCalled();
+		});
+
+		test("各案件にケースサマリを結合して返す", async () => {
+			const row2 = {
+				...sampleRow,
+				project_id: 2,
+				project_code: "PRJ-002",
+				name: "案件2",
+			};
+			mockProjectData.findAll.mockResolvedValue({
+				items: [sampleRow, row2],
+				totalCount: 2,
+			});
+			mockProjectData.findCaseSummariesByProjectIds.mockResolvedValue([
+				{
+					project_case_id: 10,
+					project_id: 1,
+					case_name: "標準ケース",
+					is_primary: true,
+				},
+				{
+					project_case_id: 11,
+					project_id: 1,
+					case_name: "悲観ケース",
+					is_primary: false,
+				},
+				{
+					project_case_id: 20,
+					project_id: 2,
+					case_name: "メインケース",
+					is_primary: true,
+				},
+			]);
+
+			const result = await projectService.findAll({
+				page: 1,
+				pageSize: 20,
+				includeDisabled: false,
+			});
+
+			expect(result.items[0].cases).toEqual([
+				{ projectCaseId: 10, caseName: "標準ケース", isPrimary: true },
+				{ projectCaseId: 11, caseName: "悲観ケース", isPrimary: false },
+			]);
+			expect(result.items[1].cases).toEqual([
+				{ projectCaseId: 20, caseName: "メインケース", isPrimary: true },
+			]);
+			expect(
+				mockProjectData.findCaseSummariesByProjectIds,
+			).toHaveBeenCalledWith([1, 2]);
+		});
+
+		test("ケースサマリが存在しない案件は空配列を返す", async () => {
+			mockProjectData.findAll.mockResolvedValue({
+				items: [sampleRow],
+				totalCount: 1,
+			});
+			mockProjectData.findCaseSummariesByProjectIds.mockResolvedValue([]);
+
+			const result = await projectService.findAll({
+				page: 1,
+				pageSize: 20,
+				includeDisabled: false,
+			});
+
+			expect(result.items[0].cases).toEqual([]);
 		});
 	});
 

@@ -2,8 +2,16 @@ import { HTTPException } from "hono/http-exception";
 import { businessUnitData } from "@/data/businessUnitData";
 import { projectData } from "@/data/projectData";
 import { projectTypeData } from "@/data/projectTypeData";
-import { toProjectResponse } from "@/transform/projectTransform";
-import type { CreateProject, Project, UpdateProject } from "@/types/project";
+import {
+	toProjectCaseSummaryResponse,
+	toProjectResponse,
+} from "@/transform/projectTransform";
+import type {
+	CreateProject,
+	Project,
+	ProjectCaseSummary,
+	UpdateProject,
+} from "@/types/project";
 
 export const projectService = {
 	async findAll(params: {
@@ -14,8 +22,27 @@ export const projectService = {
 		status?: string;
 	}): Promise<{ items: Project[]; totalCount: number }> {
 		const result = await projectData.findAll(params);
+
+		if (result.items.length === 0) {
+			return { items: [], totalCount: result.totalCount };
+		}
+
+		const projectIds = result.items.map((r) => r.project_id);
+		const caseSummaryRows =
+			await projectData.findCaseSummariesByProjectIds(projectIds);
+
+		const casesByProjectId = new Map<number, ProjectCaseSummary[]>();
+		for (const row of caseSummaryRows) {
+			const cases = casesByProjectId.get(row.project_id) || [];
+			cases.push(toProjectCaseSummaryResponse(row));
+			casesByProjectId.set(row.project_id, cases);
+		}
+
 		return {
-			items: result.items.map(toProjectResponse),
+			items: result.items.map((row) => ({
+				...toProjectResponse(row),
+				cases: casesByProjectId.get(row.project_id) || [],
+			})),
 			totalCount: result.totalCount,
 		};
 	},

@@ -1,6 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { toProjectResponse } from "@/transform/projectTransform";
-import type { ProjectRow } from "@/types/project";
+import {
+	toProjectCaseSummaryResponse,
+	toProjectResponse,
+} from "@/transform/projectTransform";
+import type { ProjectCaseSummaryRow, ProjectRow } from "@/types/project";
 
 describe("projectTransform", () => {
 	describe("toProjectResponse", () => {
@@ -39,6 +42,7 @@ describe("projectTransform", () => {
 				createdAt: "2026-01-01T00:00:00.000Z",
 				updatedAt: "2026-01-15T00:00:00.000Z",
 				deletedAt: null,
+				cases: [],
 			});
 		});
 
@@ -136,6 +140,79 @@ describe("projectTransform", () => {
 			const result = toProjectResponse(row);
 
 			expect(result.totalManhour).toBe(9999);
+		});
+
+		test("cases フィールドが空配列で返される", () => {
+			const row: ProjectRow = {
+				project_id: 6,
+				project_code: "PRJ-006",
+				name: "ケーステスト",
+				business_unit_code: "BU-001",
+				business_unit_name: "テスト部",
+				project_type_code: null,
+				project_type_name: null,
+				start_year_month: "202601",
+				total_manhour: 100,
+				status: "ACTIVE",
+				duration_months: null,
+				created_at: new Date("2026-01-01T00:00:00Z"),
+				updated_at: new Date("2026-01-01T00:00:00Z"),
+				deleted_at: null,
+			};
+
+			const result = toProjectResponse(row);
+
+			expect(result.cases).toEqual([]);
+		});
+	});
+
+	describe("toProjectCaseSummaryResponse", () => {
+		test("snake_case の DB 行を camelCase の API レスポンス形式に変換する", () => {
+			const row: ProjectCaseSummaryRow = {
+				project_case_id: 10,
+				project_id: 1,
+				case_name: "標準ケース",
+				is_primary: true,
+			};
+
+			const result = toProjectCaseSummaryResponse(row);
+
+			expect(result).toEqual({
+				projectCaseId: 10,
+				caseName: "標準ケース",
+				isPrimary: true,
+			});
+		});
+
+		test("isPrimary が false のケースを正しく変換する", () => {
+			const row: ProjectCaseSummaryRow = {
+				project_case_id: 11,
+				project_id: 1,
+				case_name: "悲観ケース",
+				is_primary: false,
+			};
+
+			const result = toProjectCaseSummaryResponse(row);
+
+			expect(result).toEqual({
+				projectCaseId: 11,
+				caseName: "悲観ケース",
+				isPrimary: false,
+			});
+		});
+
+		test("project_id はレスポンスに含まれない", () => {
+			const row: ProjectCaseSummaryRow = {
+				project_case_id: 12,
+				project_id: 99,
+				case_name: "テストケース",
+				is_primary: false,
+			};
+
+			const result = toProjectCaseSummaryResponse(row);
+
+			expect(result).not.toHaveProperty("projectId");
+			expect(result).not.toHaveProperty("project_id");
 		});
 	});
 });

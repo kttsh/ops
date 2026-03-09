@@ -209,6 +209,38 @@ describe("chartDataQuerySchema", () => {
 		});
 	});
 
+	describe("projectCaseIds のバリデーション", () => {
+		it("CSV形式の数値配列を受け付ける", () => {
+			const result = chartDataQuerySchema.safeParse({
+				...validParams,
+				projectCaseIds: "101,102,105",
+			});
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.projectCaseIds).toEqual([101, 102, 105]);
+			}
+		});
+
+		it("単一値を受け付ける", () => {
+			const result = chartDataQuerySchema.safeParse({
+				...validParams,
+				projectCaseIds: "101",
+			});
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.projectCaseIds).toEqual([101]);
+			}
+		});
+
+		it("未指定を許容する", () => {
+			const result = chartDataQuerySchema.safeParse(validParams);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.projectCaseIds).toBeUndefined();
+			}
+		});
+	});
+
 	describe("chartViewId のバリデーション", () => {
 		it("正の整数を受け付ける", () => {
 			const result = chartDataQuerySchema.safeParse({

@@ -224,6 +224,74 @@ export const chartDataData = {
 	},
 
 	/**
+	 * 個別案件工数（projectCaseIds指定時 — ケースオーバーライド）
+	 * 指定されたケースIDのデータを取得し、未指定の案件は isPrimary にフォールバック
+	 */
+	async getProjectDetailsWithCaseOverrides(params: {
+		businessUnitCodes: string[];
+		startYearMonth: string;
+		endYearMonth: string;
+		projectIds?: number[];
+		projectCaseIds: number[];
+	}): Promise<ProjectDetailRow[]> {
+		const pool = await getPool();
+		const request = pool.request();
+		request.input("startYearMonth", sql.Char(6), params.startYearMonth);
+		request.input("endYearMonth", sql.Char(6), params.endYearMonth);
+
+		const buPlaceholders = params.businessUnitCodes.map((code, i) => {
+			request.input(`bu${i}`, sql.VarChar(20), code);
+			return `@bu${i}`;
+		});
+
+		const casePlaceholders = params.projectCaseIds.map((id, i) => {
+			request.input(`caseId${i}`, sql.Int, id);
+			return `@caseId${i}`;
+		});
+
+		let projectIdFilter = "";
+		if (params.projectIds?.length) {
+			const pidPlaceholders = params.projectIds.map((id, i) => {
+				request.input(`pid${i}`, sql.Int, id);
+				return `@pid${i}`;
+			});
+			projectIdFilter = `AND p.project_id IN (${pidPlaceholders.join(",")})`;
+		}
+
+		const result = await request.query<ProjectDetailRow>(
+			`SELECT
+        p.project_id AS projectId,
+        p.name AS projectName,
+        p.project_type_code AS projectTypeCode,
+        pl.year_month AS yearMonth,
+        SUM(pl.manhour) AS manhour
+      FROM project_load pl
+      JOIN project_cases pc ON pl.project_case_id = pc.project_case_id
+      JOIN projects p ON pc.project_id = p.project_id
+      WHERE p.business_unit_code IN (${buPlaceholders.join(",")})
+        AND pl.year_month BETWEEN @startYearMonth AND @endYearMonth
+        AND p.deleted_at IS NULL
+        AND pc.deleted_at IS NULL
+        AND (
+          pc.project_case_id IN (${casePlaceholders.join(",")})
+          OR (
+            pc.is_primary = 1
+            AND p.project_id NOT IN (
+              SELECT pc2.project_id FROM project_cases pc2
+              WHERE pc2.project_case_id IN (${casePlaceholders.join(",")})
+              AND pc2.deleted_at IS NULL
+            )
+          )
+        )
+        ${projectIdFilter}
+      GROUP BY p.project_id, p.name, p.project_type_code, pl.year_month
+      ORDER BY p.project_type_code, p.name, pl.year_month`,
+		);
+
+		return result.recordset;
+	},
+
+	/**
 	 * 個別案件工数（chartViewId指定時）
 	 */
 	async getProjectDetailsByChartView(params: {

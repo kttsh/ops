@@ -120,20 +120,38 @@ export const chartDataService = {
 		params: ChartDataServiceParams,
 	): Promise<ChartDataResponse> {
 		// 案件工数（案件単位）
-		const projectDetailRows = params.chartViewId
-			? await chartDataData.getProjectDetailsByChartView({
+		// 分岐: chartViewId → projectCaseIds → デフォルト(isPrimary)
+		let projectDetailRows: ProjectDetailRow[];
+		if (params.chartViewId) {
+			projectDetailRows =
+				await chartDataData.getProjectDetailsByChartView({
 					chartViewId: params.chartViewId,
 					businessUnitCodes: params.businessUnitCodes,
 					startYearMonth: params.startYearMonth,
 					endYearMonth: params.endYearMonth,
 					projectIds: params.projectIds,
-				})
-			: await chartDataData.getProjectDetailsByDefault({
+				});
+		} else if (
+			params.projectCaseIds &&
+			params.projectCaseIds.length > 0
+		) {
+			projectDetailRows =
+				await chartDataData.getProjectDetailsWithCaseOverrides({
+					businessUnitCodes: params.businessUnitCodes,
+					startYearMonth: params.startYearMonth,
+					endYearMonth: params.endYearMonth,
+					projectIds: params.projectIds,
+					projectCaseIds: params.projectCaseIds,
+				});
+		} else {
+			projectDetailRows =
+				await chartDataData.getProjectDetailsByDefault({
 					businessUnitCodes: params.businessUnitCodes,
 					startYearMonth: params.startYearMonth,
 					endYearMonth: params.endYearMonth,
 					projectIds: params.projectIds,
 				});
+		}
 
 		// 間接工数
 		const indirectWorkLoadRows = params.chartViewId

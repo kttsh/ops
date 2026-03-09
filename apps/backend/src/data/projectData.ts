@@ -1,6 +1,10 @@
 import sql from "mssql";
 import { getPool } from "@/database/client";
-import type { CreateProject, ProjectRow } from "@/types/project";
+import type {
+	CreateProject,
+	ProjectCaseSummaryRow,
+	ProjectRow,
+} from "@/types/project";
 
 const SELECT_COLUMNS = `
   p.project_id, p.project_code, p.name,
@@ -269,5 +273,29 @@ export const projectData = {
 			);
 
 		return result.recordset[0].hasRef;
+	},
+
+	async findCaseSummariesByProjectIds(
+		projectIds: number[],
+	): Promise<ProjectCaseSummaryRow[]> {
+		if (projectIds.length === 0) return [];
+
+		const pool = await getPool();
+		const request = pool.request();
+
+		const placeholders = projectIds.map((id, i) => {
+			request.input(`pid${i}`, sql.Int, id);
+			return `@pid${i}`;
+		});
+
+		const result = await request.query<ProjectCaseSummaryRow>(
+			`SELECT pc.project_case_id, pc.project_id, pc.case_name, pc.is_primary
+       FROM project_cases pc
+       WHERE pc.project_id IN (${placeholders.join(",")})
+         AND pc.deleted_at IS NULL
+       ORDER BY pc.project_id, pc.is_primary DESC, pc.project_case_id ASC`,
+		);
+
+		return result.recordset;
 	},
 };

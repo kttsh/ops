@@ -92,6 +92,21 @@ export type ProjectRow = {
 	deleted_at: Date | null;
 };
 
+/** ケースサマリ DB 行型（snake_case） */
+export type ProjectCaseSummaryRow = {
+	project_case_id: number;
+	project_id: number;
+	case_name: string;
+	is_primary: boolean;
+};
+
+/** ケースサマリ API レスポンス型（camelCase） */
+export type ProjectCaseSummary = {
+	projectCaseId: number;
+	caseName: string;
+	isPrimary: boolean;
+};
+
 /** API レスポンス型（camelCase） */
 export type Project = {
 	projectId: number;
@@ -108,4 +123,5 @@ export type Project = {
 	createdAt: string;
 	updatedAt: string;
 	deletedAt: string | null;
+	cases: ProjectCaseSummary[];
 };

@@ -4,6 +4,7 @@ vi.mock("@/data/chartDataData", () => ({
 	chartDataData: {
 		getProjectDetailsByDefault: vi.fn(),
 		getProjectDetailsByChartView: vi.fn(),
+		getProjectDetailsWithCaseOverrides: vi.fn(),
 		getIndirectWorkLoadsByDefault: vi.fn(),
 		getIndirectWorkLoadsByChartView: vi.fn(),
 		getCapacities: vi.fn(),
@@ -31,6 +32,7 @@ describe("chartDataService.getChartData", () => {
 		vi.clearAllMocks();
 		mockedData.getProjectDetailsByDefault.mockResolvedValue([]);
 		mockedData.getProjectDetailsByChartView.mockResolvedValue([]);
+		mockedData.getProjectDetailsWithCaseOverrides.mockResolvedValue([]);
 		mockedData.getIndirectWorkLoadsByDefault.mockResolvedValue([]);
 		mockedData.getIndirectWorkLoadsByChartView.mockResolvedValue([]);
 		mockedData.getCapacities.mockResolvedValue([]);
@@ -69,6 +71,62 @@ describe("chartDataService.getChartData", () => {
 				endYearMonth: "202603",
 				indirectWorkCaseIds: [10, 20],
 			});
+		});
+	});
+
+	describe("projectCaseIds指定時の分岐動作（chartViewId未指定）", () => {
+		it("getProjectDetailsWithCaseOverrides を呼び出す", async () => {
+			await chartDataService.getChartData({
+				...baseParams,
+				projectCaseIds: [101, 102],
+			});
+			expect(
+				mockedData.getProjectDetailsWithCaseOverrides,
+			).toHaveBeenCalledWith({
+				businessUnitCodes: ["BU001"],
+				startYearMonth: "202504",
+				endYearMonth: "202603",
+				projectCaseIds: [101, 102],
+			});
+			expect(mockedData.getProjectDetailsByDefault).not.toHaveBeenCalled();
+			expect(mockedData.getProjectDetailsByChartView).not.toHaveBeenCalled();
+		});
+
+		it("projectIds も指定されている場合に両方渡す", async () => {
+			await chartDataService.getChartData({
+				...baseParams,
+				projectIds: [1, 2],
+				projectCaseIds: [101, 102],
+			});
+			expect(
+				mockedData.getProjectDetailsWithCaseOverrides,
+			).toHaveBeenCalledWith({
+				businessUnitCodes: ["BU001"],
+				startYearMonth: "202504",
+				endYearMonth: "202603",
+				projectIds: [1, 2],
+				projectCaseIds: [101, 102],
+			});
+		});
+	});
+
+	describe("chartViewId指定時はprojectCaseIdsより優先する", () => {
+		it("chartViewId と projectCaseIds が両方指定された場合、chartViewId を優先する", async () => {
+			await chartDataService.getChartData({
+				...baseParams,
+				chartViewId: 1,
+				projectCaseIds: [101, 102],
+			});
+			expect(mockedData.getProjectDetailsByChartView).toHaveBeenCalledWith({
+				chartViewId: 1,
+				businessUnitCodes: ["BU001"],
+				startYearMonth: "202504",
+				endYearMonth: "202603",
+			});
+			expect(
+				mockedData.getProjectDetailsWithCaseOverrides,
+			).not.toHaveBeenCalled();
+			expect(mockedData.getProjectDetailsByDefault).not.toHaveBeenCalled();
 		});
 	});
 

@@ -27,7 +27,7 @@ describe("GET /chart-data", () => {
 
 	it("全必須パラメータ指定時に200レスポンスで3セクション + メタ情報を返却する", async () => {
 		const res = await app.request(
-			"/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
+			"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
 		);
 
 		expect(res.status).toBe(200);
@@ -41,7 +41,7 @@ describe("GET /chart-data", () => {
 
 	it("サービス関数に正しいパラメータを渡す", async () => {
 		await app.request(
-			"/chart-data?businessUnitCodes=BU001,BU002&startYearMonth=202504&endYearMonth=202603&chartViewId=1&capacityScenarioIds=1,2&indirectWorkCaseIds=10,20",
+			"/api/ops/chart-data?businessUnitCodes=BU001,BU002&startYearMonth=202504&endYearMonth=202603&chartViewId=1&capacityScenarioIds=1,2&indirectWorkCaseIds=10,20&projectCaseIds=101,102",
 		);
 
 		expect(mockedService.getChartData).toHaveBeenCalledWith({
@@ -51,12 +51,13 @@ describe("GET /chart-data", () => {
 			chartViewId: 1,
 			capacityScenarioIds: [1, 2],
 			indirectWorkCaseIds: [10, 20],
+			projectCaseIds: [101, 102],
 		});
 	});
 
 	it("レスポンスが { data: {...} } 構造で返却される", async () => {
 		const res = await app.request(
-			"/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
+			"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
 		);
 
 		const json = await res.json();
@@ -71,7 +72,7 @@ describe("GET /chart-data", () => {
 	describe("バリデーションエラー", () => {
 		it("businessUnitCodes 未指定時に422エラーを返却する", async () => {
 			const res = await app.request(
-				"/chart-data?startYearMonth=202504&endYearMonth=202603",
+				"/api/ops/chart-data?startYearMonth=202504&endYearMonth=202603",
 			);
 
 			expect(res.status).toBe(422);
@@ -83,7 +84,7 @@ describe("GET /chart-data", () => {
 
 		it("startYearMonth が不正形式の場合に422エラーを返却する", async () => {
 			const res = await app.request(
-				"/chart-data?businessUnitCodes=BU001&startYearMonth=20250&endYearMonth=202603",
+				"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=20250&endYearMonth=202603",
 			);
 
 			expect(res.status).toBe(422);
@@ -91,7 +92,7 @@ describe("GET /chart-data", () => {
 
 		it("月が範囲外の場合に422エラーを返却する", async () => {
 			const res = await app.request(
-				"/chart-data?businessUnitCodes=BU001&startYearMonth=202513&endYearMonth=202603",
+				"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202513&endYearMonth=202603",
 			);
 
 			expect(res.status).toBe(422);
@@ -99,7 +100,7 @@ describe("GET /chart-data", () => {
 
 		it("startYearMonth > endYearMonth の場合に422エラーを返却する", async () => {
 			const res = await app.request(
-				"/chart-data?businessUnitCodes=BU001&startYearMonth=202604&endYearMonth=202603",
+				"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202604&endYearMonth=202603",
 			);
 
 			expect(res.status).toBe(422);
@@ -107,7 +108,7 @@ describe("GET /chart-data", () => {
 
 		it("期間が60ヶ月を超える場合に422エラーを返却する", async () => {
 			const res = await app.request(
-				"/chart-data?businessUnitCodes=BU001&startYearMonth=202001&endYearMonth=202501",
+				"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202001&endYearMonth=202501",
 			);
 
 			expect(res.status).toBe(422);
@@ -116,7 +117,7 @@ describe("GET /chart-data", () => {
 
 	it("オプショナルパラメータ未指定時も正常に動作する", async () => {
 		const res = await app.request(
-			"/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
+			"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
 		);
 
 		expect(res.status).toBe(200);
@@ -127,6 +128,7 @@ describe("GET /chart-data", () => {
 			chartViewId: undefined,
 			capacityScenarioIds: undefined,
 			indirectWorkCaseIds: undefined,
+			projectCaseIds: undefined,
 		});
 	});
 });

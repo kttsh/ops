@@ -14,6 +14,7 @@ const app = new Hono().get(
 			startYearMonth: query.startYearMonth,
 			endYearMonth: query.endYearMonth,
 			projectIds: query.projectIds,
+			projectCaseIds: query.projectCaseIds,
 			chartViewId: query.chartViewId,
 			capacityScenarioIds: query.capacityScenarioIds,
 			indirectWorkCaseIds: query.indirectWorkCaseIds,

@@ -30,6 +30,7 @@ export const chartDataQuerySchema = z
 		capacityScenarioIds: csvToNumberArray.optional(),
 		indirectWorkCaseIds: csvToNumberArray.optional(),
 		projectIds: csvToNumberArray.optional(),
+		projectCaseIds: csvToNumberArray.optional(),
 	})
 	.refine(
 		(data) => data.startYearMonth <= data.endYearMonth,
@@ -55,6 +56,7 @@ export type ChartDataServiceParams = {
 	startYearMonth: string;
 	endYearMonth: string;
 	projectIds?: number[];
+	projectCaseIds?: number[];
 	chartViewId?: number;
 	capacityScenarioIds?: number[];
 	indirectWorkCaseIds?: number[];

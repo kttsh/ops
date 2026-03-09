@@ -1,4 +1,9 @@
-import type { Project, ProjectRow } from "@/types/project";
+import type {
+	Project,
+	ProjectCaseSummary,
+	ProjectCaseSummaryRow,
+	ProjectRow,
+} from "@/types/project";
 import { createFieldMapper } from "@/utils/fieldMapper";
 
 export const toProjectResponse = createFieldMapper<ProjectRow, Project>({
@@ -16,4 +21,14 @@ export const toProjectResponse = createFieldMapper<ProjectRow, Project>({
 	createdAt: "created_at",
 	updatedAt: "updated_at",
 	deletedAt: "deleted_at",
+	cases: { computed: () => [] as ProjectCaseSummary[] },
+});
+
+export const toProjectCaseSummaryResponse = createFieldMapper<
+	ProjectCaseSummaryRow,
+	ProjectCaseSummary
+>({
+	projectCaseId: "project_case_id",
+	caseName: "case_name",
+	isPrimary: "is_primary",
 });
