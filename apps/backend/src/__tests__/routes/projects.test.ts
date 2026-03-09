@@ -118,6 +118,36 @@ describe("GET /projects", () => {
 		});
 	});
 
+	test("レスポンスにケースサマリが含まれる", async () => {
+		const projectWithCases = {
+			...sampleProject,
+			cases: [
+				{ projectCaseId: 10, caseName: "標準", isPrimary: true },
+				{ projectCaseId: 11, caseName: "楽観", isPrimary: false },
+			],
+		};
+		mockedService.findAll.mockResolvedValue({
+			items: [projectWithCases],
+			totalCount: 1,
+		});
+
+		const res = await app.request("/projects");
+		expect(res.status).toBe(200);
+
+		const body = await res.json();
+		expect(body.data[0].cases).toHaveLength(2);
+		expect(body.data[0].cases[0]).toEqual({
+			projectCaseId: 10,
+			caseName: "標準",
+			isPrimary: true,
+		});
+		expect(body.data[0].cases[1]).toEqual({
+			projectCaseId: 11,
+			caseName: "楽観",
+			isPrimary: false,
+		});
+	});
+
 	test("page[number] と page[size] でページネーションする", async () => {
 		mockedService.findAll.mockResolvedValue({
 			items: [sampleProject2],

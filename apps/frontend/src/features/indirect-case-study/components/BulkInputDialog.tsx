@@ -78,8 +78,7 @@ export function BulkInputDialog({
 		onOpenChange(false);
 	};
 
-	const isApplyDisabled =
-		mode === "interpolation" && !isInterpolationValid;
+	const isApplyDisabled = mode === "interpolation" && !isInterpolationValid;
 
 	return (
 		<AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -178,9 +177,7 @@ export function BulkInputDialog({
 												return;
 											}
 											const val = parseInt(normalized, 10);
-											setEndValue(
-												Number.isNaN(val) ? null : Math.max(0, val),
-											);
+											setEndValue(Number.isNaN(val) ? null : Math.max(0, val));
 										}}
 									/>
 								</div>

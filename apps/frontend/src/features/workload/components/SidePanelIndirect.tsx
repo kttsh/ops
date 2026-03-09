@@ -68,19 +68,15 @@ export function SidePanelIndirect({
 			items.length > 0
 		) {
 			initialOrderAppliedRef.current = true;
-			const orderMap = new Map(
-				initialOrder.map((code, idx) => [code, idx]),
-			);
+			const orderMap = new Map(initialOrder.map((code, idx) => [code, idx]));
 			const sorted = [...items].sort((a, b) => {
-				const orderA =
-					orderMap.get(a.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
-				const orderB =
-					orderMap.get(b.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
+				const orderA = orderMap.get(a.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
+				const orderB = orderMap.get(b.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
 				return orderA - orderB;
 			});
 			setItems(sorted.map((it, i) => ({ ...it, displayOrder: i })));
 		}
-	}, [initialOrder, items.length]);
+	}, [initialOrder, items]);
 
 	const colorMutation = useBulkUpsertColorSettings();
 	const orderMutation = useBulkUpsertStackOrderSettings();
@@ -126,9 +122,7 @@ export function SidePanelIndirect({
 					{
 						onError: () => {
 							setItems(previousItems);
-							onOrderChange?.(
-								previousItems.map((it) => it.workTypeCode),
-							);
+							onOrderChange?.(previousItems.map((it) => it.workTypeCode));
 							toast.error("表示順の保存に失敗しました");
 						},
 					},
@@ -159,9 +153,7 @@ export function SidePanelIndirect({
 					{
 						onError: () => {
 							setItems(previousItems);
-							onOrderChange?.(
-								previousItems.map((it) => it.workTypeCode),
-							);
+							onOrderChange?.(previousItems.map((it) => it.workTypeCode));
 							toast.error("表示順の保存に失敗しました");
 						},
 					},

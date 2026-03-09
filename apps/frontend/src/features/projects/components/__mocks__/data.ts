@@ -14,6 +14,7 @@ export const mockProject = {
 	durationMonths: 24,
 	createdAt: "2025-01-01T00:00:00Z",
 	updatedAt: "2025-01-01T00:00:00Z",
+	cases: [{ projectCaseId: 1, caseName: "標準", isPrimary: true }],
 } satisfies Project;
 
 export const mockProjects: Project[] = [
@@ -32,6 +33,7 @@ export const mockProjects: Project[] = [
 		durationMonths: 12,
 		createdAt: "2025-02-01T00:00:00Z",
 		updatedAt: "2025-02-01T00:00:00Z",
+		cases: [{ projectCaseId: 2, caseName: "標準", isPrimary: true }],
 	},
 	{
 		projectId: 3,
@@ -47,5 +49,6 @@ export const mockProjects: Project[] = [
 		durationMonths: 6,
 		createdAt: "2025-03-01T00:00:00Z",
 		updatedAt: "2025-03-01T00:00:00Z",
+		cases: [{ projectCaseId: 3, caseName: "標準", isPrimary: true }],
 	},
 ];

@@ -110,6 +110,78 @@ describe("chartDataService.getChartData", () => {
 		});
 	});
 
+	describe("projectCaseIds指定時のデータ返却", () => {
+		it("getProjectDetailsWithCaseOverrides のデータが変換されて返却される", async () => {
+			const rows: ProjectDetailRow[] = [
+				{
+					projectId: 1,
+					projectName: "案件A",
+					projectTypeCode: "PT001",
+					yearMonth: "202504",
+					manhour: 150,
+				},
+				{
+					projectId: 2,
+					projectName: "案件B",
+					projectTypeCode: null,
+					yearMonth: "202504",
+					manhour: 80,
+				},
+			];
+			mockedData.getProjectDetailsWithCaseOverrides.mockResolvedValue(rows);
+
+			const result = await chartDataService.getChartData({
+				...baseParams,
+				projectCaseIds: [101, 201],
+			});
+
+			expect(result.projectLoads).toHaveLength(2);
+			expect(result.projectLoads[0]).toEqual({
+				projectId: 1,
+				projectName: "案件A",
+				projectTypeCode: "PT001",
+				monthly: [{ yearMonth: "202504", manhour: 150 }],
+			});
+			expect(result.projectLoads[1]).toEqual({
+				projectId: 2,
+				projectName: "案件B",
+				projectTypeCode: null,
+				monthly: [{ yearMonth: "202504", manhour: 80 }],
+			});
+		});
+
+		it("不正なprojectCaseIds指定時もSQL層がisPrimaryフォールバックしたデータを返却する", async () => {
+			// SQL層が不正なケースIDを無視しisPrimaryフォールバックした結果を返す想定
+			const rows: ProjectDetailRow[] = [
+				{
+					projectId: 1,
+					projectName: "案件A",
+					projectTypeCode: "PT001",
+					yearMonth: "202504",
+					manhour: 100,
+				},
+			];
+			mockedData.getProjectDetailsWithCaseOverrides.mockResolvedValue(rows);
+
+			const result = await chartDataService.getChartData({
+				...baseParams,
+				projectCaseIds: [99999], // 存在しないケースID
+			});
+
+			expect(
+				mockedData.getProjectDetailsWithCaseOverrides,
+			).toHaveBeenCalledWith({
+				businessUnitCodes: ["BU001"],
+				startYearMonth: "202504",
+				endYearMonth: "202603",
+				projectCaseIds: [99999],
+			});
+			// SQL層がフォールバックしたデータがそのまま変換される
+			expect(result.projectLoads).toHaveLength(1);
+			expect(result.projectLoads[0].projectId).toBe(1);
+		});
+	});
+
 	describe("chartViewId指定時はprojectCaseIdsより優先する", () => {
 		it("chartViewId と projectCaseIds が両方指定された場合、chartViewId を優先する", async () => {
 			await chartDataService.getChartData({

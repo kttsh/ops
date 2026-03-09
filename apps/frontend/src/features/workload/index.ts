@@ -52,6 +52,7 @@ export type {
 	LineSeriesConfig,
 	MonthlyDataPoint,
 	Project,
+	ProjectCaseSummary,
 	ProjectLoadAggregation,
 	ProjectType,
 	TableRow,

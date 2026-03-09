@@ -30,6 +30,8 @@ export const Default: Story = {
 		businessUnitCodes: ["BU001"],
 		selectedProjectIds: new Set([1]),
 		onSelectionChange: fn(),
+		selectedCaseIds: new Map([[1, 1]]),
+		onCaseChange: fn(),
 	},
 };
 
@@ -38,5 +40,7 @@ export const NoSelection: Story = {
 		businessUnitCodes: ["BU001"],
 		selectedProjectIds: new Set(),
 		onSelectionChange: fn(),
+		selectedCaseIds: new Map(),
+		onCaseChange: fn(),
 	},
 };

@@ -123,18 +123,14 @@ export const chartDataService = {
 		// 分岐: chartViewId → projectCaseIds → デフォルト(isPrimary)
 		let projectDetailRows: ProjectDetailRow[];
 		if (params.chartViewId) {
-			projectDetailRows =
-				await chartDataData.getProjectDetailsByChartView({
-					chartViewId: params.chartViewId,
-					businessUnitCodes: params.businessUnitCodes,
-					startYearMonth: params.startYearMonth,
-					endYearMonth: params.endYearMonth,
-					projectIds: params.projectIds,
-				});
-		} else if (
-			params.projectCaseIds &&
-			params.projectCaseIds.length > 0
-		) {
+			projectDetailRows = await chartDataData.getProjectDetailsByChartView({
+				chartViewId: params.chartViewId,
+				businessUnitCodes: params.businessUnitCodes,
+				startYearMonth: params.startYearMonth,
+				endYearMonth: params.endYearMonth,
+				projectIds: params.projectIds,
+			});
+		} else if (params.projectCaseIds && params.projectCaseIds.length > 0) {
 			projectDetailRows =
 				await chartDataData.getProjectDetailsWithCaseOverrides({
 					businessUnitCodes: params.businessUnitCodes,
@@ -144,13 +140,12 @@ export const chartDataService = {
 					projectCaseIds: params.projectCaseIds,
 				});
 		} else {
-			projectDetailRows =
-				await chartDataData.getProjectDetailsByDefault({
-					businessUnitCodes: params.businessUnitCodes,
-					startYearMonth: params.startYearMonth,
-					endYearMonth: params.endYearMonth,
-					projectIds: params.projectIds,
-				});
+			projectDetailRows = await chartDataData.getProjectDetailsByDefault({
+				businessUnitCodes: params.businessUnitCodes,
+				startYearMonth: params.startYearMonth,
+				endYearMonth: params.endYearMonth,
+				projectIds: params.projectIds,
+			});
 		}
 
 		// 間接工数

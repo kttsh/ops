@@ -7,7 +7,9 @@ export function linearInterpolate(
 	const result: number[] = [];
 	for (let i = 0; i < MONTH_COUNT; i++) {
 		result.push(
-			Math.round(startValue + ((endValue - startValue) * i) / (MONTH_COUNT - 1)),
+			Math.round(
+				startValue + ((endValue - startValue) * i) / (MONTH_COUNT - 1),
+			),
 		);
 	}
 	return result;

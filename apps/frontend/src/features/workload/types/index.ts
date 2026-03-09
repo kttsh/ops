@@ -95,6 +95,12 @@ export type IndirectWorkCase = {
 	updatedAt: string;
 };
 
+export type ProjectCaseSummary = {
+	projectCaseId: number;
+	caseName: string;
+	isPrimary: boolean;
+};
+
 export type Project = {
 	projectId: number;
 	projectCode: string;
@@ -110,6 +116,7 @@ export type Project = {
 	createdAt: string;
 	updatedAt: string;
 	deletedAt: string | null;
+	cases: ProjectCaseSummary[];
 };
 
 // ============================================================
@@ -311,6 +318,7 @@ export type ChartDataParams = {
 	startYearMonth: string;
 	endYearMonth: string;
 	projectIds?: number[];
+	projectCaseIds?: number[];
 	capacityScenarioIds?: number[];
 	indirectWorkCaseIds?: number[];
 	chartViewId?: number;

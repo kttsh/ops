@@ -12,6 +12,12 @@ export type {
 
 // --- API レスポンス型 ---
 
+export type ProjectCaseSummary = {
+	projectCaseId: number;
+	caseName: string;
+	isPrimary: boolean;
+};
+
 export interface Project extends SoftDeletableEntity {
 	projectId: number;
 	projectCode: string;
@@ -24,6 +30,7 @@ export interface Project extends SoftDeletableEntity {
 	totalManhour: number;
 	status: string;
 	durationMonths: number | null;
+	cases: ProjectCaseSummary[];
 }
 
 // --- ステータス定数 ---

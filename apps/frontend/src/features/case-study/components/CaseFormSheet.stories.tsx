@@ -45,6 +45,7 @@ export const CreateMode: Story = {
 			durationMonths: 24,
 			createdAt: "2025-01-01T00:00:00Z",
 			updatedAt: "2025-01-01T00:00:00Z",
+			cases: [{ projectCaseId: 1, caseName: "標準", isPrimary: true }],
 		},
 		editCaseId: null,
 		onSuccess: fn(),

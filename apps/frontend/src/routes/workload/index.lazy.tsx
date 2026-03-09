@@ -25,6 +25,11 @@ import { useChartData } from "@/features/workload/hooks/useChartData";
 import { useLegendState } from "@/features/workload/hooks/useLegendState";
 import { useTableData } from "@/features/workload/hooks/useTableData";
 import { useWorkloadFilters } from "@/features/workload/hooks/useWorkloadFilters";
+import {
+	hasNonDefaultCaseSelection,
+	initializeCaseSelection,
+	syncCaseSelectionWithProjects,
+} from "@/features/workload/utils/case-selection";
 import { CAPACITY_COLORS } from "@/lib/chart-colors";
 
 export const Route = createLazyFileRoute("/workload/")({
@@ -45,27 +50,56 @@ function WorkloadPage() {
 
 	// 案件一覧を取得（selectedProjectIds の初期化に使用）
 	const { data: projectsData } = useQuery(projectsQueryOptions(filters.bu));
-	const allProjectIds = useMemo(
-		() => projectsData?.data?.map((p) => p.projectId) ?? [],
+	const projects = useMemo(
+		() => projectsData?.data ?? [],
 		[projectsData?.data],
+	);
+	const allProjectIds = useMemo(
+		() => projects.map((p) => p.projectId),
+		[projects],
 	);
 
 	const [selectedProjectIds, setSelectedProjectIds] = useState<Set<number>>(
 		() => new Set(),
 	);
 
-	// BU変更時・案件一覧取得時に全案件を選択状態にする
+	// ケース選択状態（projectId → projectCaseId）
+	const [selectedCaseIds, setSelectedCaseIds] = useState<Map<number, number>>(
+		() => new Map(),
+	);
+
+	// BU変更時・案件一覧取得時に全案件を選択状態にし、デフォルトケースで初期化
 	useEffect(() => {
 		if (allProjectIds.length > 0) {
-			setSelectedProjectIds(new Set(allProjectIds));
+			const newIds = new Set(allProjectIds);
+			setSelectedProjectIds(newIds);
+			setSelectedCaseIds(initializeCaseSelection(projects, newIds));
 		} else {
 			setSelectedProjectIds(new Set());
+			setSelectedCaseIds(new Map());
 		}
-	}, [allProjectIds]);
+	}, [allProjectIds, projects]);
 
-	const handleProjectSelectionChange = useCallback((ids: Set<number>) => {
-		setSelectedProjectIds(ids);
-	}, []);
+	const handleProjectSelectionChange = useCallback(
+		(ids: Set<number>) => {
+			setSelectedProjectIds(ids);
+			setSelectedCaseIds((prev) =>
+				syncCaseSelectionWithProjects(prev, ids, projects),
+			);
+		},
+		[projects],
+	);
+
+	const handleCaseChange = useCallback(
+		(projectId: number, projectCaseId: number) => {
+			setSelectedCaseIds((prev) => {
+				const next = new Map(prev);
+				next.set(projectId, projectCaseId);
+				return next;
+			});
+		},
+		[],
+	);
 
 	// 案件色設定（SidePanelSettings ↔ useChartData の橋渡し）
 	const [projectColors, setProjectColors] = useState<Record<number, string>>(
@@ -213,7 +247,7 @@ function WorkloadPage() {
 		[setPeriod, setPeriodAndBusinessUnits],
 	);
 
-	// chartDataParams に selectedProjectIds と capacityScenarioIds を含める
+	// chartDataParams に selectedProjectIds, projectCaseIds, capacityScenarioIds を含める
 	const chartDataParamsWithFilters = useMemo(() => {
 		if (!chartDataParams) return null;
 		if (selectedProjectIds.size === 0) return null;
@@ -221,6 +255,10 @@ function WorkloadPage() {
 		// 全選択時は projectIds を送信しない（全件取得と同じ）
 		if (selectedProjectIds.size < allProjectIds.length) {
 			params.projectIds = Array.from(selectedProjectIds);
+		}
+		// 全デフォルト時は projectCaseIds を省略（既存最適化クエリを使用）
+		if (hasNonDefaultCaseSelection(selectedCaseIds, projects)) {
+			params.projectCaseIds = Array.from(selectedCaseIds.values());
 		}
 		if (capacityScenarioIds.length > 0) {
 			params.capacityScenarioIds = capacityScenarioIds;
@@ -230,6 +268,8 @@ function WorkloadPage() {
 		chartDataParams,
 		selectedProjectIds,
 		allProjectIds.length,
+		selectedCaseIds,
+		projects,
 		capacityScenarioIds,
 	]);
 
@@ -292,6 +332,8 @@ function WorkloadPage() {
 							businessUnitCodes={filters.bu}
 							selectedProjectIds={selectedProjectIds}
 							onSelectionChange={handleProjectSelectionChange}
+							selectedCaseIds={selectedCaseIds}
+							onCaseChange={handleCaseChange}
 						/>
 					}
 					indirectContent={

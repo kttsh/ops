@@ -4,6 +4,13 @@ import { useCallback, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { projectsQueryOptions } from "@/features/workload/api/queries";
 import { ProjectEditSheet } from "@/features/workload/components/ProjectEditSheet";
 
@@ -11,6 +18,8 @@ interface SidePanelProjectsProps {
 	businessUnitCodes: string[];
 	selectedProjectIds: Set<number>;
 	onSelectionChange: (ids: Set<number>) => void;
+	selectedCaseIds: Map<number, number>;
+	onCaseChange: (projectId: number, projectCaseId: number) => void;
 }
 
 type SortKey = "name" | "manhour" | "duration" | "start";
@@ -21,6 +30,8 @@ export function SidePanelProjects({
 	businessUnitCodes,
 	selectedProjectIds,
 	onSelectionChange,
+	selectedCaseIds,
+	onCaseChange,
 }: SidePanelProjectsProps) {
 	const [searchText, setSearchText] = useState("");
 	const [sortKey, setSortKey] = useState<SortKey>("name");
@@ -140,63 +151,90 @@ export function SidePanelProjects({
 					return (
 						<div
 							key={project.projectId}
-							className="flex w-full items-start gap-3 rounded-lg border border-border bg-white p-3 text-sm transition-colors hover:bg-accent"
+							className="rounded-lg border border-border bg-white p-3 text-sm transition-colors hover:bg-accent"
 						>
-							<button
-								type="button"
-								className="flex flex-1 items-start gap-3 text-left"
-								onClick={() => toggleProject(project.projectId)}
-							>
-								<div
-									className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
-										selected
-											? "border-primary bg-primary text-primary-foreground"
-											: "border-input"
-									}`}
+							<div className="flex w-full items-start gap-3">
+								<button
+									type="button"
+									className="flex flex-1 items-start gap-3 text-left"
+									onClick={() => toggleProject(project.projectId)}
 								>
-									{selected && <Check className="h-3 w-3" />}
-								</div>
-								<div className="flex-1 min-w-0">
-									<p className="truncate font-medium">{project.name}</p>
-									<div className="mt-1.5 flex flex-wrap gap-1.5">
-										{project.businessUnitName && (
-											<Badge variant="secondary" className="text-xs">
-												{project.businessUnitName}
-											</Badge>
-										)}
-										{project.projectTypeName && (
-											<Badge variant="outline" className="text-xs">
-												{project.projectTypeName}
-											</Badge>
-										)}
+									<div
+										className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
+											selected
+												? "border-primary bg-primary text-primary-foreground"
+												: "border-input"
+										}`}
+									>
+										{selected && <Check className="h-3 w-3" />}
 									</div>
-									<div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-										{project.startYearMonth && (
-											<span>
-												{project.startYearMonth.slice(0, 4)}/
-												{project.startYearMonth.slice(4, 6)}
-												{project.durationMonths != null &&
-													` (${project.durationMonths}ヶ月)`}
-											</span>
-										)}
-										{project.totalManhour != null && (
-											<span>
-												{project.totalManhour.toLocaleString("ja-JP")}H
-											</span>
-										)}
+									<div className="flex-1 min-w-0">
+										<p className="truncate font-medium">{project.name}</p>
+										<div className="mt-1.5 flex flex-wrap gap-1.5">
+											{project.businessUnitName && (
+												<Badge variant="secondary" className="text-xs">
+													{project.businessUnitName}
+												</Badge>
+											)}
+											{project.projectTypeName && (
+												<Badge variant="outline" className="text-xs">
+													{project.projectTypeName}
+												</Badge>
+											)}
+										</div>
+										<div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+											{project.startYearMonth && (
+												<span>
+													{project.startYearMonth.slice(0, 4)}/
+													{project.startYearMonth.slice(4, 6)}
+													{project.durationMonths != null &&
+														` (${project.durationMonths}ヶ月)`}
+												</span>
+											)}
+											{project.totalManhour != null && (
+												<span>
+													{project.totalManhour.toLocaleString("ja-JP")}H
+												</span>
+											)}
+										</div>
 									</div>
+								</button>
+								<button
+									type="button"
+									className="mt-0.5 shrink-0 rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+									onClick={(e) => {
+										e.stopPropagation();
+										setEditingProjectId(project.projectId);
+									}}
+								>
+									<Pencil className="h-3.5 w-3.5" />
+								</button>
+							</div>
+							{/* ケースセレクタ: 選択中かつケースが2件以上の場合のみ表示 */}
+							{selected && project.cases.length >= 2 && (
+								<div className="mt-2 pl-7">
+									<Select
+										value={String(selectedCaseIds.get(project.projectId) ?? "")}
+										onValueChange={(value) =>
+											onCaseChange(project.projectId, Number(value))
+										}
+									>
+										<SelectTrigger className="h-7 text-xs">
+											<SelectValue placeholder="ケースを選択" />
+										</SelectTrigger>
+										<SelectContent>
+											{project.cases.map((c) => (
+												<SelectItem
+													key={c.projectCaseId}
+													value={String(c.projectCaseId)}
+												>
+													{c.caseName}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 								</div>
-							</button>
-							<button
-								type="button"
-								className="mt-0.5 shrink-0 rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-								onClick={(e) => {
-									e.stopPropagation();
-									setEditingProjectId(project.projectId);
-								}}
-							>
-								<Pencil className="h-3.5 w-3.5" />
-							</button>
+							)}
 						</div>
 					);
 				})}

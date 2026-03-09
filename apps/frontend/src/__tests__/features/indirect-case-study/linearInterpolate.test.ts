@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { linearInterpolate } from "@/features/indirect-case-study/utils/linearInterpolate";
 
 describe("linearInterpolate", () => {
