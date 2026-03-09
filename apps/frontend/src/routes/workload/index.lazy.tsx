@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	capacityScenariosQueryOptions,
 	projectsQueryOptions,
+	stackOrderSettingsQueryOptions,
 } from "@/features/workload/api/queries";
 import { BusinessUnitSelector } from "@/features/workload/components/BusinessUnitSelector";
 import {
@@ -103,6 +104,30 @@ function WorkloadPage() {
 	const handleIndirectOrderChange = useCallback((order: string[]) => {
 		setIndirectOrder(order);
 	}, []);
+
+	// 保存済み間接作業積み上げ順をロード
+	const { data: stackOrderData } = useQuery(
+		stackOrderSettingsQueryOptions("indirect_work_type"),
+	);
+
+	const savedIndirectOrder = useMemo(() => {
+		if (!stackOrderData?.data || stackOrderData.data.length === 0)
+			return undefined;
+		return [...stackOrderData.data]
+			.sort((a, b) => a.stackOrder - b.stackOrder)
+			.map((s) => s.targetCode);
+	}, [stackOrderData?.data]);
+
+	// 保存済み順序で indirectOrder を初期化（一度だけ）
+	useEffect(() => {
+		if (
+			savedIndirectOrder &&
+			savedIndirectOrder.length > 0 &&
+			indirectOrder.length === 0
+		) {
+			setIndirectOrder(savedIndirectOrder);
+		}
+	}, [savedIndirectOrder, indirectOrder.length]);
 
 	// キャパシティ表示状態（SidePanelSettings ↔ useChartData の橋渡し）
 	const { data: csData } = useQuery(capacityScenariosQueryOptions());
@@ -271,6 +296,7 @@ function WorkloadPage() {
 					}
 					indirectContent={
 						<SidePanelIndirect
+							initialOrder={savedIndirectOrder}
 							onColorsChange={handleIndirectColorsChange}
 							onOrderChange={handleIndirectOrderChange}
 						/>

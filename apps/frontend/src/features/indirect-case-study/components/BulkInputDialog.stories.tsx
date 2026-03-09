@@ -12,6 +12,7 @@ const meta = {
 		fiscalYear: 2025,
 		fiscalYearOptions: [2024, 2025, 2026],
 		onApply: fn(),
+		onApplyInterpolation: fn(),
 	},
 } satisfies Meta<typeof BulkInputDialog>;
 
@@ -19,3 +20,11 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const InterpolationMode: Story = {
+	name: "按分入力モード",
+};
+
+export const WithPreview: Story = {
+	name: "プレビュー付き按分入力",
+};

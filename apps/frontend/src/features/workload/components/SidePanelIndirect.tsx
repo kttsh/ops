@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, RotateCcw } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -20,11 +21,13 @@ interface IndirectWorkTypeSettingsItem {
 }
 
 interface SidePanelIndirectProps {
+	initialOrder?: string[];
 	onColorsChange?: (colors: Record<string, string>) => void;
 	onOrderChange?: (order: string[]) => void;
 }
 
 export function SidePanelIndirect({
+	initialOrder,
 	onColorsChange,
 	onOrderChange,
 }: SidePanelIndirectProps = {}) {
@@ -55,6 +58,30 @@ export function SidePanelIndirect({
 		setItems(newItems);
 	}
 
+	// 保存済み順序をサイドパネルの items に一度だけ適用
+	const initialOrderAppliedRef = useRef(false);
+	useEffect(() => {
+		if (
+			!initialOrderAppliedRef.current &&
+			initialOrder &&
+			initialOrder.length > 0 &&
+			items.length > 0
+		) {
+			initialOrderAppliedRef.current = true;
+			const orderMap = new Map(
+				initialOrder.map((code, idx) => [code, idx]),
+			);
+			const sorted = [...items].sort((a, b) => {
+				const orderA =
+					orderMap.get(a.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
+				const orderB =
+					orderMap.get(b.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
+				return orderA - orderB;
+			});
+			setItems(sorted.map((it, i) => ({ ...it, displayOrder: i })));
+		}
+	}, [initialOrder, items.length]);
+
 	const colorMutation = useBulkUpsertColorSettings();
 	const orderMutation = useBulkUpsertStackOrderSettings();
 
@@ -84,6 +111,7 @@ export function SidePanelIndirect({
 		(index: number) => {
 			if (index === 0) return;
 			setItems((prev) => {
+				const previousItems = [...prev];
 				const next = [...prev];
 				const temp = next[index - 1];
 				next[index - 1] = next[index];
@@ -95,6 +123,15 @@ export function SidePanelIndirect({
 						targetCode: it.workTypeCode,
 						stackOrder: it.displayOrder,
 					})),
+					{
+						onError: () => {
+							setItems(previousItems);
+							onOrderChange?.(
+								previousItems.map((it) => it.workTypeCode),
+							);
+							toast.error("表示順の保存に失敗しました");
+						},
+					},
 				);
 				onOrderChange?.(reordered.map((it) => it.workTypeCode));
 				return reordered;
@@ -107,6 +144,7 @@ export function SidePanelIndirect({
 		(index: number) => {
 			setItems((prev) => {
 				if (index >= prev.length - 1) return prev;
+				const previousItems = [...prev];
 				const next = [...prev];
 				const temp = next[index + 1];
 				next[index + 1] = next[index];
@@ -118,6 +156,15 @@ export function SidePanelIndirect({
 						targetCode: it.workTypeCode,
 						stackOrder: it.displayOrder,
 					})),
+					{
+						onError: () => {
+							setItems(previousItems);
+							onOrderChange?.(
+								previousItems.map((it) => it.workTypeCode),
+							);
+							toast.error("表示順の保存に失敗しました");
+						},
+					},
 				);
 				onOrderChange?.(reordered.map((it) => it.workTypeCode));
 				return reordered;

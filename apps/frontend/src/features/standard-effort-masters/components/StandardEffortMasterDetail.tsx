@@ -42,7 +42,7 @@ export function StandardEffortMasterDetail({
 		});
 
 		return (
-			<div className="rounded-3xl border bg-white p-6">
+			<div className="rounded-3xl border bg-card p-6">
 				<div className="flex items-center justify-between mb-6">
 					<h2 className="text-lg font-medium">編集</h2>
 					<Button
@@ -70,7 +70,7 @@ export function StandardEffortMasterDetail({
 
 	return (
 		<div className="space-y-6">
-			<div className="rounded-3xl border bg-white p-6 space-y-4">
+			<div className="rounded-3xl border bg-card p-6 space-y-4">
 				<div className="flex items-center justify-between">
 					<h2 className="text-lg font-medium">基本情報</h2>
 					<Button
@@ -87,36 +87,42 @@ export function StandardEffortMasterDetail({
 				<DetailRow label="案件タイプ" value={ptName} />
 			</div>
 
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+			<div className="grid grid-cols-1 gap-6">
 				{/* 読み取り専用の重みテーブル */}
-				<div className="rounded-3xl border bg-white p-6">
+				<div className="rounded-3xl border bg-card p-6">
 					<h3 className="text-sm font-medium mb-4">重み配分（進捗率ごと）</h3>
-					<div className="max-h-[480px] overflow-y-auto">
-						<table className="w-full text-sm">
-							<thead className="sticky top-0 bg-background">
+					<div className="overflow-x-hidden">
+						<table className="table-fixed w-full">
+							<thead>
 								<tr>
-									<th className="text-left px-3 py-2 font-medium text-muted-foreground">
-										進捗率
-									</th>
-									<th className="text-right px-3 py-2 font-medium text-muted-foreground">
-										重み
-									</th>
+									<th className="text-[11px] font-medium text-muted-foreground text-center px-1 py-2" />
+									{PROGRESS_RATES.map((rate) => (
+										<th
+											key={rate}
+											className="text-[11px] font-medium text-muted-foreground text-center px-1 py-2"
+										>
+											{rate}%
+										</th>
+									))}
 								</tr>
 							</thead>
 							<tbody>
-								{PROGRESS_RATES.map((rate) => {
-									const w = data.weights.find((w) => w.progressRate === rate);
-									return (
-										<tr key={rate} className="border-t">
-											<td className="px-3 py-1.5 text-muted-foreground tabular-nums">
-												{rate}%
-											</td>
-											<td className="px-3 py-1.5 text-right tabular-nums">
+								<tr>
+									<td className="text-[11px] font-medium text-muted-foreground px-1 py-1.5">
+										重み
+									</td>
+									{PROGRESS_RATES.map((rate) => {
+										const w = data.weights.find((w) => w.progressRate === rate);
+										return (
+											<td
+												key={rate}
+												className="text-xs text-right tabular-nums px-1 py-1.5"
+											>
 												{w?.weight ?? 0}
 											</td>
-										</tr>
-									);
-								})}
+										);
+									})}
+								</tr>
 							</tbody>
 						</table>
 					</div>

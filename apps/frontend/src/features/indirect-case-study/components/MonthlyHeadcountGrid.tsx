@@ -140,6 +140,20 @@ export function MonthlyHeadcountGrid({
 		[onDirtyChange],
 	);
 
+	const handleBulkInterpolation = useCallback(
+		(year: number, monthlyValues: number[]) => {
+			setLocalData((prev) => {
+				const updated = { ...prev };
+				MONTHS.forEach((m, i) => {
+					updated[getYearMonth(year, m)] = monthlyValues[i];
+				});
+				return updated;
+			});
+			onDirtyChange(true);
+		},
+		[onDirtyChange],
+	);
+
 	const fyOptions = useMemo(() => generateFiscalYearOptions(), []);
 
 	if (isLoading) {
@@ -212,6 +226,7 @@ export function MonthlyHeadcountGrid({
 				fiscalYear={fiscalYear}
 				fiscalYearOptions={fyOptions}
 				onApply={handleBulkSet}
+				onApplyInterpolation={handleBulkInterpolation}
 			/>
 		</div>
 	);

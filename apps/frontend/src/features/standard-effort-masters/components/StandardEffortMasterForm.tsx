@@ -69,110 +69,117 @@ export function StandardEffortMasterForm({
 			}}
 			className="space-y-6"
 		>
-			<div className="grid grid-cols-1 gap-6 max-w-md">
-				{/* 事業部 */}
-				<form.Field
-					name="businessUnitCode"
-					validators={{
-						onChange: createStandardEffortMasterSchema.shape.businessUnitCode,
-						onBlur: createStandardEffortMasterSchema.shape.businessUnitCode,
-					}}
-				>
-					{(field) => (
-						<FieldWrapper
-							label="事業部"
-							htmlFor={field.name}
-							required
-							errors={field.state.meta.errors}
-						>
-							<QuerySelect
-								id={field.name}
-								value={field.state.value}
-								onValueChange={(value) => field.handleChange(value)}
-								placeholder="事業部を選択"
-								queryResult={buQuery}
-								disabled={mode === "edit"}
-							/>
-						</FieldWrapper>
-					)}
-				</form.Field>
+			<div className="space-y-6">
+				<div className="grid grid-cols-2 gap-6 max-w-2xl">
+					{/* ビジネスユニット */}
+					<form.Field
+						name="businessUnitCode"
+						validators={{
+							onChange: createStandardEffortMasterSchema.shape.businessUnitCode,
+							onBlur: createStandardEffortMasterSchema.shape.businessUnitCode,
+						}}
+					>
+						{(field) => (
+							<FieldWrapper
+								label="ビジネスユニット"
+								htmlFor={field.name}
+								required
+								errors={field.state.meta.errors}
+							>
+								<QuerySelect
+									id={field.name}
+									value={field.state.value}
+									onValueChange={(value) => field.handleChange(value)}
+									placeholder="ビジネスユニットを選択"
+									queryResult={buQuery}
+									disabled={mode === "edit"}
+								/>
+							</FieldWrapper>
+						)}
+					</form.Field>
 
-				{/* 案件タイプ */}
-				<form.Field
-					name="projectTypeCode"
-					validators={{
-						onChange: createStandardEffortMasterSchema.shape.projectTypeCode,
-						onBlur: createStandardEffortMasterSchema.shape.projectTypeCode,
-					}}
-				>
-					{(field) => (
-						<FieldWrapper
-							label="案件タイプ"
-							htmlFor={field.name}
-							required
-							errors={field.state.meta.errors}
-						>
-							<QuerySelect
-								id={field.name}
-								value={field.state.value}
-								onValueChange={(value) => field.handleChange(value)}
-								placeholder="案件タイプを選択"
-								queryResult={ptQuery}
-								disabled={mode === "edit"}
-							/>
-						</FieldWrapper>
-					)}
-				</form.Field>
+					{/* 案件タイプ */}
+					<form.Field
+						name="projectTypeCode"
+						validators={{
+							onChange: createStandardEffortMasterSchema.shape.projectTypeCode,
+							onBlur: createStandardEffortMasterSchema.shape.projectTypeCode,
+						}}
+					>
+						{(field) => (
+							<FieldWrapper
+								label="案件タイプ"
+								htmlFor={field.name}
+								required
+								errors={field.state.meta.errors}
+							>
+								<QuerySelect
+									id={field.name}
+									value={field.state.value}
+									onValueChange={(value) => field.handleChange(value)}
+									placeholder="案件タイプを選択"
+									queryResult={ptQuery}
+									disabled={mode === "edit"}
+								/>
+							</FieldWrapper>
+						)}
+					</form.Field>
+				</div>
 
 				{/* パターン名 */}
-				<form.Field
-					name="name"
-					validators={{
-						onChange:
-							mode === "create"
-								? createStandardEffortMasterSchema.shape.name
-								: updateStandardEffortMasterSchema.shape.name,
-						onBlur:
-							mode === "create"
-								? createStandardEffortMasterSchema.shape.name
-								: updateStandardEffortMasterSchema.shape.name,
-					}}
-				>
-					{(field) => (
-						<FormTextField
-							field={field}
-							label="パターン名"
-							required
-							placeholder="例: Sカーブ標準"
-						/>
-					)}
-				</form.Field>
+				<div className="max-w-md">
+					<form.Field
+						name="name"
+						validators={{
+							onChange:
+								mode === "create"
+									? createStandardEffortMasterSchema.shape.name
+									: updateStandardEffortMasterSchema.shape.name,
+							onBlur:
+								mode === "create"
+									? createStandardEffortMasterSchema.shape.name
+									: updateStandardEffortMasterSchema.shape.name,
+						}}
+					>
+						{(field) => (
+							<FormTextField
+								field={field}
+								label="パターン名"
+								required
+								placeholder="例: Sカーブ標準"
+							/>
+						)}
+					</form.Field>
+				</div>
 			</div>
 
 			{/* 重みテーブル + チャート */}
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+			<div className="grid grid-cols-1 gap-6">
 				{/* 重みテーブル */}
-				<div className="rounded-3xl border p-6">
+				<div className="rounded-3xl border bg-card p-6">
 					<h3 className="text-sm font-medium mb-4">重み配分（進捗率ごと）</h3>
-					<div className="max-h-[480px] overflow-y-auto">
-						<table className="w-full text-sm">
-							<thead className="sticky top-0 bg-background">
+					<div className="overflow-x-hidden">
+						<table className="table-fixed w-full">
+							<thead>
 								<tr>
-									<th className="text-left px-3 py-2 font-medium text-muted-foreground">
-										進捗率
-									</th>
-									<th className="text-left px-3 py-2 font-medium text-muted-foreground">
-										重み
-									</th>
+									<th className="text-[11px] font-medium text-muted-foreground text-center px-1 py-2" />
+									{PROGRESS_RATES.map((rate) => (
+										<th
+											key={rate}
+											className="text-[11px] font-medium text-muted-foreground text-center px-1 py-2"
+										>
+											{rate}%
+										</th>
+									))}
 								</tr>
 							</thead>
 							<tbody>
-								{PROGRESS_RATES.map((rate, i) => (
-									<tr key={rate} className="border-t">
-										<td className="px-3 py-1.5 text-muted-foreground tabular-nums">
-											{rate}%
-										</td>
-										<td className="px-3 py-1.5">
+								<tr>
+									<td className="text-[11px] font-medium text-muted-foreground px-1 py-1.5">
+										重み
+									</td>
+									{PROGRESS_RATES.map((rate, i) => (
+										<td key={rate} className="px-1 py-1.5">
 											<form.Field name={`weights[${i}].weight`}>
 												{(field) => (
 													<Input
@@ -193,13 +200,13 @@ export function StandardEffortMasterForm({
 															);
 														}}
 														onBlur={field.handleBlur}
-														className="w-24 h-8 text-right tabular-nums"
+														className="w-full min-w-0 h-7 text-xs text-right tabular-nums px-1"
 													/>
 												)}
 											</form.Field>
 										</td>
-									</tr>
-								))}
+									))}
+								</tr>
 							</tbody>
 						</table>
 					</div>

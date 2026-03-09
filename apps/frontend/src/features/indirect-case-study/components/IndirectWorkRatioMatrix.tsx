@@ -50,7 +50,8 @@ export function IndirectWorkRatioMatrix({
 	if (ratiosData?.data && ratiosData !== prevDataId) {
 		const map: Record<string, number> = {};
 		ratiosData.data.forEach((item: IndirectWorkTypeRatio) => {
-			map[`${item.fiscalYear}-${item.workTypeCode}`] = item.ratio * 100;
+			map[`${item.fiscalYear}-${item.workTypeCode}`] =
+				Math.round(item.ratio * 10000) / 100;
 		});
 		setLocalData(map);
 		setPrevDataId(ratiosData);

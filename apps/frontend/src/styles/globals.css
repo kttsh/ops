@@ -78,4 +78,9 @@
 		background-color: var(--color-background);
 		color: var(--color-foreground);
 	}
+
+	.recharts-surface:focus,
+	.recharts-surface *:focus {
+		outline: none;
+	}
 }
