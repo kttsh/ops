@@ -56,8 +56,8 @@
 
 | 順序 | 要件 | GitHub Issue | Spec | 概要 | 進捗 |
 |:----:|:----:|:------------:|------|------|:----:|
-| 1-1 | #12 | [#55](https://github.com/kttsh/ops/issues/55) | `frontend-bugfixes-55-56` | 浮動小数点精度エラー修正 | 🟡 実装済み |
-| 1-2 | #6 | [#56](https://github.com/kttsh/ops/issues/56) | `frontend-bugfixes-55-56` | チャート黒枠修正 | 🟡 実装済み |
+| 1-1 | #12 | [#55](https://github.com/kttsh/ops/issues/55) | `frontend-bugfixes-55-56` | 浮動小数点精度エラー修正 | 🟢 完了 |
+| 1-2 | #6 | [#56](https://github.com/kttsh/ops/issues/56) | `frontend-bugfixes-55-56` | チャート黒枠修正 | 🟢 完了 |
 | 1-3 | #3 | [#57](https://github.com/kttsh/ops/issues/57) | `quick-fixes` | テーブル幅最大化 | ⬜ 未着手 |
 | 1-4 | #13 | [#58](https://github.com/kttsh/ops/issues/58) | `quick-fixes` | シミュレーション説明テキスト修正 | ⬜ 未着手 |
 
@@ -69,9 +69,9 @@
 |:----:|:----:|:------------:|------|------|:----:|
 | 2-1 | #7 | [#59](https://github.com/kttsh/ops/issues/59) | `bugfix-export` | エクスポート不具合の調査・修正 | ⬜ 未着手 |
 | 2-2 | #11 | [#60](https://github.com/kttsh/ops/issues/60) | `feat-order-number` | オーダー番号属性追加（DB〜UI全層） | ⬜ 未着手 |
-| 2-3 | #8,#14 | [#61](https://github.com/kttsh/ops/issues/61) | `ux-standard-effort-layout` | 標準工数パターン画面レイアウト改善 | 🟡 実装済み |
-| 2-4 | #4 | [#62](https://github.com/kttsh/ops/issues/62) | `feat-work-type-ordering` | 作業種類の表示順入れ替え | 🟡 実装済み |
-| 2-5 | #1 | [#63](https://github.com/kttsh/ops/issues/63) | `feat-bulk-interpolation` | 按分入力（線形補間）機能 | 🟡 実装済み |
+| 2-3 | #8,#14 | [#61](https://github.com/kttsh/ops/issues/61) | `ux-standard-effort-layout` | 標準工数パターン画面レイアウト改善 | 🟢 完了 |
+| 2-4 | #4 | [#62](https://github.com/kttsh/ops/issues/62) | `feat-work-type-ordering` | 作業種類の表示順入れ替え | 🟢 完了 |
+| 2-5 | #1 | [#63](https://github.com/kttsh/ops/issues/63) | `feat-bulk-interpolation` | 按分入力（線形補間）機能 | 🟢 完了 |
 
 > 各 Issue が独立した Spec。#7 は調査フェーズが先行するため Phase 2 の先頭に配置。
 
@@ -79,7 +79,7 @@
 
 | 順序 | 要件 | GitHub Issue | Spec | 概要 | 進捗 |
 |:----:|:----:|:------------:|------|------|:----:|
-| 3-1 | #5 | [#64](https://github.com/kttsh/ops/issues/64) | `feat-case-selection` | 案件ケース選択機能（API+UI） | ⬜ 未着手 |
+| 3-1 | #5 | [#64](https://github.com/kttsh/ops/issues/64) | `feat-case-selection` | 案件ケース選択機能（API+UI） | 🟢 完了 |
 | 3-2 | #9 | [#65](https://github.com/kttsh/ops/issues/65) | `feat-indirect-loads-screen` | 間接工数の閲覧・編集画面（新規画面） | ⬜ 未着手 |
 | 3-3 | #10 | [#66](https://github.com/kttsh/ops/issues/66) | `feat-capacity-auto-generation` | キャパシティ自動生成（n×m組み合わせ） | ⬜ 未着手 |
 
@@ -95,14 +95,14 @@
 
 | Spec名 | 対応要件 | フェーズ | 規模 | 状態 |
 |---------|----------|:--------:|:----:|:----:|
-| `frontend-bugfixes-55-56` | #12, #6 | Phase 1 | S | 🟡 実装済み |
+| `frontend-bugfixes-55-56` | #12, #6 | Phase 1 | S | 🟢 完了 |
 | `quick-fixes` | #3, #13 | Phase 1 | S | ⬜ 未着手 |
 | `bugfix-export` | #7 | Phase 2 | M | ⬜ 未着手 |
 | `feat-order-number` | #11 | Phase 2 | M | ⬜ 未着手 |
-| `ux-standard-effort-layout` | #8, #14 | Phase 2 | M | 🟡 実装済み |
-| `feat-work-type-ordering` | #4 | Phase 2 | M | 🟡 実装済み |
-| `feat-bulk-interpolation` | #1 | Phase 2 | M | 🟡 実装済み |
-| `feat-case-selection` | #5 | Phase 3 | L | ⬜ 未着手 |
+| `ux-standard-effort-layout` | #8, #14 | Phase 2 | M | 🟢 完了 |
+| `feat-work-type-ordering` | #4 | Phase 2 | M | 🟢 完了 |
+| `feat-bulk-interpolation` | #1 | Phase 2 | M | 🟢 完了 |
+| `feat-case-selection` | #5 | Phase 3 | L | 🟢 完了 |
 | `feat-indirect-loads-screen` | #9 | Phase 3 | L | ⬜ 未着手 |
 | `feat-capacity-auto-generation` | #10 | Phase 3 | L | ⬜ 未着手 |
 | `ux-year-selector` | #2 | Phase 4 | M | ⬜ 未着手 |
