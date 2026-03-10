@@ -9,6 +9,7 @@ import {
 	ListChecks,
 	Palette,
 	Play,
+	Table,
 	TrendingUp,
 	Users,
 } from "lucide-react";
@@ -54,6 +55,11 @@ const menuItems = [
 				label: "間接工数計算",
 				href: "/indirect/simulation",
 				icon: Play,
+			},
+			{
+				label: "月次間接工数",
+				href: "/indirect/monthly-loads",
+				icon: Table,
 			},
 		],
 	},

@@ -22,6 +22,7 @@ import { Route as MasterHeadcountPlansIndexRouteImport } from './routes/master/h
 import { Route as MasterCapacityScenariosIndexRouteImport } from './routes/master/capacity-scenarios/index'
 import { Route as MasterBusinessUnitsIndexRouteImport } from './routes/master/business-units/index'
 import { Route as IndirectSimulationIndexRouteImport } from './routes/indirect/simulation/index'
+import { Route as IndirectMonthlyLoadsIndexRouteImport } from './routes/indirect/monthly-loads/index'
 import { Route as ProjectsStandardEffortsNewRouteImport } from './routes/projects/standard-efforts/new'
 import { Route as ProjectsProjectIdEditRouteImport } from './routes/projects/$projectId/edit'
 import { Route as ProjectsStandardEffortsStandardEffortIdIndexRouteImport } from './routes/projects/standard-efforts/$standardEffortId/index'
@@ -106,6 +107,14 @@ const IndirectSimulationIndexRoute = IndirectSimulationIndexRouteImport.update({
 } as any).lazy(() =>
   import('./routes/indirect/simulation/index.lazy').then((d) => d.Route),
 )
+const IndirectMonthlyLoadsIndexRoute =
+  IndirectMonthlyLoadsIndexRouteImport.update({
+    id: '/indirect/monthly-loads/',
+    path: '/indirect/monthly-loads/',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/indirect/monthly-loads/index.lazy').then((d) => d.Route),
+  )
 const ProjectsStandardEffortsNewRoute =
   ProjectsStandardEffortsNewRouteImport.update({
     id: '/projects/standard-efforts/new',
@@ -131,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/workload/': typeof WorkloadIndexRoute
   '/projects/$projectId/edit': typeof ProjectsProjectIdEditRoute
   '/projects/standard-efforts/new': typeof ProjectsStandardEffortsNewRoute
+  '/indirect/monthly-loads/': typeof IndirectMonthlyLoadsIndexRoute
   '/indirect/simulation/': typeof IndirectSimulationIndexRoute
   '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
   '/master/capacity-scenarios/': typeof MasterCapacityScenariosIndexRoute
@@ -149,6 +159,7 @@ export interface FileRoutesByTo {
   '/workload': typeof WorkloadIndexRoute
   '/projects/$projectId/edit': typeof ProjectsProjectIdEditRoute
   '/projects/standard-efforts/new': typeof ProjectsStandardEffortsNewRoute
+  '/indirect/monthly-loads': typeof IndirectMonthlyLoadsIndexRoute
   '/indirect/simulation': typeof IndirectSimulationIndexRoute
   '/master/business-units': typeof MasterBusinessUnitsIndexRoute
   '/master/capacity-scenarios': typeof MasterCapacityScenariosIndexRoute
@@ -168,6 +179,7 @@ export interface FileRoutesById {
   '/workload/': typeof WorkloadIndexRoute
   '/projects/$projectId/edit': typeof ProjectsProjectIdEditRoute
   '/projects/standard-efforts/new': typeof ProjectsStandardEffortsNewRoute
+  '/indirect/monthly-loads/': typeof IndirectMonthlyLoadsIndexRoute
   '/indirect/simulation/': typeof IndirectSimulationIndexRoute
   '/master/business-units/': typeof MasterBusinessUnitsIndexRoute
   '/master/capacity-scenarios/': typeof MasterCapacityScenariosIndexRoute
@@ -188,6 +200,7 @@ export interface FileRouteTypes {
     | '/workload/'
     | '/projects/$projectId/edit'
     | '/projects/standard-efforts/new'
+    | '/indirect/monthly-loads/'
     | '/indirect/simulation/'
     | '/master/business-units/'
     | '/master/capacity-scenarios/'
@@ -206,6 +219,7 @@ export interface FileRouteTypes {
     | '/workload'
     | '/projects/$projectId/edit'
     | '/projects/standard-efforts/new'
+    | '/indirect/monthly-loads'
     | '/indirect/simulation'
     | '/master/business-units'
     | '/master/capacity-scenarios'
@@ -224,6 +238,7 @@ export interface FileRouteTypes {
     | '/workload/'
     | '/projects/$projectId/edit'
     | '/projects/standard-efforts/new'
+    | '/indirect/monthly-loads/'
     | '/indirect/simulation/'
     | '/master/business-units/'
     | '/master/capacity-scenarios/'
@@ -243,6 +258,7 @@ export interface RootRouteChildren {
   WorkloadIndexRoute: typeof WorkloadIndexRoute
   ProjectsProjectIdEditRoute: typeof ProjectsProjectIdEditRoute
   ProjectsStandardEffortsNewRoute: typeof ProjectsStandardEffortsNewRoute
+  IndirectMonthlyLoadsIndexRoute: typeof IndirectMonthlyLoadsIndexRoute
   IndirectSimulationIndexRoute: typeof IndirectSimulationIndexRoute
   MasterBusinessUnitsIndexRoute: typeof MasterBusinessUnitsIndexRoute
   MasterCapacityScenariosIndexRoute: typeof MasterCapacityScenariosIndexRoute
@@ -348,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndirectSimulationIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/indirect/monthly-loads/': {
+      id: '/indirect/monthly-loads/'
+      path: '/indirect/monthly-loads'
+      fullPath: '/indirect/monthly-loads/'
+      preLoaderRoute: typeof IndirectMonthlyLoadsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/standard-efforts/new': {
       id: '/projects/standard-efforts/new'
       path: '/projects/standard-efforts/new'
@@ -379,6 +402,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorkloadIndexRoute: WorkloadIndexRoute,
   ProjectsProjectIdEditRoute: ProjectsProjectIdEditRoute,
   ProjectsStandardEffortsNewRoute: ProjectsStandardEffortsNewRoute,
+  IndirectMonthlyLoadsIndexRoute: IndirectMonthlyLoadsIndexRoute,
   IndirectSimulationIndexRoute: IndirectSimulationIndexRoute,
   MasterBusinessUnitsIndexRoute: MasterBusinessUnitsIndexRoute,
   MasterCapacityScenariosIndexRoute: MasterCapacityScenariosIndexRoute,

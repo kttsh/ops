@@ -34,9 +34,11 @@ export { CapacityScenarioDetailSheet } from "./components/CapacityScenarioDetail
 export { CapacityScenarioList } from "./components/CapacityScenarioList";
 export { CaseFormSheet } from "./components/CaseFormSheet";
 export { HeadcountPlanCaseList } from "./components/HeadcountPlanCaseList";
+export { IndirectWorkCaseChips } from "./components/IndirectWorkCaseChips";
 export { IndirectWorkCaseList } from "./components/IndirectWorkCaseList";
 export { IndirectWorkRatioMatrix } from "./components/IndirectWorkRatioMatrix";
 export { MonthlyHeadcountGrid } from "./components/MonthlyHeadcountGrid";
+export { MonthlyLoadsMatrix } from "./components/MonthlyLoadsMatrix";
 export { ResultPanel } from "./components/ResultPanel";
 export { ScenarioFormSheet } from "./components/ScenarioFormSheet";
 // Hooks
@@ -46,6 +48,7 @@ export { useIndirectSimulation } from "./hooks/useIndirectSimulation";
 export { useIndirectWorkCalculation } from "./hooks/useIndirectWorkCalculation";
 export { useIndirectWorkLoadExcelExport } from "./hooks/useIndirectWorkLoadExcelExport";
 export { useIndirectWorkLoadExcelImport } from "./hooks/useIndirectWorkLoadExcelImport";
+export { useMonthlyLoadsPage } from "./hooks/useMonthlyLoadsPage";
 export type {
 	CalculateCapacityResult,
 	CalculationTableData,
