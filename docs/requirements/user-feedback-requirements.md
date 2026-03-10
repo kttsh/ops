@@ -1,7 +1,7 @@
 # ユーザーフィードバックに基づく改修要件定義書
 
-> **Version**: 0.3.0
-> **Last Updated**: 2026-03-09
+> **Version**: 0.3.1
+> **Last Updated**: 2026-03-10
 > **Status**: 開発プラン策定済み
 
 ---
@@ -71,6 +71,7 @@
 | 2-2 | #11 | [#60](https://github.com/kttsh/ops/issues/60) | `feat-order-number` | オーダー番号属性追加（DB〜UI全層） | ⬜ 未着手 |
 | 2-3 | #8,#14 | [#61](https://github.com/kttsh/ops/issues/61) | `ux-standard-effort-layout` | 標準工数パターン画面レイアウト改善 | 🟢 完了 |
 | 2-4 | #4 | [#62](https://github.com/kttsh/ops/issues/62) | `feat-work-type-ordering` | 作業種類の表示順入れ替え | 🟢 完了 |
+| 2-4b | #4 | [#68](https://github.com/kttsh/ops/issues/68) | — | ↑並び替え時に間接エリアが案件の上にスタックされるバグ修正 | 🟢 完了 |
 | 2-5 | #1 | [#63](https://github.com/kttsh/ops/issues/63) | `feat-bulk-interpolation` | 按分入力（線形補間）機能 | 🟢 完了 |
 
 > 各 Issue が独立した Spec。#7 は調査フェーズが先行するため Phase 2 の先頭に配置。
@@ -292,6 +293,19 @@
 |----------|---------|
 | `SidePanelIndirect.tsx` | 既存の↑↓ボタンの動作検証・不足分の補完 |
 | `WorkloadChart.tsx` | 間接作業が案件の下部に固定されている制約の検証 |
+
+#### 後続バグ: [#68](https://github.com/kttsh/ops/issues/68) — 間接エリアが案件の上にスタックされる
+
+#62 の実装完了後に発見。間接作業の並び替え操作後、チャート上で間接エリアが案件エリアより上に描画される不具合。
+
+**根本原因**: Recharts v3 の Redux state 管理で `<Area key={${index}_${area.dataKey}}>` を使用していたため、並び替え時に間接エリアだけが unmount→remount され `cartesianItems` 配列の末尾に push されていた。
+
+**修正** (`b25ca00`):
+- `<Area key={index}>` に変更し in-place 更新（位置保持）に修正
+- `sortAreasByIndirectOrder` に空配列ガード追加
+- `fillOpacity` をハードコードから area config 値に変更
+
+**ステータス**: 🟢 完了
 
 #### Open Questions
 
@@ -804,6 +818,7 @@ const displayValue = parseFloat((ratio * 100).toPrecision(10));
 
 | 日付 | バージョン | 内容 |
 |------|-----------|------|
+| 2026-03-10 | 0.3.1 | #68（間接エリアスタック順バグ）完了を反映、Issue #4 詳細に後続バグ修正を追記 |
 | 2026-03-09 | 0.3.0 | 開発プラン策定、GitHub Issue 13件起票（#55〜#67）、Spec単位・フェーズ定義 |
 | 2026-03-09 | 0.2.0 | ユーザー回答を要件に反映、解消済みQAを統合・削除、Open Questions再整理 |
 | 2026-03-09 | 0.1.0 | 初版作成（UAT フィードバック13件+2件の要件整理） |
