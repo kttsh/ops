@@ -141,13 +141,15 @@ describe("sortAreasByIndirectOrder", () => {
 		expect(result).toEqual(areas);
 	});
 
-	it("indirectWorkTypeOrder に基づいて間接シリーズのみをソートする", () => {
+	it("indirectWorkTypeOrder に基づいて間接シリーズを逆順ソートする（先頭=チャート上部）", () => {
 		const areas = [indA, indB, indC, projX, projY];
 		const result = sortAreasByIndirectOrder(areas, ["C03", "A01", "B02"]);
+		// チャートのスタック順: 配列先頭=下、末尾=上
+		// indirectWorkTypeOrder[0]=C03 がチャート上部（間接エリア内の配列末尾）に来る
 		expect(result.map((a) => a.dataKey)).toEqual([
-			"indirect_wt_C03",
-			"indirect_wt_A01",
 			"indirect_wt_B02",
+			"indirect_wt_A01",
+			"indirect_wt_C03",
 			"project_1",
 			"project_2",
 		]);
@@ -165,9 +167,10 @@ describe("sortAreasByIndirectOrder", () => {
 	it("未分類シリーズは常に間接シリーズの末尾に配置される", () => {
 		const areas = [indA, unclassified, indB, projX];
 		const result = sortAreasByIndirectOrder(areas, ["B02", "A01"]);
+		// 逆順: order[0]=B02 がチャート上部（間接エリア内末尾）
 		expect(result.map((a) => a.dataKey)).toEqual([
-			"indirect_wt_B02",
 			"indirect_wt_A01",
+			"indirect_wt_B02",
 			"indirect_wt_unclassified",
 			"project_1",
 		]);
@@ -176,12 +179,31 @@ describe("sortAreasByIndirectOrder", () => {
 	it("部分的な順序指定に対応する（未指定は末尾）", () => {
 		const areas = [indA, indB, indC, projX];
 		const result = sortAreasByIndirectOrder(areas, ["C03"]);
+		// 逆順: order[0]=C03 がチャート上部、未指定(A01,B02)は下層
 		expect(result.map((a) => a.dataKey)).toEqual([
-			"indirect_wt_C03",
-			"indirect_wt_A01",
 			"indirect_wt_B02",
+			"indirect_wt_A01",
+			"indirect_wt_C03",
 			"project_1",
 		]);
+	});
+
+	it("並び替え後も間接作業が常に案件の下にスタックされる", () => {
+		const areas = [indA, indB, indC, unclassified, projX, projY];
+		const orders = [
+			["A01", "B02", "C03"],
+			["C03", "B02", "A01"],
+			["B02", "C03", "A01"],
+		];
+		for (const order of orders) {
+			const result = sortAreasByIndirectOrder(areas, order);
+			const firstProjectIdx = result.findIndex((a) => a.type === "project");
+			const lastIndirectIdx = result.reduce(
+				(acc, a, i) => (a.type === "indirect" ? i : acc),
+				-1,
+			);
+			expect(lastIndirectIdx).toBeLessThan(firstProjectIdx);
+		}
 	});
 });
 

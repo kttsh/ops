@@ -120,6 +120,10 @@ export function sortAreasByIndirectOrder(
 		return orderA - orderB;
 	});
 
+	// チャートのスタック順（配列先頭=下、末尾=上）と
+	// 凡例・設定パネルの表示順（先頭=上）を一致させるため逆順にする
+	classified.reverse();
+
 	return [...classified, ...unclassified, ...projectAreas];
 }
 
