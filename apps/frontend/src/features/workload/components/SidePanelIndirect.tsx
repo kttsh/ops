@@ -11,6 +11,7 @@ import {
 	useBulkUpsertStackOrderSettings,
 } from "@/features/workload/api/mutations";
 import { INDIRECT_COLORS } from "@/lib/chart-colors";
+import { ColorPickerPopover } from "./ColorPickerPopover";
 
 interface IndirectWorkTypeSettingsItem {
 	workTypeCode: string;
@@ -41,7 +42,10 @@ export function SidePanelIndirect({
 			workTypeCode: wt.workTypeCode,
 			workTypeName: wt.name,
 			isVisible: true,
-			color: wt.color ?? INDIRECT_COLORS[i % INDIRECT_COLORS.length],
+			color:
+				wt.color && (INDIRECT_COLORS as readonly string[]).includes(wt.color)
+					? wt.color
+					: INDIRECT_COLORS[i % INDIRECT_COLORS.length],
 			displayOrder: i,
 		})),
 	);
@@ -52,7 +56,10 @@ export function SidePanelIndirect({
 			workTypeCode: wt.workTypeCode,
 			workTypeName: wt.name,
 			isVisible: true,
-			color: wt.color ?? INDIRECT_COLORS[i % INDIRECT_COLORS.length],
+			color:
+				wt.color && (INDIRECT_COLORS as readonly string[]).includes(wt.color)
+					? wt.color
+					: INDIRECT_COLORS[i % INDIRECT_COLORS.length],
 			displayOrder: i,
 		}));
 		setItems(newItems);
@@ -210,7 +217,7 @@ export function SidePanelIndirect({
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
-				<h3 className="text-sm font-semibold">間接作業種類設定</h3>
+				<h3 className="text-sm font-semibold">間接作業</h3>
 				<Button
 					variant="ghost"
 					size="sm"
@@ -235,21 +242,11 @@ export function SidePanelIndirect({
 						/>
 
 						{/* 色 */}
-						<div className="flex gap-1">
-							{INDIRECT_COLORS.map((color) => (
-								<button
-									key={color}
-									type="button"
-									className={`h-5 w-5 rounded-sm border-2 ${
-										item.color === color
-											? "border-primary"
-											: "border-transparent"
-									}`}
-									style={{ backgroundColor: color }}
-									onClick={() => setColor(item.workTypeCode, color)}
-								/>
-							))}
-						</div>
+						<ColorPickerPopover
+							colors={INDIRECT_COLORS}
+							value={item.color}
+							onChange={(color) => setColor(item.workTypeCode, color)}
+						/>
 
 						{/* 名称 */}
 						<Label className="flex-1 truncate text-sm">

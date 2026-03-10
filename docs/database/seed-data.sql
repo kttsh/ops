@@ -95,10 +95,10 @@ INSERT INTO project_types (project_type_code, name, display_order) VALUES
 -- work_types: 作業種別（間接作業用）
 -- -----------------------------------------------------------------------------
 INSERT INTO work_types (work_type_code, name, display_order, color) VALUES
-('BUMON', N'部門費', 1, '#64748B'),
-('LABO', N'試験研究費', 2, '#A855F7'),
-('ESTIMATE', N'見積', 3, '#F97316'),
-('OTHER', N'その他', 99, '#94A3B8');
+('BUMON', N'部門費', 1, '#d1d5db'),
+('LABO', N'試験研究費', 2, '#9ca3af'),
+('ESTIMATE', N'見積', 3, '#6b7280'),
+('OTHER', N'その他', 99, '#4b5563');
 
 -- -----------------------------------------------------------------------------
 -- chart_color_palettes: カラーパレット
@@ -913,9 +913,9 @@ INSERT INTO chart_color_settings (target_type, target_code, color_code) VALUES
 ('PROJECT', '8', '#14B8A6'),  -- Teal
 ('PROJECT', '9', '#F97316'),  -- Orange
 ('PROJECT', '10', '#06B6D4'), -- Cyan
-('INDIRECT', '1', '#64748B'), -- Slate
-('INDIRECT', '2', '#64748B'), -- Slate
-('INDIRECT', '3', '#64748B'); -- Slate
+('INDIRECT', '1', '#d1d5db'), -- Gray-300
+('INDIRECT', '2', '#9ca3af'), -- Gray-400
+('INDIRECT', '3', '#6b7280'); -- Gray-500
 
 -- -----------------------------------------------------------------------------
 -- project_load: P-2026-001 ベースケース (project_case_id = 5)
