@@ -96,7 +96,7 @@ export function sortAreasByIndirectOrder(
 	areas: AreaSeriesConfig[],
 	indirectWorkTypeOrder: string[] | undefined,
 ): AreaSeriesConfig[] {
-	if (!indirectWorkTypeOrder) return areas;
+	if (!indirectWorkTypeOrder || indirectWorkTypeOrder.length === 0) return areas;
 
 	const projectAreas = areas.filter((a) => a.type === "project");
 	const indirectAreas = areas.filter((a) => a.type === "indirect");

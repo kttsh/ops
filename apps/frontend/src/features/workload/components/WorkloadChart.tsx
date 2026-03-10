@@ -110,13 +110,13 @@ function WorkloadChartInner({
 				{/* 間接作業 → 案件タイプ の順でエリア描画 */}
 				{seriesConfig.areas.map((area, index) => (
 					<Area
-						key={`${index}_${area.dataKey}`}
+						key={index}
 						type="monotone"
 						dataKey={area.dataKey}
 						stackId={area.stackId}
 						fill={area.fill}
 						stroke="none"
-						fillOpacity={1}
+						fillOpacity={area.fillOpacity}
 						name={area.name}
 						isAnimationActive={false}
 						animationDuration={0}

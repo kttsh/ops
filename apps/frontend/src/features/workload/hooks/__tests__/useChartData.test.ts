@@ -141,6 +141,12 @@ describe("sortAreasByIndirectOrder", () => {
 		expect(result).toEqual(areas);
 	});
 
+	it("indirectWorkTypeOrder が空配列の場合、元の順序を維持する", () => {
+		const areas = [indA, indB, indC, projX, projY];
+		const result = sortAreasByIndirectOrder(areas, []);
+		expect(result).toEqual(areas);
+	});
+
 	it("indirectWorkTypeOrder に基づいて間接シリーズを逆順ソートする（先頭=チャート上部）", () => {
 		const areas = [indA, indB, indC, projX, projY];
 		const result = sortAreasByIndirectOrder(areas, ["C03", "A01", "B02"]);
