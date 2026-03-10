@@ -1,6 +1,6 @@
 # ユーザーフィードバックに基づく改修要件定義書
 
-> **Version**: 0.3.1
+> **Version**: 0.3.2
 > **Last Updated**: 2026-03-10
 > **Status**: 開発プラン策定済み
 
@@ -81,7 +81,7 @@
 | 順序 | 要件 | GitHub Issue | Spec | 概要 | 進捗 |
 |:----:|:----:|:------------:|------|------|:----:|
 | 3-1 | #5 | [#64](https://github.com/kttsh/ops/issues/64) | `feat-case-selection` | 案件ケース選択機能（API+UI） | 🟢 完了 |
-| 3-2 | #9 | [#65](https://github.com/kttsh/ops/issues/65) | `feat-indirect-loads-screen` | 間接工数の閲覧・編集画面（新規画面） | ⬜ 未着手 |
+| 3-2 | #9 | [#65](https://github.com/kttsh/ops/issues/65) | `feat-indirect-loads-screen` | 間接工数の閲覧・編集画面（新規画面） | 🟢 完了 |
 | 3-3 | #10 | [#66](https://github.com/kttsh/ops/issues/66) | `feat-capacity-auto-generation` | キャパシティ自動生成（n×m組み合わせ） | ⬜ 未着手 |
 
 > #10 は #5 のチャート設定基盤を活用するため、#5 の後に実施。#9 は独立だが新規画面のため Phase 3。
@@ -104,7 +104,7 @@
 | `feat-work-type-ordering` | #4 | Phase 2 | M | 🟢 完了 |
 | `feat-bulk-interpolation` | #1 | Phase 2 | M | 🟢 完了 |
 | `feat-case-selection` | #5 | Phase 3 | L | 🟢 完了 |
-| `feat-indirect-loads-screen` | #9 | Phase 3 | L | ⬜ 未着手 |
+| `feat-indirect-loads-screen` | #9 | Phase 3 | L | 🟢 完了 |
 | `feat-capacity-auto-generation` | #10 | Phase 3 | L | ⬜ 未着手 |
 | `ux-year-selector` | #2 | Phase 4 | M | ⬜ 未着手 |
 
@@ -818,6 +818,7 @@ const displayValue = parseFloat((ratio * 100).toPrecision(10));
 
 | 日付 | バージョン | 内容 |
 |------|-----------|------|
+| 2026-03-10 | 0.3.2 | #65（間接工数の閲覧・編集画面）完了を反映、GitHub Issue #65 クローズ |
 | 2026-03-10 | 0.3.1 | #68（間接エリアスタック順バグ）完了を反映、Issue #4 詳細に後続バグ修正を追記 |
 | 2026-03-09 | 0.3.0 | 開発プラン策定、GitHub Issue 13件起票（#55〜#67）、Spec単位・フェーズ定義 |
 | 2026-03-09 | 0.2.0 | ユーザー回答を要件に反映、解消済みQAを統合・削除、Open Questions再整理 |
