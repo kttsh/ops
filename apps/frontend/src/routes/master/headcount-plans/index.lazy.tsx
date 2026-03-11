@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { Loader2, Save } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { UnsavedChangesDialog } from "@/components/shared/UnsavedChangesDialog";
 import { Button } from "@/components/ui/button";
 import {
 	BusinessUnitSingleSelector,
-	HeadcountPlanCaseList,
-	MonthlyHeadcountGrid,
+	HeadcountPlanCaseChips,
+	MonthlyHeadcountTable,
 } from "@/features/indirect-case-study";
+import { BulkInputDialog } from "@/features/indirect-case-study/components/BulkInputDialog";
 import { useHeadcountPlansPage } from "@/features/indirect-case-study/hooks/useHeadcountPlansPage";
 import { businessUnitsQueryOptions } from "@/features/workload/api/queries";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
@@ -20,6 +21,7 @@ export const Route = createLazyFileRoute("/master/headcount-plans/")({
 function HeadcountPlansPage() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
+	const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
 
 	const { data: buData, isLoading: buLoading } = useQuery(
 		businessUnitsQueryOptions(),
@@ -86,39 +88,52 @@ function HeadcountPlansPage() {
 				/>
 			</div>
 
-			{/* メインコンテンツ - 2カラムレイアウト */}
-			<div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4 p-4">
-				{/* 左パネル: ケース一覧 */}
-				<div className="overflow-y-auto rounded-xl bg-card border border-border shadow-sm p-4">
-					<HeadcountPlanCaseList
-						items={page.cases}
-						selectedId={page.selectedCaseId}
-						onSelect={page.setSelectedCaseId}
-						businessUnitCode={selectedBu}
-						isLoading={page.isLoadingCases}
-						includeDisabled={page.includeDisabled}
-						onIncludeDisabledChange={page.setIncludeDisabled}
-					/>
-				</div>
-
-				{/* 右パネル: 月別入力グリッド */}
-				<div className="overflow-y-auto rounded-xl bg-card border border-border shadow-sm p-4">
-					{page.selectedCaseId ? (
-						<MonthlyHeadcountGrid
-							headcountPlanCaseId={page.selectedCaseId}
-							businessUnitCode={selectedBu}
-							fiscalYear={page.fiscalYear}
-							onFiscalYearChange={page.setFiscalYear}
-							onDirtyChange={page.setHeadcountDirty}
-							onLocalDataChange={page.setHeadcountLocalData}
-						/>
-					) : (
-						<div className="flex h-full items-center justify-center text-muted-foreground">
-							左のリストからケースを選択してください
-						</div>
-					)}
-				</div>
+			{/* ケースチップセレクター */}
+			<div className="border-b border-border px-4 py-3">
+				<HeadcountPlanCaseChips
+					cases={page.cases}
+					selectedCaseId={page.selectedCaseId}
+					onSelect={page.setSelectedCaseId}
+					businessUnitCode={selectedBu}
+					isLoading={page.isLoadingCases}
+					includeDisabled={page.includeDisabled}
+					onIncludeDisabledChange={page.setIncludeDisabled}
+				/>
 			</div>
+
+			{/* メインコンテンツ - 1カラムレイアウト */}
+			<div className="flex-1 overflow-auto p-4">
+				{page.selectedCaseId ? (
+					page.isLoadingMonthly ? (
+						<div className="flex items-center justify-center py-8">
+							<Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+						</div>
+					) : (
+						<MonthlyHeadcountTable
+							fiscalYears={page.fiscalYears}
+							localData={page.localData}
+							isCellDirty={page.isCellDirty}
+							onCellChange={page.handleCellChange}
+							currentFiscalYear={page.currentFiscalYear}
+							onOpenBulkInput={() => setBulkDialogOpen(true)}
+						/>
+					)
+				) : (
+					<div className="flex h-full items-center justify-center text-muted-foreground">
+						ケースを選択してください
+					</div>
+				)}
+			</div>
+
+			{/* 一括入力ダイアログ */}
+			<BulkInputDialog
+				open={bulkDialogOpen}
+				onOpenChange={setBulkDialogOpen}
+				fiscalYear={page.currentFiscalYear}
+				fiscalYearOptions={page.fiscalYears}
+				onApply={page.handleBulkSet}
+				onApplyInterpolation={page.handleBulkInterpolation}
+			/>
 
 			{/* 未保存警告ダイアログ */}
 			<UnsavedChangesDialog
