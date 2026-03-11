@@ -108,18 +108,13 @@ export function IndirectWorkRatioMatrix({
 	return (
 		<div className="space-y-3">
 			<h4 className="text-sm font-medium">間接作業比率（%）</h4>
-			<div className="overflow-x-auto">
+			<div className="overflow-x-auto rounded-lg border border-border">
 				<table className="w-full text-sm">
 					<thead>
-						<tr className="border-b">
-							<th className="text-left py-2 pr-3 font-medium text-muted-foreground">
-								作業種類
-							</th>
+						<tr className="border-b border-border bg-muted/50">
+							<th className="text-left py-2 pr-3 font-medium">作業種類</th>
 							{fiscalYears.map((fy) => (
-								<th
-									key={fy}
-									className="text-center py-2 px-2 font-medium text-muted-foreground"
-								>
+								<th key={fy} className="text-center py-2 px-2 font-medium">
 									{fy}年度
 								</th>
 							))}
@@ -127,8 +122,13 @@ export function IndirectWorkRatioMatrix({
 					</thead>
 					<tbody>
 						{workTypes.map((wt: WorkType) => (
-							<tr key={wt.workTypeCode} className="border-b">
-								<td className="py-1.5 pr-3 whitespace-nowrap">{wt.name}</td>
+							<tr
+								key={wt.workTypeCode}
+								className="border-b border-border bg-white last:border-b-0"
+							>
+								<td className="py-1.5 pr-3 whitespace-nowrap bg-white">
+									{wt.name}
+								</td>
 								{fiscalYears.map((fy) => {
 									const key = `${fy}-${wt.workTypeCode}`;
 									return (
@@ -161,7 +161,7 @@ export function IndirectWorkRatioMatrix({
 								})}
 							</tr>
 						))}
-						<tr className="border-t-2 font-semibold">
+						<tr className="border-t-2 border-border bg-white font-semibold">
 							<td className="py-1.5 pr-3">合計</td>
 							{fiscalYears.map((fy) => (
 								<td key={fy} className="py-1.5 px-1 text-center">

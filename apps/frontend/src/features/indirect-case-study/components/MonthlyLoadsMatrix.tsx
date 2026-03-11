@@ -119,7 +119,7 @@ export function MonthlyLoadsMatrix({
 							{MONTHS.map((m) => (
 								<th
 									key={m}
-									className="min-w-[90px] px-2 py-2 text-right font-medium"
+									className="min-w-[90px] px-2 py-2 text-center font-medium"
 								>
 									{m}
 								</th>

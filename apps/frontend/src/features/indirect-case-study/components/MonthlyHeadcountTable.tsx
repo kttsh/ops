@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
+import { Input } from "@/components/ui/input";
 import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 
 const MONTHS = [
@@ -54,6 +55,26 @@ export function MonthlyHeadcountTable({
 	currentFiscalYear,
 	onOpenBulkInput,
 }: MonthlyHeadcountTableProps) {
+	const tableRef = useRef<HTMLTableElement>(null);
+
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === "Enter") {
+				e.preventDefault();
+				const el = e.currentTarget;
+				const row = Number(el.dataset.row);
+				const col = Number(el.dataset.col);
+				const nextRow = row + 1;
+				const target = tableRef.current?.querySelector<HTMLInputElement>(
+					`input[data-row="${nextRow}"][data-col="${col}"]`,
+				);
+				target?.focus();
+				target?.select();
+			}
+		},
+		[],
+	);
+
 	const handleInputChange = useCallback(
 		(yearMonth: string, rawValue: string) => {
 			const normalized = normalizeNumericInput(rawValue);
@@ -76,17 +97,17 @@ export function MonthlyHeadcountTable({
 				</button>
 			</div>
 
-			<div className="overflow-x-auto">
-				<table className="w-full border-collapse text-sm">
+			<div className="overflow-x-auto rounded-lg border border-border">
+				<table ref={tableRef} className="w-full text-sm">
 					<thead>
-						<tr className="border-b border-border">
-							<th className="sticky left-0 z-10 bg-card px-3 py-2 text-left text-xs font-medium text-muted-foreground">
+						<tr className="border-b border-border bg-muted/50">
+							<th className="sticky left-0 z-10 bg-muted/50 px-3 py-2 text-left font-medium">
 								年度
 							</th>
 							{MONTH_LABELS.map((label) => (
 								<th
 									key={label}
-									className="px-2 py-2 text-center text-xs font-medium text-muted-foreground whitespace-nowrap"
+									className="min-w-[90px] px-2 py-2 text-center font-medium whitespace-nowrap"
 								>
 									{label}
 								</th>
@@ -94,35 +115,39 @@ export function MonthlyHeadcountTable({
 						</tr>
 					</thead>
 					<tbody>
-						{fiscalYears.map((fy) => {
+						{fiscalYears.map((fy, rowIndex) => {
 							const isCurrentYear = fy === currentFiscalYear;
 							return (
 								<tr
 									key={fy}
-									className={`border-b border-border ${isCurrentYear ? "bg-primary/5" : ""}`}
+									className={`border-b border-border last:border-b-0 ${isCurrentYear ? "bg-primary/5" : "bg-white"}`}
 								>
-									<td className="sticky left-0 z-10 bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground whitespace-nowrap">
-										{isCurrentYear && (
-											<span className={isCurrentYear ? "bg-primary/5" : ""}>
-												{fy}年度
-											</span>
-										)}
-										{!isCurrentYear && `${fy}年度`}
+									<td
+										className={`sticky left-0 z-10 px-3 py-1.5 font-medium whitespace-nowrap ${isCurrentYear ? "bg-primary/5" : "bg-white"}`}
+									>
+										FY{fy}
 									</td>
-									{MONTHS.map((m) => {
+									{MONTHS.map((m, colIndex) => {
 										const ym = getYearMonth(fy, m);
 										const dirty = isCellDirty(ym);
 										return (
-											<td key={m} className="px-1 py-1">
-												<input
+											<td
+												key={m}
+												className={`px-1 py-1 ${dirty ? "bg-amber-50" : ""}`}
+											>
+												<Input
 													type="text"
 													inputMode="numeric"
+													data-row={rowIndex}
+													data-col={colIndex}
 													value={localData[ym] ?? 0}
 													onChange={(e) =>
 														handleInputChange(ym, e.target.value)
 													}
-													className={`w-full rounded border border-border px-2 py-1 text-center text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary ${
-														dirty ? "bg-amber-50" : "bg-background"
+													onFocus={(e) => e.target.select()}
+													onKeyDown={handleKeyDown}
+													className={`h-8 w-full text-right tabular-nums ${
+														dirty ? "ring-1 ring-amber-400" : ""
 													}`}
 												/>
 											</td>

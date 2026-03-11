@@ -202,30 +202,30 @@ export const CalculationResultTable = memo(function CalculationResultTable({
 			</div>
 
 			{/* テーブル */}
-			<div className="overflow-x-auto">
-				<table className="w-full text-sm border-collapse">
+			<div className="overflow-x-auto rounded-lg border border-border">
+				<table className="w-full text-sm">
 					<thead>
-						<tr className="border-b-2">
-							<th className="text-left py-2 pr-3 font-medium text-muted-foreground sticky left-0 bg-background">
+						<tr className="border-b border-border bg-muted/50">
+							<th className="text-left py-2 pr-3 font-medium sticky left-0 bg-muted/50">
 								項目
 							</th>
 							{MONTH_LABELS.map((label) => (
 								<th
 									key={label}
-									className="text-right py-2 px-2 font-medium text-muted-foreground whitespace-nowrap"
+									className="text-right py-2 px-2 font-medium whitespace-nowrap"
 								>
 									{label}
 								</th>
 							))}
-							<th className="text-right py-2 pl-3 font-semibold text-muted-foreground whitespace-nowrap border-l">
+							<th className="text-right py-2 pl-3 font-semibold whitespace-nowrap border-l">
 								年間合計
 							</th>
 						</tr>
 					</thead>
 					<tbody>
 						{/* 人員数 */}
-						<tr className="border-b hover:bg-muted/30">
-							<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-background">
+						<tr className="border-b border-border bg-white hover:bg-muted/30">
+							<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-white">
 								{rowData.headcountRow.label}
 							</td>
 							{rowData.headcountRow.values.map((v, i) => (
@@ -239,8 +239,8 @@ export const CalculationResultTable = memo(function CalculationResultTable({
 						</tr>
 
 						{/* キャパシティ */}
-						<tr className="border-b hover:bg-muted/30">
-							<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-background">
+						<tr className="border-b border-border bg-white hover:bg-muted/30">
+							<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-white">
 								{rowData.capacityRow.label}
 							</td>
 							{rowData.capacityRow.values.map((v, i) => (
@@ -254,7 +254,7 @@ export const CalculationResultTable = memo(function CalculationResultTable({
 						</tr>
 
 						{/* 間接内訳ヘッダー */}
-						<tr className="border-b bg-muted/20">
+						<tr className="border-b border-border bg-muted/30">
 							<td
 								colSpan={MONTH_LABELS.length + 2}
 								className="py-1.5 pr-3 sticky left-0"
@@ -280,9 +280,9 @@ export const CalculationResultTable = memo(function CalculationResultTable({
 							rowData.breakdownRows.map((row) => (
 								<tr
 									key={row.workTypeCode}
-									className="border-b hover:bg-muted/30"
+									className="border-b border-border bg-white hover:bg-muted/30"
 								>
-									<td className="py-1.5 pr-3 whitespace-nowrap text-muted-foreground sticky left-0 bg-background">
+									<td className="py-1.5 pr-3 whitespace-nowrap text-muted-foreground sticky left-0 bg-white">
 										{row.label}
 									</td>
 									{row.values.map((v, i) => (
@@ -297,8 +297,8 @@ export const CalculationResultTable = memo(function CalculationResultTable({
 							))}
 
 						{/* 間接合計 */}
-						<tr className="border-b-2 hover:bg-muted/30 font-semibold">
-							<td className="py-1.5 pr-3 whitespace-nowrap sticky left-0 bg-background">
+						<tr className="border-t border-border bg-white hover:bg-muted/30 font-semibold">
+							<td className="py-1.5 pr-3 whitespace-nowrap sticky left-0 bg-white">
 								{rowData.indirectTotalRow.label}
 							</td>
 							{rowData.indirectTotalRow.values.map((v, i) => (
