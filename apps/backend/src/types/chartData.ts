@@ -107,11 +107,24 @@ export type CapacityAggregation = {
 	}>;
 };
 
+/** キャパシティライン集約（人員計画ケース × キャパシティシナリオ） */
+export type CapacityLineAggregation = {
+	headcountPlanCaseId: number;
+	caseName: string;
+	capacityScenarioId: number;
+	scenarioName: string;
+	lineName: string;
+	monthly: Array<{
+		yearMonth: string;
+		capacity: number;
+	}>;
+};
+
 /** チャートデータレスポンス */
 export type ChartDataResponse = {
 	projectLoads: ProjectLoadAggregation[];
 	indirectWorkLoads: IndirectWorkLoadAggregation[];
-	capacities: CapacityAggregation[];
+	capacityLines: CapacityLineAggregation[];
 	period: {
 		startYearMonth: string;
 		endYearMonth: string;
@@ -147,6 +160,17 @@ export type IndirectWorkLoadRow = {
 
 /** キャパシティ行 */
 export type CapacityRow = {
+	capacityScenarioId: number;
+	scenarioName: string;
+	businessUnitCode: string;
+	yearMonth: string;
+	capacity: number;
+};
+
+/** キャパシティライン行（人員計画ケース × キャパシティシナリオの CROSS JOIN 結果） */
+export type CapacityLineRow = {
+	headcountPlanCaseId: number;
+	caseName: string;
 	capacityScenarioId: number;
 	scenarioName: string;
 	businessUnitCode: string;

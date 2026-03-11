@@ -1,6 +1,7 @@
 import sql from "mssql";
 import { getPool } from "@/database/client";
 import type {
+	CapacityLineRow,
 	CapacityRow,
 	IndirectWorkLoadRow,
 	ProjectDetailRow,
@@ -167,6 +168,47 @@ export const chartDataData = {
         AND mc.year_month BETWEEN @startYearMonth AND @endYearMonth
         AND cs.deleted_at IS NULL
       ORDER BY mc.capacity_scenario_id, mc.year_month`,
+		);
+
+		return result.recordset;
+	},
+
+	/**
+	 * キャパシティライン取得（人員計画ケース × キャパシティシナリオのオンザフライ計算）
+	 */
+	async getCapacityLines(params: {
+		businessUnitCodes: string[];
+		startYearMonth: string;
+		endYearMonth: string;
+	}): Promise<CapacityLineRow[]> {
+		const pool = await getPool();
+		const request = pool.request();
+		request.input("startYearMonth", sql.Char(6), params.startYearMonth);
+		request.input("endYearMonth", sql.Char(6), params.endYearMonth);
+
+		const buPlaceholders = params.businessUnitCodes.map((code, i) => {
+			request.input(`bu${i}`, sql.VarChar(20), code);
+			return `@bu${i}`;
+		});
+
+		const result = await request.query<CapacityLineRow>(
+			`SELECT
+        hpc.headcount_plan_case_id AS headcountPlanCaseId,
+        hpc.case_name AS caseName,
+        cs.capacity_scenario_id AS capacityScenarioId,
+        cs.scenario_name AS scenarioName,
+        mhp.business_unit_code AS businessUnitCode,
+        mhp.year_month AS yearMonth,
+        CAST(mhp.headcount * cs.hours_per_person AS DECIMAL(10,2)) AS capacity
+      FROM headcount_plan_cases hpc
+      CROSS JOIN capacity_scenarios cs
+      INNER JOIN monthly_headcount_plan mhp
+        ON mhp.headcount_plan_case_id = hpc.headcount_plan_case_id
+      WHERE hpc.deleted_at IS NULL
+        AND cs.deleted_at IS NULL
+        AND mhp.business_unit_code IN (${buPlaceholders.join(",")})
+        AND mhp.year_month BETWEEN @startYearMonth AND @endYearMonth
+      ORDER BY hpc.headcount_plan_case_id, cs.capacity_scenario_id, mhp.year_month`,
 		);
 
 		return result.recordset;

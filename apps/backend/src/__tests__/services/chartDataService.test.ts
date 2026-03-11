@@ -8,12 +8,14 @@ vi.mock("@/data/chartDataData", () => ({
 		getIndirectWorkLoadsByDefault: vi.fn(),
 		getIndirectWorkLoadsByChartView: vi.fn(),
 		getCapacities: vi.fn(),
+		getCapacityLines: vi.fn(),
 	},
 }));
 
 import { chartDataData } from "@/data/chartDataData";
 import { chartDataService } from "@/services/chartDataService";
 import type {
+	CapacityLineRow,
 	CapacityRow,
 	IndirectWorkLoadRow,
 	ProjectDetailRow,
@@ -36,6 +38,7 @@ describe("chartDataService.getChartData", () => {
 		mockedData.getIndirectWorkLoadsByDefault.mockResolvedValue([]);
 		mockedData.getIndirectWorkLoadsByChartView.mockResolvedValue([]);
 		mockedData.getCapacities.mockResolvedValue([]);
+		mockedData.getCapacityLines.mockResolvedValue([]);
 	});
 
 	describe("chartViewId未指定時の分岐動作", () => {
@@ -226,33 +229,32 @@ describe("chartDataService.getChartData", () => {
 		});
 	});
 
-	describe("capacityScenarioIds の処理", () => {
-		it("未指定時にキャパシティを空配列で返却する", async () => {
-			const result = await chartDataService.getChartData(baseParams);
-			expect(result.capacities).toEqual([]);
-			expect(mockedData.getCapacities).not.toHaveBeenCalled();
-		});
-
-		it("指定時に getCapacities を呼び出す", async () => {
-			await chartDataService.getChartData({
-				...baseParams,
-				capacityScenarioIds: [1, 2],
-			});
-			expect(mockedData.getCapacities).toHaveBeenCalledWith({
-				capacityScenarioIds: [1, 2],
+	describe("キャパシティラインの取得", () => {
+		it("常に getCapacityLines を呼び出す（capacityScenarioIds の有無に関わらず）", async () => {
+			await chartDataService.getChartData(baseParams);
+			expect(mockedData.getCapacityLines).toHaveBeenCalledWith({
 				businessUnitCodes: ["BU001"],
 				startYearMonth: "202504",
 				endYearMonth: "202603",
 			});
 		});
 
-		it("chartViewId指定 + capacityScenarioIds未指定時も空配列", async () => {
-			const result = await chartDataService.getChartData({
+		it("データが空の場合に空配列を返却する", async () => {
+			mockedData.getCapacityLines.mockResolvedValue([]);
+			const result = await chartDataService.getChartData(baseParams);
+			expect(result.capacityLines).toEqual([]);
+		});
+
+		it("chartViewId指定時も getCapacityLines を呼び出す", async () => {
+			await chartDataService.getChartData({
 				...baseParams,
 				chartViewId: 1,
 			});
-			expect(result.capacities).toEqual([]);
-			expect(mockedData.getCapacities).not.toHaveBeenCalled();
+			expect(mockedData.getCapacityLines).toHaveBeenCalledWith({
+				businessUnitCodes: ["BU001"],
+				startYearMonth: "202504",
+				endYearMonth: "202603",
+			});
 		});
 	});
 
@@ -474,59 +476,128 @@ describe("chartDataService.getChartData", () => {
 		});
 	});
 
-	describe("キャパシティのネスト構造変換", () => {
-		it("シナリオID単位でグループ化しBU横断で月別にSUM集約する", async () => {
-			const rows: CapacityRow[] = [
+	describe("キャパシティラインのネスト構造変換", () => {
+		it("(ケースID, シナリオID)の複合キーでグループ化しBU横断で月別にSUM集約する", async () => {
+			const rows: CapacityLineRow[] = [
 				{
+					headcountPlanCaseId: 1,
+					caseName: "標準",
 					capacityScenarioId: 1,
-					scenarioName: "標準",
+					scenarioName: "定時160h",
 					businessUnitCode: "BU001",
 					yearMonth: "202504",
 					capacity: 500,
 				},
 				{
+					headcountPlanCaseId: 1,
+					caseName: "標準",
 					capacityScenarioId: 1,
-					scenarioName: "標準",
+					scenarioName: "定時160h",
 					businessUnitCode: "BU002",
 					yearMonth: "202504",
 					capacity: 300,
 				},
 				{
+					headcountPlanCaseId: 1,
+					caseName: "標準",
 					capacityScenarioId: 1,
-					scenarioName: "標準",
+					scenarioName: "定時160h",
 					businessUnitCode: "BU001",
 					yearMonth: "202505",
 					capacity: 600,
 				},
 				{
+					headcountPlanCaseId: 1,
+					caseName: "標準",
 					capacityScenarioId: 2,
-					scenarioName: "楽観",
+					scenarioName: "残業180h",
 					businessUnitCode: "BU001",
 					yearMonth: "202504",
 					capacity: 700,
 				},
 			];
-			mockedData.getCapacities.mockResolvedValue(rows);
+			mockedData.getCapacityLines.mockResolvedValue(rows);
 
-			const result = await chartDataService.getChartData({
-				...baseParams,
-				capacityScenarioIds: [1, 2],
-			});
+			const result = await chartDataService.getChartData(baseParams);
 
-			expect(result.capacities).toHaveLength(2);
-			expect(result.capacities[0]).toEqual({
+			expect(result.capacityLines).toHaveLength(2);
+			expect(result.capacityLines[0]).toEqual({
+				headcountPlanCaseId: 1,
+				caseName: "標準",
 				capacityScenarioId: 1,
-				scenarioName: "標準",
+				scenarioName: "定時160h",
+				lineName: "標準(定時160h)",
 				monthly: [
 					{ yearMonth: "202504", capacity: 800 },
 					{ yearMonth: "202505", capacity: 600 },
 				],
 			});
-			expect(result.capacities[1]).toEqual({
+			expect(result.capacityLines[1]).toEqual({
+				headcountPlanCaseId: 1,
+				caseName: "標準",
 				capacityScenarioId: 2,
-				scenarioName: "楽観",
+				scenarioName: "残業180h",
+				lineName: "標準(残業180h)",
 				monthly: [{ yearMonth: "202504", capacity: 700 }],
 			});
+		});
+
+		it("ケース2×シナリオ3で6本の集約結果が生成される", async () => {
+			const rows: CapacityLineRow[] = [];
+			const cases = [
+				{ id: 1, name: "標準" },
+				{ id: 2, name: "増員" },
+			];
+			const scenarios = [
+				{ id: 1, name: "定時160h" },
+				{ id: 2, name: "残業180h" },
+				{ id: 3, name: "短縮140h" },
+			];
+			for (const c of cases) {
+				for (const s of scenarios) {
+					rows.push({
+						headcountPlanCaseId: c.id,
+						caseName: c.name,
+						capacityScenarioId: s.id,
+						scenarioName: s.name,
+						businessUnitCode: "BU001",
+						yearMonth: "202504",
+						capacity: 100,
+					});
+				}
+			}
+			mockedData.getCapacityLines.mockResolvedValue(rows);
+
+			const result = await chartDataService.getChartData(baseParams);
+
+			expect(result.capacityLines).toHaveLength(6);
+			expect(result.capacityLines[0].lineName).toBe("標準(定時160h)");
+			expect(result.capacityLines[5].lineName).toBe("増員(短縮140h)");
+		});
+
+		it("空入力で空配列を返却する", async () => {
+			mockedData.getCapacityLines.mockResolvedValue([]);
+			const result = await chartDataService.getChartData(baseParams);
+			expect(result.capacityLines).toEqual([]);
+		});
+
+		it("lineName が {ケース名}({シナリオ名}) 形式で生成される", async () => {
+			const rows: CapacityLineRow[] = [
+				{
+					headcountPlanCaseId: 1,
+					caseName: "標準",
+					capacityScenarioId: 1,
+					scenarioName: "定時160h",
+					businessUnitCode: "BU001",
+					yearMonth: "202504",
+					capacity: 480,
+				},
+			];
+			mockedData.getCapacityLines.mockResolvedValue(rows);
+
+			const result = await chartDataService.getChartData(baseParams);
+
+			expect(result.capacityLines[0].lineName).toBe("標準(定時160h)");
 		});
 	});
 });

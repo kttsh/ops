@@ -1,6 +1,8 @@
 import { chartDataData } from "@/data/chartDataData";
 import type {
 	CapacityAggregation,
+	CapacityLineAggregation,
+	CapacityLineRow,
 	CapacityRow,
 	ChartDataResponse,
 	ChartDataServiceParams,
@@ -115,6 +117,52 @@ function transformCapacities(rows: CapacityRow[]): CapacityAggregation[] {
 	}));
 }
 
+function transformCapacityLines(
+	rows: CapacityLineRow[],
+): CapacityLineAggregation[] {
+	const groups = new Map<
+		string,
+		{
+			headcountPlanCaseId: number;
+			caseName: string;
+			capacityScenarioId: number;
+			scenarioName: string;
+			monthlyMap: Map<string, number>;
+		}
+	>();
+
+	for (const row of rows) {
+		const key = `${row.headcountPlanCaseId}:${row.capacityScenarioId}`;
+		if (!groups.has(key)) {
+			groups.set(key, {
+				headcountPlanCaseId: row.headcountPlanCaseId,
+				caseName: row.caseName,
+				capacityScenarioId: row.capacityScenarioId,
+				scenarioName: row.scenarioName,
+				monthlyMap: new Map(),
+			});
+		}
+
+		const group = groups.get(key)!;
+		const current = group.monthlyMap.get(row.yearMonth) ?? 0;
+		group.monthlyMap.set(row.yearMonth, current + row.capacity);
+	}
+
+	return Array.from(groups.values()).map((group) => ({
+		headcountPlanCaseId: group.headcountPlanCaseId,
+		caseName: group.caseName,
+		capacityScenarioId: group.capacityScenarioId,
+		scenarioName: group.scenarioName,
+		lineName: `${group.caseName}(${group.scenarioName})`,
+		monthly: Array.from(group.monthlyMap.entries()).map(
+			([yearMonth, capacity]) => ({
+				yearMonth,
+				capacity,
+			}),
+		),
+	}));
+}
+
 export const chartDataService = {
 	async getChartData(
 		params: ChartDataServiceParams,
@@ -163,23 +211,19 @@ export const chartDataService = {
 					indirectWorkCaseIds: params.indirectWorkCaseIds,
 				});
 
-		// キャパシティ
-		const capacities =
-			params.capacityScenarioIds && params.capacityScenarioIds.length > 0
-				? transformCapacities(
-						await chartDataData.getCapacities({
-							capacityScenarioIds: params.capacityScenarioIds,
-							businessUnitCodes: params.businessUnitCodes,
-							startYearMonth: params.startYearMonth,
-							endYearMonth: params.endYearMonth,
-						}),
-					)
-				: [];
+		// キャパシティライン（人員計画ケース × キャパシティシナリオのオンザフライ計算）
+		const capacityLines = transformCapacityLines(
+			await chartDataData.getCapacityLines({
+				businessUnitCodes: params.businessUnitCodes,
+				startYearMonth: params.startYearMonth,
+				endYearMonth: params.endYearMonth,
+			}),
+		);
 
 		return {
 			projectLoads: transformProjectLoads(projectDetailRows),
 			indirectWorkLoads: transformIndirectWorkLoads(indirectWorkLoadRows),
-			capacities,
+			capacityLines,
 			period: {
 				startYearMonth: params.startYearMonth,
 				endYearMonth: params.endYearMonth,

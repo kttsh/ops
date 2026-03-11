@@ -15,7 +15,7 @@ describe("GET /chart-data", () => {
 	const mockResponse = {
 		projectLoads: [],
 		indirectWorkLoads: [],
-		capacities: [],
+		capacityLines: [],
 		period: { startYearMonth: "202504", endYearMonth: "202603" },
 		businessUnitCodes: ["BU001"],
 	};
@@ -34,7 +34,7 @@ describe("GET /chart-data", () => {
 		const json = await res.json();
 		expect(json.data).toHaveProperty("projectLoads");
 		expect(json.data).toHaveProperty("indirectWorkLoads");
-		expect(json.data).toHaveProperty("capacities");
+		expect(json.data).toHaveProperty("capacityLines");
 		expect(json.data).toHaveProperty("period");
 		expect(json.data).toHaveProperty("businessUnitCodes");
 	});
@@ -112,6 +112,139 @@ describe("GET /chart-data", () => {
 			);
 
 			expect(res.status).toBe(422);
+		});
+	});
+
+	describe("キャパシティラインのレスポンス検証", () => {
+		it("n×m本のキャパシティラインがcapacityLinesフィールドに含まれる", async () => {
+			mockedService.getChartData.mockResolvedValue({
+				...mockResponse,
+				capacityLines: [
+					{
+						headcountPlanCaseId: 1,
+						caseName: "標準",
+						capacityScenarioId: 1,
+						scenarioName: "定時160h",
+						lineName: "標準(定時160h)",
+						monthly: [{ yearMonth: "202504", capacity: 800 }],
+					},
+					{
+						headcountPlanCaseId: 1,
+						caseName: "標準",
+						capacityScenarioId: 2,
+						scenarioName: "残業180h",
+						lineName: "標準(残業180h)",
+						monthly: [{ yearMonth: "202504", capacity: 900 }],
+					},
+					{
+						headcountPlanCaseId: 2,
+						caseName: "増員",
+						capacityScenarioId: 1,
+						scenarioName: "定時160h",
+						lineName: "増員(定時160h)",
+						monthly: [{ yearMonth: "202504", capacity: 1200 }],
+					},
+					{
+						headcountPlanCaseId: 2,
+						caseName: "増員",
+						capacityScenarioId: 2,
+						scenarioName: "残業180h",
+						lineName: "増員(残業180h)",
+						monthly: [{ yearMonth: "202504", capacity: 1350 }],
+					},
+				],
+			});
+
+			const res = await app.request(
+				"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
+			);
+
+			expect(res.status).toBe(200);
+			const json = await res.json();
+			expect(json.data.capacityLines).toHaveLength(4);
+			expect(json.data.capacityLines[0].lineName).toBe("標準(定時160h)");
+			expect(json.data.capacityLines[3].lineName).toBe("増員(残業180h)");
+		});
+
+		it("ケースまたはシナリオが0件の場合に空のcapacityLinesが返却される", async () => {
+			mockedService.getChartData.mockResolvedValue({
+				...mockResponse,
+				capacityLines: [],
+			});
+
+			const res = await app.request(
+				"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
+			);
+
+			expect(res.status).toBe(200);
+			const json = await res.json();
+			expect(json.data.capacityLines).toEqual([]);
+		});
+
+		it("キャパシティ値が既知の入力値で正しく返却される", async () => {
+			mockedService.getChartData.mockResolvedValue({
+				...mockResponse,
+				capacityLines: [
+					{
+						headcountPlanCaseId: 1,
+						caseName: "標準",
+						capacityScenarioId: 1,
+						scenarioName: "定時160h",
+						lineName: "標準(定時160h)",
+						monthly: [
+							{ yearMonth: "202504", capacity: 480 },
+							{ yearMonth: "202505", capacity: 640 },
+						],
+					},
+				],
+			});
+
+			const res = await app.request(
+				"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
+			);
+
+			expect(res.status).toBe(200);
+			const json = await res.json();
+			const line = json.data.capacityLines[0];
+			expect(line.headcountPlanCaseId).toBe(1);
+			expect(line.capacityScenarioId).toBe(1);
+			expect(line.lineName).toBe("標準(定時160h)");
+			expect(line.monthly).toEqual([
+				{ yearMonth: "202504", capacity: 480 },
+				{ yearMonth: "202505", capacity: 640 },
+			]);
+		});
+
+		it("削除済みケース・シナリオがキャパシティラインに含まれない（サービス層が除外済み）", async () => {
+			// サービス層が deleted_at IS NOT NULL のケース・シナリオを除外した結果を返す
+			mockedService.getChartData.mockResolvedValue({
+				...mockResponse,
+				capacityLines: [
+					{
+						headcountPlanCaseId: 1,
+						caseName: "標準",
+						capacityScenarioId: 1,
+						scenarioName: "定時160h",
+						lineName: "標準(定時160h)",
+						monthly: [{ yearMonth: "202504", capacity: 480 }],
+					},
+				],
+			});
+
+			const res = await app.request(
+				"/api/ops/chart-data?businessUnitCodes=BU001&startYearMonth=202504&endYearMonth=202603",
+			);
+
+			expect(res.status).toBe(200);
+			const json = await res.json();
+			// 削除済みケースID=2、削除済みシナリオID=2 は結果に含まれない
+			expect(json.data.capacityLines).toHaveLength(1);
+			expect(
+				json.data.capacityLines.every(
+					(line: { headcountPlanCaseId: number }) =>
+						line.headcountPlanCaseId !== 2,
+				),
+			).toBe(true);
 		});
 	});
 
