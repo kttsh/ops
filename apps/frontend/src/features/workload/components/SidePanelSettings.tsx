@@ -6,11 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useBulkUpsertColorSettings } from "@/features/workload/api/mutations";
-import {
-	capacityScenariosQueryOptions,
-	projectsQueryOptions,
-} from "@/features/workload/api/queries";
-import type { BulkUpsertProjectItemInput } from "@/features/workload/types";
+import { projectsQueryOptions } from "@/features/workload/api/queries";
+import type {
+	AvailableCapacityLine,
+	BulkUpsertProjectItemInput,
+} from "@/features/workload/types";
 import { CAPACITY_COLORS, PROJECT_TYPE_COLORS } from "@/lib/chart-colors";
 import { ColorPickerPopover } from "./ColorPickerPopover";
 import { PeriodSelector } from "./PeriodSelector";
@@ -24,10 +24,11 @@ interface SidePanelSettingsProps {
 	onPeriodChange: (from: string | undefined, months: number) => void;
 	onProjectColorsChange?: (colors: Record<number, string>) => void;
 	onProjectOrderChange?: (order: number[]) => void;
-	capVisible?: Record<number, boolean>;
-	capColors?: Record<number, string>;
-	onCapVisibleChange?: (capVisible: Record<number, boolean>) => void;
-	onCapColorsChange?: (capColors: Record<number, string>) => void;
+	availableCapacityLines?: AvailableCapacityLine[];
+	capLineVisible?: Record<string, boolean>;
+	capLineColors?: Record<string, string>;
+	onCapLineVisibleChange?: (visible: Record<string, boolean>) => void;
+	onCapLineColorsChange?: (colors: Record<string, string>) => void;
 	onProfileApply?: (profile: {
 		chartViewId: number;
 		startYearMonth: string;
@@ -45,16 +46,15 @@ export function SidePanelSettings({
 	onPeriodChange,
 	onProjectColorsChange,
 	onProjectOrderChange,
-	capVisible = {},
-	capColors = {},
-	onCapVisibleChange,
-	onCapColorsChange,
+	availableCapacityLines = [],
+	capLineVisible = {},
+	capLineColors = {},
+	onCapLineVisibleChange,
+	onCapLineColorsChange,
 	onProfileApply,
 }: SidePanelSettingsProps) {
 	const { data: projData } = useQuery(projectsQueryOptions(businessUnitCodes));
-	const { data: csData } = useQuery(capacityScenariosQueryOptions());
 	const projects = projData?.data ?? [];
-	const capacityScenarios = csData?.data ?? [];
 
 	const colorMutation = useBulkUpsertColorSettings();
 
@@ -301,39 +301,45 @@ export function SidePanelSettings({
 
 			<Separator />
 
-			{/* キャパシティ表示設定 */}
+			{/* キャパシティライン表示設定 */}
 			<div>
 				<h3 className="mb-3 text-sm font-semibold">キャパシティ設定</h3>
 				<div className="space-y-2">
-					{capacityScenarios.map((cs) => (
+					{availableCapacityLines.map((cl, idx) => (
 						<div
-							key={cs.capacityScenarioId}
+							key={cl.key}
 							className="flex items-center gap-3 rounded-lg border border-border bg-white p-2"
 						>
 							<Switch
-								checked={capVisible[cs.capacityScenarioId] ?? true}
+								checked={capLineVisible[cl.key] ?? false}
 								onCheckedChange={(checked) =>
-									onCapVisibleChange?.({
-										...capVisible,
-										[cs.capacityScenarioId]: checked,
+									onCapLineVisibleChange?.({
+										...capLineVisible,
+										[cl.key]: checked,
 									})
 								}
 							/>
 							<ColorPickerPopover
 								colors={CAPACITY_COLORS}
-								value={capColors[cs.capacityScenarioId] ?? CAPACITY_COLORS[0]}
+								value={
+									capLineColors[cl.key] ??
+									CAPACITY_COLORS[idx % CAPACITY_COLORS.length]
+								}
 								onChange={(color) =>
-									onCapColorsChange?.({
-										...capColors,
-										[cs.capacityScenarioId]: color,
+									onCapLineColorsChange?.({
+										...capLineColors,
+										[cl.key]: color,
 									})
 								}
 							/>
-							<Label className="flex-1 truncate text-sm">
-								{cs.scenarioName}
-							</Label>
+							<Label className="flex-1 truncate text-sm">{cl.lineName}</Label>
 						</div>
 					))}
+					{availableCapacityLines.length === 0 && (
+						<p className="py-2 text-center text-xs text-muted-foreground">
+							人員計画ケースまたはキャパシティシナリオがありません
+						</p>
+					)}
 				</div>
 			</div>
 
@@ -346,8 +352,6 @@ export function SidePanelSettings({
 				endYearMonth={endYearMonth}
 				projectItems={profileProjectItems}
 				businessUnitCodes={businessUnitCodes}
-				capVisible={capVisible}
-				capColors={capColors}
 				onApply={handleProfileApply}
 			/>
 		</div>

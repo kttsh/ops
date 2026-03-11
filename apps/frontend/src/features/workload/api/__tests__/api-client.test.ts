@@ -22,7 +22,7 @@ function mockOkResponse() {
 			data: {
 				projectLoads: [],
 				indirectWorkLoads: [],
-				capacities: [],
+				capacityLines: [],
 				period: { startYearMonth: "202401", endYearMonth: "202412" },
 				businessUnitCodes: ["BU01"],
 			},

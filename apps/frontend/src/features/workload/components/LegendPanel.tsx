@@ -41,8 +41,11 @@ function LegendPanelInner({
 		return area?.fill ?? "#6b7280";
 	};
 
-	const getLineColor = (scenarioId: number) => {
-		const key = `capacity_${scenarioId}`;
+	const getLineColor = (
+		headcountPlanCaseId: number,
+		capacityScenarioId: number,
+	) => {
+		const key = `capacity_${headcountPlanCaseId}_${capacityScenarioId}`;
 		const line = seriesConfig.lines.find((l) => l.dataKey === key);
 		return line?.stroke ?? "#3b82f6";
 	};
@@ -127,18 +130,23 @@ function LegendPanelInner({
 					キャパシティ
 				</p>
 				<div className="space-y-1">
-					{data.capacities.map((cap) => (
+					{data.capacityLines.map((cl) => (
 						<div
-							key={cap.scenarioId}
+							key={`${cl.headcountPlanCaseId}_${cl.capacityScenarioId}`}
 							className="flex items-center gap-2 px-1 py-1 text-sm"
 						>
 							<span
 								className="inline-block h-3 w-3 rounded-full border-2"
-								style={{ borderColor: getLineColor(cap.scenarioId) }}
+								style={{
+									borderColor: getLineColor(
+										cl.headcountPlanCaseId,
+										cl.capacityScenarioId,
+									),
+								}}
 							/>
-							<span className="flex-1 truncate">{cap.scenarioName}</span>
+							<span className="flex-1 truncate">{cl.lineName}</span>
 							<span className="tabular-nums text-muted-foreground">
-								{formatManhour(cap.capacity)}
+								{formatManhour(cl.capacity)}
 							</span>
 						</div>
 					))}

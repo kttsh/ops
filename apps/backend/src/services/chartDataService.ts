@@ -1,9 +1,7 @@
 import { chartDataData } from "@/data/chartDataData";
 import type {
-	CapacityAggregation,
 	CapacityLineAggregation,
 	CapacityLineRow,
-	CapacityRow,
 	ChartDataResponse,
 	ChartDataServiceParams,
 	IndirectWorkLoadAggregation,
@@ -84,37 +82,6 @@ function transformIndirectWorkLoads(
 	}
 
 	return Array.from(groups.values());
-}
-
-function transformCapacities(rows: CapacityRow[]): CapacityAggregation[] {
-	const groups = new Map<
-		number,
-		{ scenarioName: string; monthlyMap: Map<string, number> }
-	>();
-
-	for (const row of rows) {
-		if (!groups.has(row.capacityScenarioId)) {
-			groups.set(row.capacityScenarioId, {
-				scenarioName: row.scenarioName,
-				monthlyMap: new Map(),
-			});
-		}
-
-		const group = groups.get(row.capacityScenarioId)!;
-		const current = group.monthlyMap.get(row.yearMonth) ?? 0;
-		group.monthlyMap.set(row.yearMonth, current + row.capacity);
-	}
-
-	return Array.from(groups.entries()).map(([id, group]) => ({
-		capacityScenarioId: id,
-		scenarioName: group.scenarioName,
-		monthly: Array.from(group.monthlyMap.entries()).map(
-			([yearMonth, capacity]) => ({
-				yearMonth,
-				capacity,
-			}),
-		),
-	}));
 }
 
 function transformCapacityLines(

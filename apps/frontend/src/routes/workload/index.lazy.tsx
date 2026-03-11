@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-	capacityScenariosQueryOptions,
 	projectsQueryOptions,
 	stackOrderSettingsQueryOptions,
 } from "@/features/workload/api/queries";
@@ -25,12 +24,12 @@ import { useChartData } from "@/features/workload/hooks/useChartData";
 import { useLegendState } from "@/features/workload/hooks/useLegendState";
 import { useTableData } from "@/features/workload/hooks/useTableData";
 import { useWorkloadFilters } from "@/features/workload/hooks/useWorkloadFilters";
+import type { BulkUpsertProjectItemInput } from "@/features/workload/types";
 import {
 	hasNonDefaultCaseSelection,
 	initializeCaseSelection,
 	syncCaseSelectionWithProjects,
 } from "@/features/workload/utils/case-selection";
-import { CAPACITY_COLORS } from "@/lib/chart-colors";
 
 export const Route = createLazyFileRoute("/workload/")({
 	component: WorkloadPage,
@@ -163,54 +162,23 @@ function WorkloadPage() {
 		}
 	}, [savedIndirectOrder, indirectOrder.length]);
 
-	// キャパシティ表示状態（SidePanelSettings ↔ useChartData の橋渡し）
-	const { data: csData } = useQuery(capacityScenariosQueryOptions());
-	const capacityScenarios = csData?.data ?? [];
+	// キャパシティライン表示状態（SidePanelSettings ↔ useChartData の橋渡し）
+	// デフォルト全 OFF（capLineVisible に存在しないキーは false として扱う）
+	const [capLineVisible, setCapLineVisible] = useState<Record<string, boolean>>(
+		{},
+	);
+	const [capLineColors, setCapLineColors] = useState<Record<string, string>>(
+		{},
+	);
 
-	const [capVisible, setCapVisible] = useState<Record<number, boolean>>({});
-	const [capColors, setCapColors] = useState<Record<number, string>>({});
-
-	// キャパシティシナリオ一覧の取得結果をもとに全シナリオをデフォルトONで初期化
-	useEffect(() => {
-		if (capacityScenarios.length > 0 && Object.keys(capVisible).length === 0) {
-			const vis: Record<number, boolean> = {};
-			const cols: Record<number, string> = {};
-			capacityScenarios.forEach((cs, i) => {
-				vis[cs.capacityScenarioId] = true;
-				cols[cs.capacityScenarioId] =
-					CAPACITY_COLORS[i % CAPACITY_COLORS.length];
-			});
-			setCapVisible(vis);
-			setCapColors(cols);
-		}
-	}, [capacityScenarios, capVisible]);
-
-	// チェックONのシナリオIDのみを抽出
-	const capacityScenarioIds = useMemo(() => {
-		return Object.entries(capVisible)
-			.filter(([, visible]) => visible)
-			.map(([id]) => Number(id));
-	}, [capVisible]);
-
-	// プロファイル適用
+	// プロファイル適用（後方互換：旧キャパシティ設定は無視しデフォルト全OFFにフォールバック）
 	const handleProfileApply = useCallback(
 		(profile: {
 			chartViewId: number;
 			startYearMonth: string;
 			endYearMonth: string;
-			projectItems: Array<{
-				projectId: number;
-				projectCaseId: number | null;
-				displayOrder: number;
-				isVisible: boolean;
-				color: string | null;
-			}>;
+			projectItems: BulkUpsertProjectItemInput[];
 			businessUnitCodes: string[] | null;
-			capacityItems?: Array<{
-				capacityScenarioId: number;
-				isVisible: boolean;
-				colorCode: string | null;
-			}>;
 		}) => {
 			// startYearMonth と endYearMonth から months を計算
 			const startY = parseInt(profile.startYearMonth.slice(0, 4), 10);
@@ -229,25 +197,13 @@ function WorkloadPage() {
 				setPeriod(profile.startYearMonth, months);
 			}
 
-			// キャパシティ設定の復元
-			if (profile.capacityItems && profile.capacityItems.length > 0) {
-				const vis: Record<number, boolean> = {};
-				const cols: Record<number, string> = {};
-				for (const item of profile.capacityItems) {
-					vis[item.capacityScenarioId] = item.isVisible;
-					if (item.colorCode) {
-						cols[item.capacityScenarioId] = item.colorCode;
-					}
-				}
-				setCapVisible(vis);
-				setCapColors(cols);
-			}
-			// else: キャパシティ設定なし → 現在の状態を維持（後方互換）
+			// キャパシティライン設定はプロファイルから復元しない（デフォルト全 OFF 維持）
+			// 旧形式（capacity_scenario_id 単独キー）のプロファイルとの後方互換を確保
 		},
 		[setPeriod, setPeriodAndBusinessUnits],
 	);
 
-	// chartDataParams に selectedProjectIds, projectCaseIds, capacityScenarioIds を含める
+	// chartDataParams に selectedProjectIds, projectCaseIds を含める
 	const chartDataParamsWithFilters = useMemo(() => {
 		if (!chartDataParams) return null;
 		if (selectedProjectIds.size === 0) return null;
@@ -260,9 +216,6 @@ function WorkloadPage() {
 		if (hasNonDefaultCaseSelection(selectedCaseIds, projects)) {
 			params.projectCaseIds = Array.from(selectedCaseIds.values());
 		}
-		if (capacityScenarioIds.length > 0) {
-			params.capacityScenarioIds = capacityScenarioIds;
-		}
 		return params;
 	}, [
 		chartDataParams,
@@ -270,7 +223,6 @@ function WorkloadPage() {
 		allProjectIds.length,
 		selectedCaseIds,
 		projects,
-		capacityScenarioIds,
 	]);
 
 	const {
@@ -279,6 +231,7 @@ function WorkloadPage() {
 		legendDataByMonth,
 		latestMonth,
 		rawResponse,
+		availableCapacityLines,
 		isLoading,
 		isFetching,
 		isError,
@@ -288,7 +241,8 @@ function WorkloadPage() {
 		projectOrder,
 		indirectWorkTypeColors: indirectColors,
 		indirectWorkTypeOrder: indirectOrder,
-		capacityColors: capColors,
+		capLineVisible,
+		capLineColors,
 	});
 
 	const {
@@ -352,10 +306,11 @@ function WorkloadPage() {
 							onPeriodChange={setPeriod}
 							onProjectColorsChange={handleProjectColorsChange}
 							onProjectOrderChange={handleProjectOrderChange}
-							capVisible={capVisible}
-							capColors={capColors}
-							onCapVisibleChange={setCapVisible}
-							onCapColorsChange={setCapColors}
+							availableCapacityLines={availableCapacityLines}
+							capLineVisible={capLineVisible}
+							capLineColors={capLineColors}
+							onCapLineVisibleChange={setCapLineVisible}
+							onCapLineColorsChange={setCapLineColors}
 							onProfileApply={handleProfileApply}
 						/>
 					}

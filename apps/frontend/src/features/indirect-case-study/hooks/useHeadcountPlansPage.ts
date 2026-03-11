@@ -72,10 +72,7 @@ export function useHeadcountPlansPage({
 	);
 
 	const monthlyQuery = useQuery(
-		monthlyHeadcountPlansQueryOptions(
-			selectedCaseId ?? 0,
-			businessUnitCode,
-		),
+		monthlyHeadcountPlansQueryOptions(selectedCaseId ?? 0, businessUnitCode),
 	);
 
 	// APIデータからローカルデータを初期化
@@ -127,26 +124,20 @@ export function useHeadcountPlansPage({
 	}, [localData, originalData]);
 
 	// セル値変更
-	const handleCellChange = useCallback(
-		(yearMonth: string, value: number) => {
-			setLocalData((prev) => ({ ...prev, [yearMonth]: value }));
-		},
-		[],
-	);
+	const handleCellChange = useCallback((yearMonth: string, value: number) => {
+		setLocalData((prev) => ({ ...prev, [yearMonth]: value }));
+	}, []);
 
 	// 一括入力ハンドラー
-	const handleBulkSet = useCallback(
-		(year: number, headcount: number) => {
-			setLocalData((prev) => {
-				const updated = { ...prev };
-				MONTHS.forEach((m) => {
-					updated[getYearMonth(year, m)] = headcount;
-				});
-				return updated;
+	const handleBulkSet = useCallback((year: number, headcount: number) => {
+		setLocalData((prev) => {
+			const updated = { ...prev };
+			MONTHS.forEach((m) => {
+				updated[getYearMonth(year, m)] = headcount;
 			});
-		},
-		[],
-	);
+			return updated;
+		});
+	}, []);
 
 	const handleBulkInterpolation = useCallback(
 		(year: number, monthlyValues: number[]) => {
@@ -166,7 +157,11 @@ export function useHeadcountPlansPage({
 		if (!selectedCaseId) return;
 
 		// 差分のみ抽出
-		const changedItems: { businessUnitCode: string; yearMonth: string; headcount: number }[] = [];
+		const changedItems: {
+			businessUnitCode: string;
+			yearMonth: string;
+			headcount: number;
+		}[] = [];
 		const allKeys = new Set([
 			...Object.keys(localData),
 			...Object.keys(originalData),
@@ -193,7 +188,13 @@ export function useHeadcountPlansPage({
 		} catch {
 			// エラートーストは mutation の onError で表示済み
 		}
-	}, [selectedCaseId, localData, originalData, businessUnitCode, bulkHeadcountMutation]);
+	}, [
+		selectedCaseId,
+		localData,
+		originalData,
+		businessUnitCode,
+		bulkHeadcountMutation,
+	]);
 
 	return {
 		// クエリ結果

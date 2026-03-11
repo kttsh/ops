@@ -14,7 +14,14 @@ const mockLegendData: LegendMonthData = {
 	indirectWorkTypes: [
 		{ workTypeCode: "WT001", workTypeName: "基本設計", manhour: 60 },
 	],
-	capacities: [{ scenarioId: 1, scenarioName: "キャパシティ", capacity: 800 }],
+	capacityLines: [
+		{
+			headcountPlanCaseId: 1,
+			capacityScenarioId: 1,
+			lineName: "標準(キャパシティ)",
+			capacity: 800,
+		},
+	],
 	totalManhour: 790,
 	totalCapacity: 800,
 };

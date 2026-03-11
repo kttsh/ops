@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 								? "h-full"
 								: currentPath.startsWith("/projects")
 									? "px-6 py-8"
-								: "mx-auto max-w-4xl px-6 py-8",
+									: "mx-auto max-w-4xl px-6 py-8",
 						)}
 					>
 						{children}

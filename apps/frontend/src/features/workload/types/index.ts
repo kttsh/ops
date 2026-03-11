@@ -46,10 +46,30 @@ export type CapacityAggregation = {
 	monthly: Array<{ yearMonth: string; capacity: number }>;
 };
 
+/** キャパシティライン集約（人員計画ケース × キャパシティシナリオ） */
+export type CapacityLineAggregation = {
+	headcountPlanCaseId: number;
+	caseName: string;
+	capacityScenarioId: number;
+	scenarioName: string;
+	lineName: string;
+	monthly: Array<{ yearMonth: string; capacity: number }>;
+};
+
+/** キャパシティライン一覧（設定 UI 用） */
+export type AvailableCapacityLine = {
+	key: string; // "${headcountPlanCaseId}_${capacityScenarioId}"
+	headcountPlanCaseId: number;
+	caseName: string;
+	capacityScenarioId: number;
+	scenarioName: string;
+	lineName: string;
+};
+
 export type ChartDataResponse = {
 	projectLoads: ProjectLoadAggregation[];
 	indirectWorkLoads: IndirectWorkLoadAggregation[];
-	capacities: CapacityAggregation[];
+	capacityLines: CapacityLineAggregation[];
 	period: { startYearMonth: string; endYearMonth: string };
 	businessUnitCodes: string[];
 };
@@ -277,9 +297,10 @@ export type LegendMonthData = {
 		workTypeName: string;
 		manhour: number;
 	}>;
-	capacities: Array<{
-		scenarioId: number;
-		scenarioName: string;
+	capacityLines: Array<{
+		headcountPlanCaseId: number;
+		capacityScenarioId: number;
+		lineName: string;
 		capacity: number;
 	}>;
 	totalManhour: number;

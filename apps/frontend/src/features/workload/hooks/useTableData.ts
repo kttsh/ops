@@ -36,11 +36,11 @@ export function useTableData(
 		const allRows: TableRow[] = [];
 		const yearSet = new Set<number>();
 
-		// キャパシティ行
-		for (const cap of rawResponse.capacities) {
+		// キャパシティライン行
+		for (const cl of rawResponse.capacityLines) {
 			const monthly: Record<string, number> = {};
 			let total = 0;
-			for (const m of cap.monthly) {
+			for (const m of cl.monthly) {
 				const month = m.yearMonth.slice(4, 6);
 				const year = parseInt(m.yearMonth.slice(0, 4), 10);
 				yearSet.add(year);
@@ -48,9 +48,9 @@ export function useTableData(
 				total += m.capacity;
 			}
 			allRows.push({
-				id: `capacity_${cap.capacityScenarioId}`,
+				id: `capacity_${cl.headcountPlanCaseId}_${cl.capacityScenarioId}`,
 				rowType: "capacity",
-				name: cap.scenarioName,
+				name: cl.lineName,
 				total,
 				monthly,
 			});

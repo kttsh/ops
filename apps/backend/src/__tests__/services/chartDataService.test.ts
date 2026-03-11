@@ -16,7 +16,6 @@ import { chartDataData } from "@/data/chartDataData";
 import { chartDataService } from "@/services/chartDataService";
 import type {
 	CapacityLineRow,
-	CapacityRow,
 	IndirectWorkLoadRow,
 	ProjectDetailRow,
 } from "@/types/chartData";

@@ -46,8 +46,8 @@
   - キャパシティ値が `人員数 × 1人あたり稼働時間` で正しく計算されることを既知の入力値で検証する
   - _Requirements: 1.1, 1.2, 1.3, 5.3, 6.1, 6.2, 6.3_
 
-- [ ] 4. フロントエンド型定義とデータ変換
-- [ ] 4.1 (P) フロントエンドの型定義をキャパシティライン対応に更新する
+- [x] 4. フロントエンド型定義とデータ変換
+- [x] 4.1 (P) フロントエンドの型定義をキャパシティライン対応に更新する
   - `ChartDataResponse` 型の `capacities` フィールドを `capacityLines` に変更し、バックエンドの新レスポンス型と一致させる
   - `CapacityLineAggregation` 型（ケースID、ケース名、シナリオID、シナリオ名、ライン名称、月別配列）を追加する
   - `AvailableCapacityLine` 型（複合キー、ケース情報、シナリオ情報、ライン名称）を追加する
@@ -55,7 +55,7 @@
   - `UseChartDataOptions` の `capacityColors` を `capLineColors`（string キー）に、`UseChartDataReturn` に `availableCapacityLines` を追加する
   - _Requirements: 1.1, 2.1, 3.4_
 
-- [ ] 4.2 チャートデータ変換フックをキャパシティライン対応に更新する
+- [x] 4.2 チャートデータ変換フックをキャパシティライン対応に更新する
   - `capacityLines` を `capacity_{ケースID}_{シナリオID}` の複合キーで `LineSeriesConfig` に変換する処理に書き換える
   - 全キャパシティラインに `strokeDasharray: "6 3"` を設定し破線で描画されるようにする
   - `capLineVisible` 状態に基づき、ON のラインのみ `seriesConfig.lines` に含めるフィルタリングを実装する
@@ -65,8 +65,8 @@
   - 色の割り当ては `capLineColors` を優先し、未設定の場合は `CAPACITY_COLORS` パレットからローテーションする
   - _Requirements: 3.1, 3.2, 3.3, 4.1, 4.2, 4.3_
 
-- [ ] 5. フロントエンド設定UIと互換性対応
-- [ ] 5.1 キャパシティライン設定UIをn×m対応に更新する
+- [x] 5. フロントエンド設定UIと互換性対応
+- [x] 5.1 キャパシティライン設定UIをn×m対応に更新する
   - 設定パネルのキャパシティセクションで、`availableCapacityLines` を受け取り n×m 本全てのラインを一覧表示する
   - 各ラインに Switch（ON/OFF トグル）と ColorPickerPopover を配置し、ラベルに `lineName`（`{ケース名}({シナリオ名})`）を表示する
   - `capLineVisible` / `capLineColors` の状態を複合キー `{ケースID}_{シナリオID}` で管理し、変更時にコールバックで親コンポーネントに通知する
@@ -74,7 +74,7 @@
   - ワークロードページのルートコンポーネントで `availableCapacityLines` を設定パネルに渡す配線を行う
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [ ] 5.2 チャートビュープロファイルの後方互換性を確保する
+- [x] 5.2 チャートビュープロファイルの後方互換性を確保する
   - プロファイル読み込み時に旧形式（`capacity_scenario_id` 単独キー）のキャパシティ設定を検出した場合、当該設定を無視しデフォルト全 OFF にフォールバックする
   - プロファイル適用処理で新形式の複合キーが存在しない場合もエラーにせず、デフォルト状態で動作することを確認する
   - _Requirements: 3.1_
