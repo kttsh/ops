@@ -1,7 +1,7 @@
 # ユーザーフィードバックに基づく改修要件定義書
 
-> **Version**: 0.3.2
-> **Last Updated**: 2026-03-10
+> **Version**: 0.3.3
+> **Last Updated**: 2026-03-11
 > **Status**: 開発プラン策定済み
 
 ---
@@ -90,7 +90,7 @@
 
 | 順序 | 要件 | GitHub Issue | Spec | 概要 | 進捗 |
 |:----:|:----:|:------------:|------|------|:----:|
-| 4-1 | #2 | [#67](https://github.com/kttsh/ops/issues/67) | `ux-year-selector` | 年度セレクタ改善（複数年度同時表示） | ⬜ 未着手 |
+| 4-1 | #2 | [#67](https://github.com/kttsh/ops/issues/67) | — | 年度セレクタ改善（複数年度同時表示） | 🟢 完了 (#69で解決) |
 
 ### 2.3 Spec 一覧
 
@@ -106,7 +106,7 @@
 | `feat-case-selection` | #5 | Phase 3 | L | 🟢 完了 |
 | `feat-indirect-loads-screen` | #9 | Phase 3 | L | 🟢 完了 |
 | `feat-capacity-auto-generation` | #10 | Phase 3 | L | ⬜ 未着手 |
-| `ux-year-selector` | #2 | Phase 4 | M | ⬜ 未着手 |
+| ~~`ux-year-selector`~~ | #2 | Phase 4 | — | 🟢 完了 (#69で解決) |
 
 ### 2.4 進捗記号の凡例
 
@@ -818,6 +818,7 @@ const displayValue = parseFloat((ratio * 100).toPrecision(10));
 
 | 日付 | バージョン | 内容 |
 |------|-----------|------|
+| 2026-03-11 | 0.3.3 | #69（人員計画フルワイド1カラム化）完了、#67（年度セレクタ改善）を #69 で解決としてクローズ |
 | 2026-03-10 | 0.3.2 | #65（間接工数の閲覧・編集画面）完了を反映、GitHub Issue #65 クローズ |
 | 2026-03-10 | 0.3.1 | #68（間接エリアスタック順バグ）完了を反映、Issue #4 詳細に後続バグ修正を追記 |
 | 2026-03-09 | 0.3.0 | 開発プラン策定、GitHub Issue 13件起票（#55〜#67）、Spec単位・フェーズ定義 |
