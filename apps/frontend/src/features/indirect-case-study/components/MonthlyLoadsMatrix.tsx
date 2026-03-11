@@ -133,8 +133,11 @@ export function MonthlyLoadsMatrix({
 						{fiscalYears.map((fy, rowIndex) => {
 							let rowTotal = 0;
 							return (
-								<tr key={fy} className="border-b border-border last:border-b-0">
-									<td className="sticky left-0 z-10 bg-background px-3 py-1.5 font-medium">
+								<tr
+									key={fy}
+									className="border-b border-border bg-white last:border-b-0"
+								>
+									<td className="sticky left-0 z-10 bg-white px-3 py-1.5 font-medium">
 										FY{fy}
 									</td>
 									{MONTHS.map((_, colIndex) => {
