@@ -118,6 +118,13 @@
 | total_manhour | INT | NO | - | 総工数（人時） |
 | status | VARCHAR(20) | NO | - | ステータス |
 | duration_months | INT | YES | NULL | 期間（月数） |
+| fiscal_year | INT | YES | NULL | 年度 |
+| nickname | NVARCHAR(120) | YES | NULL | 通称・略称 |
+| customer_name | NVARCHAR(120) | YES | NULL | 客先名 |
+| order_number | NVARCHAR(120) | YES | NULL | オーダ |
+| calculation_basis | NVARCHAR(500) | YES | NULL | 算出根拠 |
+| remarks | NVARCHAR(500) | YES | NULL | 備考 |
+| region | NVARCHAR(100) | YES | NULL | 地域 |
 | created_at | DATETIME2 | NO | GETDATE() | 作成日時 |
 | updated_at | DATETIME2 | NO | GETDATE() | 更新日時 |
 | deleted_at | DATETIME2 | YES | NULL | 削除日時（論理削除） |

@@ -62,8 +62,21 @@ function createApp() {
 const sampleExportData = {
 	data: [
 		{
+			projectCode: "PRJ-001",
+			businessUnitCode: "BU-A",
+			fiscalYear: 2026,
+			projectTypeCode: "PT-001",
+			name: "案件A",
+			nickname: null,
+			customerName: null,
+			orderNumber: null,
+			startYearMonth: "202601",
+			totalManhour: 5000,
+			durationMonths: 12,
+			calculationBasis: null,
+			remarks: null,
+			region: null,
 			projectCaseId: 1,
-			projectName: "案件A",
 			caseName: "標準ケース",
 			loads: [
 				{ yearMonth: "202601", manhour: 1000 },
@@ -72,6 +85,28 @@ const sampleExportData = {
 		},
 	],
 	yearMonths: ["202601", "202602"],
+};
+
+/** 新スキーマ用の有効なインポート行 */
+const validImportItem = {
+	projectCode: "PRJ-001",
+	businessUnitCode: "BU-A",
+	fiscalYear: 2026,
+	projectTypeCode: "PT-001",
+	name: "テスト案件",
+	nickname: null,
+	customerName: null,
+	orderNumber: null,
+	startYearMonth: "202601",
+	totalManhour: 1000,
+	durationMonths: 12,
+	calculationBasis: null,
+	remarks: null,
+	region: null,
+	deleteFlag: false,
+	projectCaseId: 1,
+	caseName: "標準ケース",
+	loads: [{ yearMonth: "202601", manhour: 100 }],
 };
 
 // =============================================================================
@@ -134,25 +169,26 @@ describe("POST /bulk/import-project-loads", () => {
 
 	test("正常インポートで 200 と更新件数を返す", async () => {
 		mockedService.bulkImport.mockResolvedValue({
-			updatedCases: 2,
-			updatedRecords: 3,
+			createdProjects: 1,
+			updatedProjects: 0,
+			deletedProjects: 0,
+			createdCases: 1,
+			updatedCases: 0,
+			updatedRecords: 1,
 		});
 
 		const res = await app.request("/bulk/import-project-loads", {
 			method: "POST",
 			body: JSON.stringify({
-				items: [
-					{ projectCaseId: 1, yearMonth: "202601", manhour: 1000 },
-					{ projectCaseId: 1, yearMonth: "202602", manhour: 2000 },
-					{ projectCaseId: 2, yearMonth: "202601", manhour: 500 },
-				],
+				items: [validImportItem],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
 		expect(res.status).toBe(200);
 
 		const body = await res.json();
-		expect(body.data).toEqual({ updatedCases: 2, updatedRecords: 3 });
+		expect(body.data.createdProjects).toBe(1);
+		expect(body.data.updatedRecords).toBe(1);
 	});
 
 	test("バリデーションエラー（空配列）で 422 を返す", async () => {
@@ -167,11 +203,11 @@ describe("POST /bulk/import-project-loads", () => {
 		expect(body.type).toContain("validation-error");
 	});
 
-	test("バリデーションエラー（yearMonth 形式不正）で 422 を返す", async () => {
+	test("バリデーションエラー（businessUnitCode 空文字）で 422 を返す", async () => {
 		const res = await app.request("/bulk/import-project-loads", {
 			method: "POST",
 			body: JSON.stringify({
-				items: [{ projectCaseId: 1, yearMonth: "2026-01", manhour: 1000 }],
+				items: [{ ...validImportItem, businessUnitCode: "" }],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
@@ -181,11 +217,11 @@ describe("POST /bulk/import-project-loads", () => {
 		expect(body.type).toContain("validation-error");
 	});
 
-	test("バリデーションエラー（manhour 負値）で 422 を返す", async () => {
+	test("バリデーションエラー（name 空文字）で 422 を返す", async () => {
 		const res = await app.request("/bulk/import-project-loads", {
 			method: "POST",
 			body: JSON.stringify({
-				items: [{ projectCaseId: 1, yearMonth: "202601", manhour: -1 }],
+				items: [{ ...validImportItem, name: "" }],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
@@ -195,11 +231,11 @@ describe("POST /bulk/import-project-loads", () => {
 		expect(body.type).toContain("validation-error");
 	});
 
-	test("バリデーションエラー（projectCaseId 不正）で 422 を返す", async () => {
+	test("バリデーションエラー（startYearMonth 形式不正）で 422 を返す", async () => {
 		const res = await app.request("/bulk/import-project-loads", {
 			method: "POST",
 			body: JSON.stringify({
-				items: [{ projectCaseId: 0, yearMonth: "202601", manhour: 100 }],
+				items: [{ ...validImportItem, startYearMonth: "2026-01" }],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
@@ -209,17 +245,31 @@ describe("POST /bulk/import-project-loads", () => {
 		expect(body.type).toContain("validation-error");
 	});
 
-	test("存在しない projectCaseId で 422 を返す", async () => {
+	test("バリデーションエラー（totalManhour 負値）で 422 を返す", async () => {
+		const res = await app.request("/bulk/import-project-loads", {
+			method: "POST",
+			body: JSON.stringify({
+				items: [{ ...validImportItem, totalManhour: -1 }],
+			}),
+			headers: new Headers({ "Content-Type": "application/json" }),
+		});
+		expect(res.status).toBe(422);
+
+		const body = await res.json();
+		expect(body.type).toContain("validation-error");
+	});
+
+	test("マスタ不整合（BU コード不存在）で 422 を返す", async () => {
 		mockedService.bulkImport.mockRejectedValue(
 			new HTTPException(422, {
-				message: "Invalid project case IDs: 999",
+				message: "Invalid business unit codes: BU-INVALID",
 			}),
 		);
 
 		const res = await app.request("/bulk/import-project-loads", {
 			method: "POST",
 			body: JSON.stringify({
-				items: [{ projectCaseId: 999, yearMonth: "202601", manhour: 100 }],
+				items: [{ ...validImportItem, businessUnitCode: "BU-INVALID" }],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});
@@ -247,7 +297,7 @@ describe("POST /bulk/import-project-loads", () => {
 		const res = await app.request("/bulk/import-project-loads", {
 			method: "POST",
 			body: JSON.stringify({
-				items: [{ projectCaseId: 1, yearMonth: "202601", manhour: 100 }],
+				items: [validImportItem],
 			}),
 			headers: new Headers({ "Content-Type": "application/json" }),
 		});

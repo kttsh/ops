@@ -380,6 +380,101 @@ describe("createProjectSchema", () => {
 			expect(result.success).toBe(false);
 		});
 	});
+
+	describe("7 新規フィールドのバリデーション（任意）", () => {
+		it("全ての新規フィールドを省略できる", () => {
+			const result = createProjectSchema.safeParse(validData);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.fiscalYear).toBeUndefined();
+				expect(result.data.nickname).toBeUndefined();
+				expect(result.data.customerName).toBeUndefined();
+				expect(result.data.orderNumber).toBeUndefined();
+				expect(result.data.calculationBasis).toBeUndefined();
+				expect(result.data.remarks).toBeUndefined();
+				expect(result.data.region).toBeUndefined();
+			}
+		});
+
+		it("全ての新規フィールドを指定できる", () => {
+			const result = createProjectSchema.safeParse({
+				...validData,
+				fiscalYear: 2026,
+				nickname: "テスト通称",
+				customerName: "テスト客先",
+				orderNumber: "ORD-001",
+				calculationBasis: "見積もり根拠",
+				remarks: "テスト備考",
+				region: "東北",
+			});
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.fiscalYear).toBe(2026);
+				expect(result.data.nickname).toBe("テスト通称");
+				expect(result.data.customerName).toBe("テスト客先");
+				expect(result.data.orderNumber).toBe("ORD-001");
+				expect(result.data.calculationBasis).toBe("見積もり根拠");
+				expect(result.data.remarks).toBe("テスト備考");
+				expect(result.data.region).toBe("東北");
+			}
+		});
+
+		it("fiscalYear に小数を拒否する", () => {
+			const result = createProjectSchema.safeParse({
+				...validData,
+				fiscalYear: 2026.5,
+			});
+			expect(result.success).toBe(false);
+		});
+
+		it("nickname の121文字以上を拒否する", () => {
+			const result = createProjectSchema.safeParse({
+				...validData,
+				nickname: "あ".repeat(121),
+			});
+			expect(result.success).toBe(false);
+		});
+
+		it("customerName の121文字以上を拒否する", () => {
+			const result = createProjectSchema.safeParse({
+				...validData,
+				customerName: "あ".repeat(121),
+			});
+			expect(result.success).toBe(false);
+		});
+
+		it("orderNumber の121文字以上を拒否する", () => {
+			const result = createProjectSchema.safeParse({
+				...validData,
+				orderNumber: "a".repeat(121),
+			});
+			expect(result.success).toBe(false);
+		});
+
+		it("calculationBasis の501文字以上を拒否する", () => {
+			const result = createProjectSchema.safeParse({
+				...validData,
+				calculationBasis: "a".repeat(501),
+			});
+			expect(result.success).toBe(false);
+		});
+
+		it("remarks の501文字以上を拒否する", () => {
+			const result = createProjectSchema.safeParse({
+				...validData,
+				remarks: "a".repeat(501),
+			});
+			expect(result.success).toBe(false);
+		});
+
+		it("region の101文字以上を拒否する", () => {
+			const result = createProjectSchema.safeParse({
+				...validData,
+				region: "a".repeat(101),
+			});
+			expect(result.success).toBe(false);
+		});
+	});
 });
 
 describe("updateProjectSchema", () => {
@@ -460,6 +555,71 @@ describe("updateProjectSchema", () => {
 	it("status の空文字を拒否する", () => {
 		const result = updateProjectSchema.safeParse({ status: "" });
 		expect(result.success).toBe(false);
+	});
+
+	describe("7 新規フィールド（任意・NULL 許容）", () => {
+		it("fiscalYear を単独で更新できる", () => {
+			const result = updateProjectSchema.safeParse({ fiscalYear: 2026 });
+			expect(result.success).toBe(true);
+		});
+
+		it("fiscalYear に null を許容する", () => {
+			const result = updateProjectSchema.safeParse({ fiscalYear: null });
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.fiscalYear).toBeNull();
+			}
+		});
+
+		it("nickname を単独で更新できる", () => {
+			const result = updateProjectSchema.safeParse({
+				nickname: "テスト通称",
+			});
+			expect(result.success).toBe(true);
+		});
+
+		it("nickname に null を許容する", () => {
+			const result = updateProjectSchema.safeParse({ nickname: null });
+			expect(result.success).toBe(true);
+		});
+
+		it("customerName を単独で更新できる", () => {
+			const result = updateProjectSchema.safeParse({
+				customerName: "テスト客先",
+			});
+			expect(result.success).toBe(true);
+		});
+
+		it("orderNumber を単独で更新できる", () => {
+			const result = updateProjectSchema.safeParse({
+				orderNumber: "ORD-001",
+			});
+			expect(result.success).toBe(true);
+		});
+
+		it("calculationBasis を単独で更新できる", () => {
+			const result = updateProjectSchema.safeParse({
+				calculationBasis: "見積もり根拠",
+			});
+			expect(result.success).toBe(true);
+		});
+
+		it("remarks を単独で更新できる", () => {
+			const result = updateProjectSchema.safeParse({
+				remarks: "テスト備考",
+			});
+			expect(result.success).toBe(true);
+		});
+
+		it("region を単独で更新できる", () => {
+			const result = updateProjectSchema.safeParse({ region: "東北" });
+			expect(result.success).toBe(true);
+		});
+
+		it("region に null を許容する", () => {
+			const result = updateProjectSchema.safeParse({ region: null });
+			expect(result.success).toBe(true);
+		});
 	});
 });
 

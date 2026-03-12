@@ -11,6 +11,8 @@ const SELECT_COLUMNS = `
   p.business_unit_code, bu.name AS business_unit_name,
   p.project_type_code, pt.name AS project_type_name,
   p.start_year_month, p.total_manhour, p.status, p.duration_months,
+  p.fiscal_year, p.nickname, p.customer_name, p.order_number,
+  p.calculation_basis, p.remarks, p.region,
   p.created_at, p.updated_at, p.deleted_at`;
 
 const JOIN_CLAUSE = `
@@ -155,24 +157,21 @@ export const projectData = {
 			.input("businessUnitCode", sql.VarChar, data.businessUnitCode)
 			.input("startYearMonth", sql.Char, data.startYearMonth)
 			.input("totalManhour", sql.Int, data.totalManhour)
-			.input("status", sql.VarChar, data.status);
-
-		if (data.projectTypeCode !== undefined) {
-			request.input("projectTypeCode", sql.VarChar, data.projectTypeCode);
-		} else {
-			request.input("projectTypeCode", sql.VarChar, null);
-		}
-
-		if (data.durationMonths !== undefined) {
-			request.input("durationMonths", sql.Int, data.durationMonths);
-		} else {
-			request.input("durationMonths", sql.Int, null);
-		}
+			.input("status", sql.VarChar, data.status)
+			.input("projectTypeCode", sql.VarChar, data.projectTypeCode ?? null)
+			.input("durationMonths", sql.Int, data.durationMonths ?? null)
+			.input("fiscalYear", sql.Int, data.fiscalYear ?? null)
+			.input("nickname", sql.NVarChar, data.nickname ?? null)
+			.input("customerName", sql.NVarChar, data.customerName ?? null)
+			.input("orderNumber", sql.NVarChar, data.orderNumber ?? null)
+			.input("calculationBasis", sql.NVarChar, data.calculationBasis ?? null)
+			.input("remarks", sql.NVarChar, data.remarks ?? null)
+			.input("region", sql.NVarChar, data.region ?? null);
 
 		const insertResult = await request.query<{ project_id: number }>(
-			`INSERT INTO projects (project_code, name, business_unit_code, project_type_code, start_year_month, total_manhour, status, duration_months)
+			`INSERT INTO projects (project_code, name, business_unit_code, project_type_code, start_year_month, total_manhour, status, duration_months, fiscal_year, nickname, customer_name, order_number, calculation_basis, remarks, region)
        OUTPUT INSERTED.project_id
-       VALUES (@projectCode, @name, @businessUnitCode, @projectTypeCode, @startYearMonth, @totalManhour, @status, @durationMonths)`,
+       VALUES (@projectCode, @name, @businessUnitCode, @projectTypeCode, @startYearMonth, @totalManhour, @status, @durationMonths, @fiscalYear, @nickname, @customerName, @orderNumber, @calculationBasis, @remarks, @region)`,
 		);
 
 		const insertedId = insertResult.recordset[0].project_id;
@@ -200,6 +199,13 @@ export const projectData = {
 			totalManhour: { sqlType: sql.Int, column: "total_manhour" },
 			status: { sqlType: sql.VarChar, column: "status" },
 			durationMonths: { sqlType: sql.Int, column: "duration_months" },
+			fiscalYear: { sqlType: sql.Int, column: "fiscal_year" },
+			nickname: { sqlType: sql.NVarChar, column: "nickname" },
+			customerName: { sqlType: sql.NVarChar, column: "customer_name" },
+			orderNumber: { sqlType: sql.NVarChar, column: "order_number" },
+			calculationBasis: { sqlType: sql.NVarChar, column: "calculation_basis" },
+			remarks: { sqlType: sql.NVarChar, column: "remarks" },
+			region: { sqlType: sql.NVarChar, column: "region" },
 		};
 
 		for (const [key, value] of Object.entries(data)) {

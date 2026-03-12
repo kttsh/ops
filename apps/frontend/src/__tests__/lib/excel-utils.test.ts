@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
 	buildExportWorkbook,
+	convertShortYearMonthHeader,
 	convertYearMonthHeader,
 	type ExportSheetConfig,
+	formatShortYearMonth,
 	type ImportParseConfig,
 	type ImportRow,
 	parseImportSheet,
@@ -130,6 +132,94 @@ describe("convertYearMonthHeader", () => {
 
 	it("異常: テキスト文字列は null", () => {
 		expect(convertYearMonthHeader("abc")).toBeNull();
+	});
+});
+
+// ============================================================
+// convertShortYearMonthHeader (Task 5.2)
+// ============================================================
+
+describe("convertShortYearMonthHeader", () => {
+	it("正常: 25-04 → 202504", () => {
+		expect(convertShortYearMonthHeader("25-04")).toBe("202504");
+	});
+
+	it("正常: 25-12 → 202512", () => {
+		expect(convertShortYearMonthHeader("25-12")).toBe("202512");
+	});
+
+	it("正常: 26-01 → 202601", () => {
+		expect(convertShortYearMonthHeader("26-01")).toBe("202601");
+	});
+
+	it("正常: 00-01 → 200001（21世紀）", () => {
+		expect(convertShortYearMonthHeader("00-01")).toBe("200001");
+	});
+
+	it("正常: 69-12 → 206912（21世紀）", () => {
+		expect(convertShortYearMonthHeader("69-12")).toBe("206912");
+	});
+
+	it("正常: 70-01 → 197001（20世紀）", () => {
+		expect(convertShortYearMonthHeader("70-01")).toBe("197001");
+	});
+
+	it("正常: 99-06 → 199906（20世紀）", () => {
+		expect(convertShortYearMonthHeader("99-06")).toBe("199906");
+	});
+
+	it("正常: 前後のスペースをトリムする", () => {
+		expect(convertShortYearMonthHeader("  25-04  ")).toBe("202504");
+	});
+
+	it("異常: YYYY-MM 形式は null", () => {
+		expect(convertShortYearMonthHeader("2025-04")).toBeNull();
+	});
+
+	it("異常: YYYYMM 形式は null", () => {
+		expect(convertShortYearMonthHeader("202504")).toBeNull();
+	});
+
+	it("異常: 月が13の場合は null", () => {
+		expect(convertShortYearMonthHeader("25-13")).toBeNull();
+	});
+
+	it("異常: 月が00の場合は null", () => {
+		expect(convertShortYearMonthHeader("25-00")).toBeNull();
+	});
+
+	it("異常: 空文字は null", () => {
+		expect(convertShortYearMonthHeader("")).toBeNull();
+	});
+
+	it("異常: テキスト文字列は null", () => {
+		expect(convertShortYearMonthHeader("abc")).toBeNull();
+	});
+
+	it("異常: ハイフンなしは null", () => {
+		expect(convertShortYearMonthHeader("2504")).toBeNull();
+	});
+});
+
+// ============================================================
+// formatShortYearMonth (Task 5.2)
+// ============================================================
+
+describe("formatShortYearMonth", () => {
+	it("正常: 202504 → 25-04", () => {
+		expect(formatShortYearMonth("202504")).toBe("25-04");
+	});
+
+	it("正常: 202612 → 26-12", () => {
+		expect(formatShortYearMonth("202612")).toBe("26-12");
+	});
+
+	it("正常: 200001 → 00-01", () => {
+		expect(formatShortYearMonth("200001")).toBe("00-01");
+	});
+
+	it("正常: 199906 → 99-06", () => {
+		expect(formatShortYearMonth("199906")).toBe("99-06");
 	});
 });
 

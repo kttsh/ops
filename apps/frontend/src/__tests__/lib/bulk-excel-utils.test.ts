@@ -4,6 +4,8 @@ import {
 	type BulkImportParseConfig,
 	type BulkImportRow,
 	buildBulkExportWorkbook,
+	convertShortYearMonthHeader,
+	formatShortYearMonth,
 	parseBulkImportSheet,
 } from "@/lib/excel-utils";
 
@@ -366,5 +368,404 @@ describe("一括エクスポート/インポート ラウンドトリップ", ()
 				expect(parsed.monthlyValues.get(load.yearMonth)).toBe(load.manhour);
 			}
 		}
+	});
+});
+
+// ============================================================
+// 17固定列 ラウンドトリップ互換性テスト（Task 5.3）
+// ============================================================
+
+describe("17固定列 ラウンドトリップ", () => {
+	it("エクスポート → インポートで 17 列フォーマットが正常動作すること", async () => {
+		const originalData = {
+			yearMonths: ["202604", "202605", "202606"],
+			rows: [
+				{
+					projectCode: "PRJ-001",
+					businessUnitCode: "BU-A",
+					fiscalYear: 2026,
+					projectTypeCode: "PT-001",
+					name: "案件A",
+					nickname: "略称A",
+					customerName: "客先A",
+					orderNumber: "ORD-001",
+					startYearMonth: "202604",
+					totalManhour: 5000,
+					durationMonths: 12,
+					calculationBasis: "根拠A",
+					remarks: "備考A",
+					region: "東北",
+					projectCaseId: 1,
+					caseName: "標準ケース",
+					loads: [
+						{ yearMonth: "202604", manhour: 1000 },
+						{ yearMonth: "202605", manhour: 2000 },
+						{ yearMonth: "202606", manhour: 3000 },
+					],
+				},
+				{
+					projectCode: "PRJ-002",
+					businessUnitCode: "BU-B",
+					fiscalYear: null,
+					projectTypeCode: null,
+					name: "案件B",
+					nickname: null,
+					customerName: null,
+					orderNumber: null,
+					startYearMonth: "202604",
+					totalManhour: 3000,
+					durationMonths: null,
+					calculationBasis: null,
+					remarks: null,
+					region: null,
+					projectCaseId: 2,
+					caseName: "楽観ケース",
+					loads: [
+						{ yearMonth: "202604", manhour: 500 },
+						{ yearMonth: "202605", manhour: 600 },
+						{ yearMonth: "202606", manhour: 700 },
+					],
+				},
+			],
+		};
+
+		// エクスポート: YYYYMM → YY-MM
+		const displayYearMonths = originalData.yearMonths.map(formatShortYearMonth);
+
+		const exportConfig: BulkExportSheetConfig = {
+			sheetName: "案件工数一括",
+			fixedHeaders: [
+				"案件コード",
+				"BU",
+				"年度",
+				"工事種別",
+				"案件名",
+				"通称・略称",
+				"客先名",
+				"オーダ",
+				"開始時期",
+				"案件工数",
+				"月数",
+				"算出根拠",
+				"備考",
+				"地域",
+				"削除",
+				"工数ケースNo",
+				"工数ケース名",
+			],
+			yearMonths: displayYearMonths,
+			rows: originalData.rows.map((r) => ({
+				fixedValues: [
+					r.projectCode,
+					r.businessUnitCode,
+					r.fiscalYear ?? "",
+					r.projectTypeCode ?? "",
+					r.name,
+					r.nickname ?? "",
+					r.customerName ?? "",
+					r.orderNumber ?? "",
+					r.startYearMonth,
+					r.totalManhour,
+					r.durationMonths ?? "",
+					r.calculationBasis ?? "",
+					r.remarks ?? "",
+					r.region ?? "",
+					"",
+					r.projectCaseId,
+					r.caseName,
+				],
+				monthlyValues: originalData.yearMonths.map(
+					(ym) => r.loads.find((l) => l.yearMonth === ym)?.manhour ?? 0,
+				),
+			})),
+		};
+
+		const wb = await buildBulkExportWorkbook(exportConfig);
+
+		// ワークブックからパース
+		const XLSX = await import("xlsx");
+		const ws = wb.Sheets[wb.SheetNames[0]];
+		const aoa: (string | number | null)[][] = XLSX.utils.sheet_to_json(ws, {
+			header: 1,
+			defval: null,
+		});
+
+		const headers = aoa[0].map((cell) => (cell != null ? String(cell) : ""));
+		const rawRows = aoa.slice(1);
+
+		// インポート: YY-MM → YYYYMM
+		const importConfig: BulkImportParseConfig = {
+			fixedColumnCount: 17,
+			parseYearMonth: convertShortYearMonthHeader,
+			validateRow: () => [],
+		};
+
+		const result = parseBulkImportSheet(headers, rawRows, importConfig);
+
+		// 検証
+		expect(result.errors).toHaveLength(0);
+		expect(result.yearMonths).toEqual(originalData.yearMonths);
+		expect(result.rows).toHaveLength(2);
+
+		// 1行目の検証
+		const row1 = result.rows[0];
+		expect(row1.fixedValues[0]).toBe("PRJ-001");
+		expect(row1.fixedValues[1]).toBe("BU-A");
+		expect(row1.fixedValues[2]).toBe(2026);
+		expect(row1.fixedValues[3]).toBe("PT-001");
+		expect(row1.fixedValues[4]).toBe("案件A");
+		expect(row1.fixedValues[15]).toBe(1);
+		expect(row1.fixedValues[16]).toBe("標準ケース");
+
+		for (const load of originalData.rows[0].loads) {
+			expect(row1.monthlyValues.get(load.yearMonth)).toBe(load.manhour);
+		}
+
+		// 2行目の検証（NULL フィールド）
+		const row2 = result.rows[1];
+		expect(row2.fixedValues[0]).toBe("PRJ-002");
+		expect(row2.fixedValues[1]).toBe("BU-B");
+		// fiscalYear: null → Excel では "" → パース後は ""
+		// projectTypeCode: null → ""
+	});
+
+	it("複数 BU 混在データのインポートが正しく処理されること", () => {
+		const headers = [
+			"案件コード",
+			"BU",
+			"年度",
+			"工事種別",
+			"案件名",
+			"通称・略称",
+			"客先名",
+			"オーダ",
+			"開始時期",
+			"案件工数",
+			"月数",
+			"算出根拠",
+			"備考",
+			"地域",
+			"削除",
+			"工数ケースNo",
+			"工数ケース名",
+			"26-04",
+			"26-05",
+		];
+		const rawRows: (string | number | null)[][] = [
+			[
+				"PRJ-001",
+				"BU-A",
+				2026,
+				"PT-001",
+				"案件A",
+				null,
+				null,
+				null,
+				"202604",
+				5000,
+				12,
+				null,
+				null,
+				null,
+				null,
+				1,
+				"ケースA",
+				1000,
+				2000,
+			],
+			[
+				"PRJ-002",
+				"BU-B",
+				2026,
+				"PT-002",
+				"案件B",
+				null,
+				null,
+				null,
+				"202604",
+				3000,
+				6,
+				null,
+				null,
+				null,
+				null,
+				2,
+				"ケースB",
+				500,
+				600,
+			],
+		];
+
+		const config: BulkImportParseConfig = {
+			fixedColumnCount: 17,
+			parseYearMonth: convertShortYearMonthHeader,
+			validateRow: () => [],
+		};
+
+		const result = parseBulkImportSheet(headers, rawRows, config);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.rows).toHaveLength(2);
+		expect(result.rows[0].fixedValues[1]).toBe("BU-A");
+		expect(result.rows[1].fixedValues[1]).toBe("BU-B");
+	});
+
+	it("案件コード空欄行 + 既存行の混在が正しく処理されること", () => {
+		const headers = [
+			"案件コード",
+			"BU",
+			"年度",
+			"工事種別",
+			"案件名",
+			"通称・略称",
+			"客先名",
+			"オーダ",
+			"開始時期",
+			"案件工数",
+			"月数",
+			"算出根拠",
+			"備考",
+			"地域",
+			"削除",
+			"工数ケースNo",
+			"工数ケース名",
+			"26-04",
+		];
+		const rawRows: (string | number | null)[][] = [
+			[
+				"PRJ-001",
+				"BU-A",
+				2026,
+				null,
+				"既存案件",
+				null,
+				null,
+				null,
+				"202604",
+				5000,
+				null,
+				null,
+				null,
+				null,
+				null,
+				1,
+				"標準",
+				1000,
+			],
+			[
+				null,
+				"BU-B",
+				2026,
+				null,
+				"新規案件",
+				null,
+				null,
+				null,
+				"202604",
+				3000,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				"新規ケース",
+				500,
+			],
+		];
+
+		const config: BulkImportParseConfig = {
+			fixedColumnCount: 17,
+			parseYearMonth: convertShortYearMonthHeader,
+			validateRow: () => [],
+		};
+
+		const result = parseBulkImportSheet(headers, rawRows, config);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.rows).toHaveLength(2);
+		// 既存行
+		expect(result.rows[0].fixedValues[0]).toBe("PRJ-001");
+		// 新規行（コード空欄）
+		expect(result.rows[1].fixedValues[0]).toBeNull();
+	});
+
+	it("ソフトデリート指定行が正しく処理されること", () => {
+		const headers = [
+			"案件コード",
+			"BU",
+			"年度",
+			"工事種別",
+			"案件名",
+			"通称・略称",
+			"客先名",
+			"オーダ",
+			"開始時期",
+			"案件工数",
+			"月数",
+			"算出根拠",
+			"備考",
+			"地域",
+			"削除",
+			"工数ケースNo",
+			"工数ケース名",
+			"26-04",
+		];
+		const rawRows: (string | number | null)[][] = [
+			[
+				"PRJ-001",
+				"BU-A",
+				2026,
+				null,
+				"案件A",
+				null,
+				null,
+				null,
+				"202604",
+				5000,
+				null,
+				null,
+				null,
+				null,
+				"1",
+				1,
+				"標準",
+				1000,
+			],
+			[
+				"PRJ-002",
+				"BU-A",
+				2026,
+				null,
+				"案件B",
+				null,
+				null,
+				null,
+				"202604",
+				3000,
+				null,
+				null,
+				null,
+				null,
+				"削除",
+				2,
+				"標準",
+				500,
+			],
+		];
+
+		const config: BulkImportParseConfig = {
+			fixedColumnCount: 17,
+			parseYearMonth: convertShortYearMonthHeader,
+			validateRow: () => [],
+		};
+
+		const result = parseBulkImportSheet(headers, rawRows, config);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.rows).toHaveLength(2);
+		// O列（index 14）の削除フラグ値を確認
+		expect(result.rows[0].fixedValues[14]).toBe("1");
+		expect(result.rows[1].fixedValues[14]).toBe("削除");
 	});
 });

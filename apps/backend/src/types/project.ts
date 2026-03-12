@@ -23,6 +23,13 @@ export const createProjectSchema = z.object({
 	totalManhour: z.number().int().positive(),
 	status: z.string().min(1).max(20),
 	durationMonths: z.number().int().positive().optional(),
+	fiscalYear: z.number().int().optional(),
+	nickname: z.string().max(120).optional(),
+	customerName: z.string().max(120).optional(),
+	orderNumber: z.string().max(120).optional(),
+	calculationBasis: z.string().max(500).optional(),
+	remarks: z.string().max(500).optional(),
+	region: z.string().max(100).optional(),
 });
 
 /** 更新用スキーマ */
@@ -50,6 +57,13 @@ export const updateProjectSchema = z
 		totalManhour: z.number().int().positive().optional(),
 		status: z.string().min(1).max(20).optional(),
 		durationMonths: z.number().int().positive().nullable().optional(),
+		fiscalYear: z.number().int().nullable().optional(),
+		nickname: z.string().max(120).nullable().optional(),
+		customerName: z.string().max(120).nullable().optional(),
+		orderNumber: z.string().max(120).nullable().optional(),
+		calculationBasis: z.string().max(500).nullable().optional(),
+		remarks: z.string().max(500).nullable().optional(),
+		region: z.string().max(100).nullable().optional(),
 	})
 	.refine((data) => Object.keys(data).length > 0, {
 		message: "At least one field must be provided",
@@ -87,6 +101,13 @@ export type ProjectRow = {
 	total_manhour: number;
 	status: string;
 	duration_months: number | null;
+	fiscal_year: number | null;
+	nickname: string | null;
+	customer_name: string | null;
+	order_number: string | null;
+	calculation_basis: string | null;
+	remarks: string | null;
+	region: string | null;
 	created_at: Date;
 	updated_at: Date;
 	deleted_at: Date | null;
@@ -120,6 +141,13 @@ export type Project = {
 	totalManhour: number;
 	status: string;
 	durationMonths: number | null;
+	fiscalYear: number | null;
+	nickname: string | null;
+	customerName: string | null;
+	orderNumber: string | null;
+	calculationBasis: string | null;
+	remarks: string | null;
+	region: string | null;
 	createdAt: string;
 	updatedAt: string;
 	deletedAt: string | null;

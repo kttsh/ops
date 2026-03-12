@@ -81,6 +81,21 @@ export function convertYearMonthHeader(header: string): string | null {
 	return validateYearMonth(ym) ? ym : null;
 }
 
+/** YY-MM → YYYYMM 変換（YY >= 70 → 19YY、YY < 70 → 20YY） */
+export function convertShortYearMonthHeader(header: string): string | null {
+	const match = header.trim().match(/^(\d{2})-(\d{2})$/);
+	if (!match) return null;
+	const yy = parseInt(match[1], 10);
+	const century = yy >= 70 ? 19 : 20;
+	const ym = `${century}${match[1]}${match[2]}`;
+	return validateYearMonth(ym) ? ym : null;
+}
+
+/** YYYYMM → YY-MM 変換 */
+export function formatShortYearMonth(ym: string): string {
+	return `${ym.slice(2, 4)}-${ym.slice(4, 6)}`;
+}
+
 // ============================================================
 // Bulk Export/Import Types
 // ============================================================

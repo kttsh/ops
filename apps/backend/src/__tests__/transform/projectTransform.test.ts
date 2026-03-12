@@ -20,6 +20,13 @@ describe("projectTransform", () => {
 				total_manhour: 100,
 				status: "ACTIVE",
 				duration_months: 12,
+				fiscal_year: null,
+				nickname: null,
+				customer_name: null,
+				order_number: null,
+				calculation_basis: null,
+				remarks: null,
+				region: null,
 				created_at: new Date("2026-01-01T00:00:00Z"),
 				updated_at: new Date("2026-01-15T00:00:00Z"),
 				deleted_at: null,
@@ -39,6 +46,13 @@ describe("projectTransform", () => {
 				totalManhour: 100,
 				status: "active",
 				durationMonths: 12,
+				fiscalYear: null,
+				nickname: null,
+				customerName: null,
+				orderNumber: null,
+				calculationBasis: null,
+				remarks: null,
+				region: null,
 				createdAt: "2026-01-01T00:00:00.000Z",
 				updatedAt: "2026-01-15T00:00:00.000Z",
 				deletedAt: null,
@@ -59,6 +73,13 @@ describe("projectTransform", () => {
 				total_manhour: 50,
 				status: "DRAFT",
 				duration_months: null,
+				fiscal_year: null,
+				nickname: null,
+				customer_name: null,
+				order_number: null,
+				calculation_basis: null,
+				remarks: null,
+				region: null,
 				created_at: new Date("2026-06-15T09:30:00Z"),
 				updated_at: new Date("2026-06-15T10:00:00Z"),
 				deleted_at: null,
@@ -83,6 +104,13 @@ describe("projectTransform", () => {
 				total_manhour: 200,
 				status: "ACTIVE",
 				duration_months: null,
+				fiscal_year: null,
+				nickname: null,
+				customer_name: null,
+				order_number: null,
+				calculation_basis: null,
+				remarks: null,
+				region: null,
 				created_at: new Date("2026-01-01T00:00:00Z"),
 				updated_at: new Date("2026-01-01T00:00:00Z"),
 				deleted_at: null,
@@ -108,6 +136,13 @@ describe("projectTransform", () => {
 				total_manhour: 100,
 				status: "ACTIVE",
 				duration_months: 6,
+				fiscal_year: null,
+				nickname: null,
+				customer_name: null,
+				order_number: null,
+				calculation_basis: null,
+				remarks: null,
+				region: null,
 				created_at: new Date("2026-01-01T00:00:00Z"),
 				updated_at: new Date("2026-01-10T00:00:00Z"),
 				deleted_at: new Date("2026-01-10T00:00:00Z"),
@@ -132,6 +167,13 @@ describe("projectTransform", () => {
 				total_manhour: 9999,
 				status: "ACTIVE",
 				duration_months: null,
+				fiscal_year: null,
+				nickname: null,
+				customer_name: null,
+				order_number: null,
+				calculation_basis: null,
+				remarks: null,
+				region: null,
 				created_at: new Date("2026-01-01T00:00:00Z"),
 				updated_at: new Date("2026-01-01T00:00:00Z"),
 				deleted_at: null,
@@ -155,6 +197,13 @@ describe("projectTransform", () => {
 				total_manhour: 100,
 				status: "ACTIVE",
 				duration_months: null,
+				fiscal_year: null,
+				nickname: null,
+				customer_name: null,
+				order_number: null,
+				calculation_basis: null,
+				remarks: null,
+				region: null,
 				created_at: new Date("2026-01-01T00:00:00Z"),
 				updated_at: new Date("2026-01-01T00:00:00Z"),
 				deleted_at: null,
@@ -163,6 +212,78 @@ describe("projectTransform", () => {
 			const result = toProjectResponse(row);
 
 			expect(result.cases).toEqual([]);
+		});
+
+		test("7 新規フィールドを正しく変換する（値あり）", () => {
+			const row: ProjectRow = {
+				project_id: 7,
+				project_code: "PRJ-007",
+				name: "メタデータテスト",
+				business_unit_code: "BU-001",
+				business_unit_name: "テスト部",
+				project_type_code: "PT-001",
+				project_type_name: "受託開発",
+				start_year_month: "202601",
+				total_manhour: 500,
+				status: "ACTIVE",
+				duration_months: 12,
+				fiscal_year: 2026,
+				nickname: "メタテスト",
+				customer_name: "テスト客先",
+				order_number: "ORD-001",
+				calculation_basis: "見積もり根拠テスト",
+				remarks: "テスト備考",
+				region: "東北",
+				created_at: new Date("2026-01-01T00:00:00Z"),
+				updated_at: new Date("2026-01-01T00:00:00Z"),
+				deleted_at: null,
+			};
+
+			const result = toProjectResponse(row);
+
+			expect(result.fiscalYear).toBe(2026);
+			expect(result.nickname).toBe("メタテスト");
+			expect(result.customerName).toBe("テスト客先");
+			expect(result.orderNumber).toBe("ORD-001");
+			expect(result.calculationBasis).toBe("見積もり根拠テスト");
+			expect(result.remarks).toBe("テスト備考");
+			expect(result.region).toBe("東北");
+		});
+
+		test("7 新規フィールドが null の場合に null を保持する", () => {
+			const row: ProjectRow = {
+				project_id: 8,
+				project_code: "PRJ-008",
+				name: "NULL新規フィールド",
+				business_unit_code: "BU-001",
+				business_unit_name: "テスト部",
+				project_type_code: null,
+				project_type_name: null,
+				start_year_month: "202601",
+				total_manhour: 100,
+				status: "ACTIVE",
+				duration_months: null,
+				fiscal_year: null,
+				nickname: null,
+				customer_name: null,
+				order_number: null,
+				calculation_basis: null,
+				remarks: null,
+				region: null,
+				created_at: new Date("2026-01-01T00:00:00Z"),
+				updated_at: new Date("2026-01-01T00:00:00Z"),
+				deleted_at: null,
+			};
+
+			const result = toProjectResponse(row);
+
+			expect(result.fiscalYear).toBeNull();
+			expect(result.nickname).toBeNull();
+			expect(result.customerName).toBeNull();
+			expect(result.orderNumber).toBeNull();
+			expect(result.calculationBasis).toBeNull();
+			expect(result.remarks).toBeNull();
+			expect(result.region).toBeNull();
 		});
 	});
 
