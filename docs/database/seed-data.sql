@@ -151,20 +151,20 @@ INSERT INTO indirect_work_cases (case_name, is_primary, description, business_un
 -- -----------------------------------------------------------------------------
 -- projects: 案件
 -- -----------------------------------------------------------------------------
-INSERT INTO projects (project_code, name, business_unit_code, project_type_code, start_year_month, total_manhour, status, duration_months) VALUES
+INSERT INTO projects (project_code, name, business_unit_code, project_type_code, start_year_month, total_manhour, status, duration_months, fiscal_year, nickname, customer_name, order_number, calculation_basis, remarks, region) VALUES
 -- PLANT BU
-(N'P-2025-001', N'A社プラント建設案件', 'PLANT', 'EPC', '202504', 48000, 'ACTIVE', 24),
-(N'P-2025-002', N'B社設備更新案件', 'PLANT', 'SERVICE', '202507', 12000, 'ACTIVE', 12),
-(N'P-2025-003', N'C社FEED調査', 'PLANT', 'FEED', '202510', 3000, 'PLANNING', 6),
-(N'P-2026-001', N'D社大型プラント', 'PLANT', 'EPC', '202601', 96000, 'PLANNING', 36),
-(N'P-2026-002', N'E社保守サービス', 'PLANT', 'SERVICE', '202604', 8000, 'PLANNING', 12),
+(N'P-2025-001', N'A社プラント建設案件', 'PLANT', 'EPC', '202504', 48000, 'ACTIVE', 24, 2025, N'A社プラント', N'A社', N'ORD-2025-001', N'過去実績ベース', N'優先度高', N'関東'),
+(N'P-2025-002', N'B社設備更新案件', 'PLANT', 'SERVICE', '202507', 12000, 'ACTIVE', 12, 2025, N'B社設備更新', N'B社', N'ORD-2025-002', N'見積ベース', NULL, N'中部'),
+(N'P-2025-003', N'C社FEED調査', 'PLANT', 'FEED', '202510', 3000, 'PLANNING', 6, 2025, N'C社FEED', N'C社', NULL, N'概算', N'FEED段階', N'関西'),
+(N'P-2026-001', N'D社大型プラント', 'PLANT', 'EPC', '202601', 96000, 'PLANNING', 36, 2026, N'D社大型', N'D社', NULL, N'標準工数マスタベース', N'大型案件・要注意', N'海外'),
+(N'P-2026-002', N'E社保守サービス', 'PLANT', 'SERVICE', '202604', 8000, 'PLANNING', 12, 2026, N'E社保守', N'E社', NULL, N'過去実績ベース', NULL, N'関東'),
 -- TRANS BU
-(N'T-2025-001', N'F市地下鉄車両', 'TRANS', 'VICHLE', '202504', 24000, 'ACTIVE', 18),
-(N'T-2025-002', N'G鉄道サポート', 'TRANS', 'SUPPORT', '202506', 6000, 'ACTIVE', 12),
-(N'T-2026-001', N'H市新交通システム', 'TRANS', 'EPC', '202607', 72000, 'INQUIRY', 30),
+(N'T-2025-001', N'F市地下鉄車両', 'TRANS', 'VICHLE', '202504', 24000, 'ACTIVE', 18, 2025, N'F市地下鉄', N'F市交通局', N'ORD-2025-T01', N'車両単価×編成数', NULL, N'関東'),
+(N'T-2025-002', N'G鉄道サポート', 'TRANS', 'SUPPORT', '202506', 6000, 'ACTIVE', 12, 2025, N'G鉄道', N'G鉄道', N'ORD-2025-T02', N'過去実績ベース', N'継続案件', N'東北'),
+(N'T-2026-001', N'H市新交通システム', 'TRANS', 'EPC', '202607', 72000, 'INQUIRY', 30, 2026, N'H市新交通', N'H市', NULL, N'概算', N'引合段階', N'九州'),
 -- CO2 BU
-(N'C-2025-001', N'I社CO2回収設備', 'CO2', 'EPC', '202505', 18000, 'ACTIVE', 15),
-(N'C-2025-002', N'J社FS調査', 'CO2', 'FS', '202508', 2400, 'ACTIVE', 4);
+(N'C-2025-001', N'I社CO2回収設備', 'CO2', 'EPC', '202505', 18000, 'ACTIVE', 15, 2025, N'I社CO2回収', N'I社', N'ORD-2025-C01', N'過去実績ベース', NULL, N'中部'),
+(N'C-2025-002', N'J社FS調査', 'CO2', 'FS', '202508', 2400, 'ACTIVE', 4, 2025, N'J社FS', N'J社', NULL, N'概算', N'短期調査', N'関西');
 
 -- -----------------------------------------------------------------------------
 -- project_cases: 案件ケース
