@@ -25,12 +25,6 @@ export {
 	createCapacityScenarioSchema,
 	updateCapacityScenarioSchema,
 } from "./capacity-scenario";
-export type {
-	PaginatedResponse,
-	ProblemDetails,
-	SelectOption,
-	SingleResponse,
-} from "./common";
 // Headcount Plan
 export type {
 	BulkMonthlyHeadcountInput,

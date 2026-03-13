@@ -1,9 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
-import type {
-	ProjectListParams,
-	SelectOption,
-} from "@/features/projects/types";
+import type { ProjectListParams } from "@/features/projects/types";
 import {
+	type SelectOption,
 	createDetailQueryOptions,
 	createListQueryOptions,
 	createQueryKeys,

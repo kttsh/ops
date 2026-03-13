@@ -19,9 +19,6 @@ export { WorkTypeDetailSheet } from "./components/WorkTypeDetailSheet";
 export { WorkTypeForm } from "./components/WorkTypeForm";
 export type {
 	CreateWorkTypeInput,
-	PaginatedResponse,
-	ProblemDetails,
-	SingleResponse,
 	UpdateWorkTypeInput,
 	WorkType,
 	WorkTypeListParams,

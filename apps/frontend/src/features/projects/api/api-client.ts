@@ -2,12 +2,16 @@ import type { BusinessUnit } from "@/features/business-units/types";
 import type { ProjectType } from "@/features/project-types/types";
 import type {
 	CreateProjectInput,
-	PaginatedResponse,
 	Project,
 	ProjectListParams,
 	UpdateProjectInput,
 } from "@/features/projects/types";
-import { API_BASE_URL, createCrudClient, handleResponse } from "@/lib/api";
+import {
+	type PaginatedResponse,
+	API_BASE_URL,
+	createCrudClient,
+	handleResponse,
+} from "@/lib/api";
 
 const client = createCrudClient<
 	Project,

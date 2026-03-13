@@ -1,14 +1,5 @@
 import { z } from "zod";
 import type { SoftDeletableEntity } from "@/lib/types/base-entity";
-
-// --- 共通型を共有レイヤーから re-export ---
-export type {
-	PaginatedResponse,
-	ProblemDetails,
-	SelectOption,
-	SingleResponse,
-} from "@/lib/api";
-
 // --- API レスポンス型 ---
 
 export interface StandardEffortMaster extends SoftDeletableEntity {

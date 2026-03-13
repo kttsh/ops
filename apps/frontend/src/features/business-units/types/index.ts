@@ -5,15 +5,6 @@ import {
 	nameSchema,
 } from "@/lib/schemas/master-entity-schema";
 import type { MasterEntity } from "@/lib/types/base-entity";
-
-// --- 共通型を共有レイヤーから re-export ---
-export type {
-	PaginatedResponse,
-	ProblemDetails,
-	SelectOption,
-	SingleResponse,
-} from "@/lib/api";
-
 // --- API レスポンス型 ---
 
 export interface BusinessUnit extends MasterEntity {

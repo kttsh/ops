@@ -6,11 +6,14 @@ import type {
 	IndirectWorkCaseListParams,
 	IndirectWorkTypeRatio,
 	MonthlyIndirectWorkLoad,
-	PaginatedResponse,
-	SingleResponse,
 	UpdateIndirectWorkCaseInput,
 } from "@/features/indirect-case-study/types";
-import { API_BASE_URL, handleResponse } from "@/lib/api";
+import {
+	type PaginatedResponse,
+	type SingleResponse,
+	API_BASE_URL,
+	handleResponse,
+} from "@/lib/api";
 
 // ============================================================
 // Indirect Work Cases

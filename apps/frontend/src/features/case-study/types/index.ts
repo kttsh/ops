@@ -6,14 +6,6 @@ export type {
 	StandardEffortMasterDetail,
 	StandardEffortWeight,
 } from "@/features/standard-effort-masters/types";
-// --- 共通型を共有レイヤーから re-export ---
-export type {
-	PaginatedResponse,
-	ProblemDetails,
-	SelectOption,
-	SingleResponse,
-} from "@/lib/api";
-
 // ============================================================
 // ProjectCase
 // ============================================================

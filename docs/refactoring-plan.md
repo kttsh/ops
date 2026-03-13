@@ -16,8 +16,8 @@
 | Phase 3: アーキテクチャリファクタリング | 15 | **1** | 14 | **7%** |
 | Phase 4: 品質向上・統一化 | 7 | **0** | 7 | **0%** |
 | Phase 5: 画面分割・ナビゲーション再構成 | 4 | **4** | 0 | **100%** |
-| Phase 6: デッドコード削除・簡素化 | 5 | **3** | 2 | **60%** |
-| **合計** | **57** | **33** | **24** | **58%** |
+| Phase 6: デッドコード削除・簡素化 | 5 | **5** | 0 | **100%** |
+| **合計** | **57** | **35** | **22** | **61%** |
 
 ---
 
@@ -84,8 +84,8 @@ Phase 1〜2 と Phase 5〜6 の完了分により、当初の重複 ~3,800行か
 
 ```
 🟢 即時実行可能 (低リスク)
-  ├── 6-3 重複型定義の統一
-  ├── 6-4 Feature 型 re-export 整理
+  ├── 6-3 重複型定義の統一           ← ✅ 完了
+  ├── 6-4 Feature 型 re-export 整理  ← ✅ 完了
   ├── 4-3 Backend 型ファイルの整理
   └── 4-4 Row 型の命名統一
         │
@@ -119,20 +119,22 @@ Phase 1〜2 と Phase 5〜6 の完了分により、当初の重複 ~3,800行か
 
 ## 4. タスク詳細 — 🟢 即時実行可能
 
-### 6-3. 重複型定義の統一
+### 6-3. 重複型定義の統一 — ✅ 完了 (2026-03-13)
 
-- [ ] `case-study/types/index.ts` 内の `StandardEffortMaster` ローカル型定義を確認
-  - `standard-effort-masters` feature からの import に置き換え可能か検証
-  - feature 間の依存は最小限にする原則に注意（必要なら shared types に昇格）
+- [x] `case-study/types/index.ts` 内の `StandardEffortMaster` ローカル型定義を `standard-effort-masters` feature からの re-export に置換
+  - `StandardEffortMaster`, `StandardEffortWeight`, `StandardEffortMasterDetail` の3型を統一
+  - `StandardEffortMasterListParams` は case-study 固有（全フィールド optional）のためローカルに残置
+  - feature 間依存は re-export による最小限の参照に留めた
 - **対応スメル**: なし（整理目的）
 - **リスク**: 低
-- **前提**: 参照調査を完了すること
 
-### 6-4. Feature 型ファイルの re-export 整理
+### 6-4. Feature 型ファイルの re-export 整理 — ✅ 完了 (2026-03-13)
 
-- [ ] 8つの feature `types/index.ts` から `PaginatedResponse`, `SingleResponse`, `ProblemDetails`, `SelectOption` の re-export パターンを確認
-  - 各 feature で `@/lib/api` から直接 import する方が明確なら re-export を削除
-  - 消費者側のインポートパスを調査し、影響範囲を確認してから判断
+- [x] 8つの feature `types/index.ts` から `PaginatedResponse`, `SingleResponse`, `ProblemDetails`, `SelectOption` の re-export を削除
+  - 全消費者を調査し、これら4型を feature パス経由で import しているコードは外部に存在しないことを確認
+  - feature 内部の api クライアント (5ファイル) が feature types 経由で import していた箇所を `@/lib/api` からの直接 import に変更
+  - feature `index.ts` (7ファイル) の re-export リストから4型を除去
+  - `indirect-case-study/types/common.ts` (re-export のみのファイル) を削除
 - **対応スメル**: なし（整理目的）
 - **リスク**: 低
 
@@ -422,7 +424,7 @@ B-S2 はファウラーの「Middle Man」に該当するが、現時点では**
 
 ---
 
-### Phase 6: デッドコード削除・簡素化 — 完了分
+### Phase 6: デッドコード削除・簡素化 — ✅ 全完了
 
 #### 6-1. 未使用バックエンドエンドポイントの削除 — ✅ 完了 (2026-03-13)
 
@@ -440,6 +442,21 @@ B-S2 はファウラーの「Middle Man」に該当するが、現時点では**
 
 - `toSummaryResponse` / `toWeightResponse` を createFieldMapper に移行
 - `toDetailResponse` は composition パターンを維持
+
+#### 6-4. Feature 型 re-export 整理 — ✅ 完了 (2026-03-13)
+
+- 8つの feature `types/index.ts` から `PaginatedResponse`, `SingleResponse`, `ProblemDetails`, `SelectOption` の re-export を削除
+- feature 内部の api クライアント 5ファイルの import 元を `@/lib/api` に変更
+- feature `index.ts` 7ファイルの re-export リストから4型を除去
+- `indirect-case-study/types/common.ts` (re-export 専用ファイル) を削除
+- **根拠**: 4型はすべて `@/lib/api` の公開型。feature 経由の迂回 import は不要
+
+#### 6-3. 重複型定義の統一 — ✅ 完了 (2026-03-13)
+
+- `case-study/types/index.ts` の `StandardEffortMaster`, `StandardEffortWeight`, `StandardEffortMasterDetail` ローカル定義を削除
+- `@/features/standard-effort-masters/types` からの re-export に置換
+- `StandardEffortMasterListParams` は case-study 固有要件（全フィールド optional）のためローカルに残置
+- **根拠**: `standard-effort-masters` が正規の型定義元。case-study 側は `SoftDeletableEntity` 継承なしの不完全な複製だった
 
 ---
 

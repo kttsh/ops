@@ -5,11 +5,14 @@ import type {
 	CapacityScenarioListParams,
 	CreateCapacityScenarioInput,
 	MonthlyCapacity,
-	PaginatedResponse,
-	SingleResponse,
 	UpdateCapacityScenarioInput,
 } from "@/features/indirect-case-study/types";
-import { API_BASE_URL, handleResponse } from "@/lib/api";
+import {
+	type PaginatedResponse,
+	type SingleResponse,
+	API_BASE_URL,
+	handleResponse,
+} from "@/lib/api";
 
 // ============================================================
 // Capacity Scenarios

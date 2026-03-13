@@ -1,9 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
-import type {
-	SelectOption,
-	StandardEffortMasterListParams,
-} from "@/features/standard-effort-masters/types";
+import type { StandardEffortMasterListParams } from "@/features/standard-effort-masters/types";
 import {
+	type SelectOption,
 	createDetailQueryOptions,
 	createListQueryOptions,
 	createQueryKeys,

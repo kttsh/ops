@@ -1,13 +1,4 @@
 import { z } from "zod";
-
-// --- 共通型を共有レイヤーから re-export ---
-export type {
-	PaginatedResponse,
-	ProblemDetails,
-	SelectOption,
-	SingleResponse,
-} from "@/lib/api";
-
 // ============================================================
 // API レスポンス型（バックエンド ChartDataResponse と対応）
 // ============================================================

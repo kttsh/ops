@@ -60,8 +60,6 @@ export type {
 	MonthlyCapacity,
 	MonthlyHeadcountPlan,
 	MonthlyIndirectWorkLoad,
-	PaginatedResponse,
-	SingleResponse,
 } from "./types";
 export {
 	createCapacityScenarioSchema,
