@@ -131,7 +131,6 @@ describe("sortAreasByIndirectOrder", () => {
 	const indA = makeIndirectArea("A01", "間接A");
 	const indB = makeIndirectArea("B02", "間接B");
 	const indC = makeIndirectArea("C03", "間接C");
-	const unclassified = makeIndirectArea("unclassified", "未分類");
 	const projX = makeProjectArea(1, "案件X");
 	const projY = makeProjectArea(2, "案件Y");
 
@@ -170,18 +169,6 @@ describe("sortAreasByIndirectOrder", () => {
 		expect(result[3].type).toBe("project");
 	});
 
-	it("未分類シリーズは常に間接シリーズの末尾に配置される", () => {
-		const areas = [indA, unclassified, indB, projX];
-		const result = sortAreasByIndirectOrder(areas, ["B02", "A01"]);
-		// 逆順: order[0]=B02 がチャート上部（間接エリア内末尾）
-		expect(result.map((a) => a.dataKey)).toEqual([
-			"indirect_wt_A01",
-			"indirect_wt_B02",
-			"indirect_wt_unclassified",
-			"project_1",
-		]);
-	});
-
 	it("部分的な順序指定に対応する（未指定は末尾）", () => {
 		const areas = [indA, indB, indC, projX];
 		const result = sortAreasByIndirectOrder(areas, ["C03"]);
@@ -195,7 +182,7 @@ describe("sortAreasByIndirectOrder", () => {
 	});
 
 	it("並び替え後も間接作業が常に案件の下にスタックされる", () => {
-		const areas = [indA, indB, indC, unclassified, projX, projY];
+		const areas = [indA, indB, indC, projX, projY];
 		const orders = [
 			["A01", "B02", "C03"],
 			["C03", "B02", "A01"],
@@ -228,25 +215,6 @@ describe("sortLegendIndirectByOrder", () => {
 	it("indirectWorkTypeOrder に基づいてソートする", () => {
 		const result = sortLegendIndirectByOrder(items, ["C03", "A01", "B02"]);
 		expect(result.map((i) => i.workTypeCode)).toEqual(["C03", "A01", "B02"]);
-	});
-
-	it("未分類は常に末尾に来る", () => {
-		const withUnclassified = [
-			...items,
-			{ workTypeCode: "unclassified", workTypeName: "未分類", manhour: 50 },
-		];
-		const result = sortLegendIndirectByOrder(withUnclassified, [
-			"C03",
-			"unclassified",
-			"A01",
-			"B02",
-		]);
-		expect(result.map((i) => i.workTypeCode)).toEqual([
-			"C03",
-			"A01",
-			"B02",
-			"unclassified",
-		]);
 	});
 
 	it("順序に含まれない項目は末尾に配置される", () => {

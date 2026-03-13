@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { normalizeNumericInput } from "@/lib/normalizeNumericInput";
 
@@ -88,13 +89,15 @@ export function MonthlyHeadcountTable({
 		<div className="space-y-3">
 			<div className="flex items-center justify-between">
 				<h4 className="text-sm font-medium">月次人員数</h4>
-				<button
+				<Button
 					type="button"
-					className="inline-flex items-center rounded-md border border-border bg-background px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+					variant="default"
+					size="sm"
+					className="h-8 px-3 font-medium shadow-sm"
 					onClick={onOpenBulkInput}
 				>
 					一括入力
-				</button>
+				</Button>
 			</div>
 
 			<div className="overflow-x-auto rounded-lg border border-border">
@@ -146,7 +149,7 @@ export function MonthlyHeadcountTable({
 													}
 													onFocus={(e) => e.target.select()}
 													onKeyDown={handleKeyDown}
-													className={`h-8 w-full text-right tabular-nums ${
+													className={`h-8 w-full bg-white disabled:bg-muted text-right tabular-nums ${
 														dirty ? "ring-1 ring-amber-400" : ""
 													}`}
 												/>

@@ -15,7 +15,6 @@ import {
 	CAPACITY_COLORS,
 	INDIRECT_COLORS,
 	PROJECT_TYPE_COLORS,
-	UNCLASSIFIED_COLOR,
 } from "@/lib/chart-colors";
 
 export interface UseChartDataReturn {
@@ -93,7 +92,6 @@ export function sortLegendProjectsByOrder<T extends { projectId: number }>(
 /**
  * 間接作業シリーズを indirectWorkTypeOrder に基づいてソートする。
  * 案件シリーズ（type: "project"）の位置は維持し、間接作業シリーズのみを並び替える。
- * 未分類シリーズ（indirect_wt_unclassified）は常に間接シリーズの末尾に配置。
  */
 export function sortAreasByIndirectOrder(
 	areas: AreaSeriesConfig[],
@@ -103,20 +101,13 @@ export function sortAreasByIndirectOrder(
 		return areas;
 
 	const projectAreas = areas.filter((a) => a.type === "project");
-	const indirectAreas = areas.filter((a) => a.type === "indirect");
-
-	const unclassified = indirectAreas.filter(
-		(a) => a.dataKey === "indirect_wt_unclassified",
-	);
-	const classified = indirectAreas.filter(
-		(a) => a.dataKey !== "indirect_wt_unclassified",
-	);
+	const indirectAreas = [...areas.filter((a) => a.type === "indirect")];
 
 	const orderMap = new Map(
 		indirectWorkTypeOrder.map((code, idx) => [code, idx]),
 	);
 
-	classified.sort((a, b) => {
+	indirectAreas.sort((a, b) => {
 		const codeA = a.dataKey.replace("indirect_wt_", "");
 		const codeB = b.dataKey.replace("indirect_wt_", "");
 		const orderA = orderMap.get(codeA) ?? Number.MAX_SAFE_INTEGER;
@@ -126,14 +117,13 @@ export function sortAreasByIndirectOrder(
 
 	// チャートのスタック順（配列先頭=下、末尾=上）と
 	// 凡例・設定パネルの表示順（先頭=上）を一致させるため逆順にする
-	classified.reverse();
+	indirectAreas.reverse();
 
-	return [...classified, ...unclassified, ...projectAreas];
+	return [...indirectAreas, ...projectAreas];
 }
 
 /**
  * 凡例パネル用の間接作業リストを indirectWorkTypeOrder に基づいてソートする。
- * 未分類（workTypeCode === "unclassified"）は常に末尾に配置。
  */
 export function sortLegendIndirectByOrder<T extends { workTypeCode: string }>(
 	indirectWorkTypes: T[],
@@ -141,26 +131,15 @@ export function sortLegendIndirectByOrder<T extends { workTypeCode: string }>(
 ): T[] {
 	if (!indirectWorkTypeOrder) return indirectWorkTypes;
 
-	const unclassified = indirectWorkTypes.filter(
-		(i) => i.workTypeCode === "unclassified",
-	);
-	const classified = indirectWorkTypes.filter(
-		(i) => i.workTypeCode !== "unclassified",
-	);
-
 	const orderMap = new Map(
-		indirectWorkTypeOrder
-			.filter((code) => code !== "unclassified")
-			.map((code, idx) => [code, idx]),
+		indirectWorkTypeOrder.map((code, idx) => [code, idx]),
 	);
 
-	classified.sort((a, b) => {
+	return [...indirectWorkTypes].sort((a, b) => {
 		const orderA = orderMap.get(a.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
 		const orderB = orderMap.get(b.workTypeCode) ?? Number.MAX_SAFE_INTEGER;
 		return orderA - orderB;
 	});
-
-	return [...classified, ...unclassified];
 }
 
 export function useChartData(
@@ -218,18 +197,6 @@ export function useChartData(
 			}
 		}
 
-		// breakdownCoverage < 1.0 の月があるかチェック（未分類エリアが必要か判定）
-		let hasUnclassified = false;
-		for (const iw of rawResponse.indirectWorkLoads) {
-			for (const m of iw.monthly) {
-				if (m.manhour > 0 && m.breakdownCoverage < 1.0) {
-					hasUnclassified = true;
-					break;
-				}
-			}
-			if (hasUnclassified) break;
-		}
-
 		// capacityLines から一意なライン一覧を抽出
 		const capLineMap = new Map<string, AvailableCapacityLine>();
 		for (const cl of rawResponse.capacityLines) {
@@ -268,19 +235,6 @@ export function useChartData(
 				type: "indirect",
 			});
 			wtIdx++;
-		}
-
-		// 未分類エリア（breakdownCoverage < 1.0 の場合のみ）
-		if (hasUnclassified) {
-			areas.push({
-				dataKey: "indirect_wt_unclassified",
-				stackId: "workload",
-				fill: UNCLASSIFIED_COLOR,
-				stroke: UNCLASSIFIED_COLOR,
-				fillOpacity: 0.5,
-				name: "未分類",
-				type: "indirect",
-			});
 		}
 
 		// 案件エリアシリーズ（上層）
@@ -328,33 +282,20 @@ export function useChartData(
 
 			// 間接作業 — workType 単位で合算
 			const wtTotals = new Map<string, number>();
-			let totalBreakdownManhour = 0;
-			let totalIndirectManhour = 0;
 
 			for (const iw of rawResponse.indirectWorkLoads) {
 				const monthData = iw.monthly.find((m) => m.yearMonth === ym);
 				if (!monthData) continue;
-				totalIndirectManhour += monthData.manhour;
 				for (const bd of monthData.breakdown) {
 					wtTotals.set(
 						bd.workTypeCode,
 						(wtTotals.get(bd.workTypeCode) ?? 0) + bd.manhour,
 					);
-					totalBreakdownManhour += bd.manhour;
 				}
 			}
 
 			for (const workTypeCode of workTypeMap.keys()) {
 				point[`indirect_wt_${workTypeCode}`] = wtTotals.get(workTypeCode) ?? 0;
-			}
-
-			// 未分類分
-			if (hasUnclassified) {
-				const unclassifiedManhour = Math.max(
-					0,
-					totalIndirectManhour - totalBreakdownManhour,
-				);
-				point.indirect_wt_unclassified = unclassifiedManhour;
 			}
 
 			// 案件
@@ -397,7 +338,6 @@ export function useChartData(
 				{ workTypeName: string; manhour: number }
 			>();
 			let totalIndirectManhour = 0;
-			let totalBreakdownManhour = 0;
 
 			for (const iw of rawResponse.indirectWorkLoads) {
 				const monthData = iw.monthly.find((m) => m.yearMonth === ym);
@@ -413,7 +353,6 @@ export function useChartData(
 							manhour: bd.manhour,
 						});
 					}
-					totalBreakdownManhour += bd.manhour;
 				}
 			}
 
@@ -424,21 +363,6 @@ export function useChartData(
 					manhour: v.manhour,
 				}),
 			);
-
-			// 未分類分を追加
-			if (hasUnclassified) {
-				const unclassifiedManhour = Math.max(
-					0,
-					totalIndirectManhour - totalBreakdownManhour,
-				);
-				if (unclassifiedManhour > 0) {
-					indirectWorkTypes.push({
-						workTypeCode: "unclassified",
-						workTypeName: "未分類",
-						manhour: unclassifiedManhour,
-					});
-				}
-			}
 
 			// visible なキャパシティラインのみ凡例に含める
 			const capacityLines = rawResponse.capacityLines

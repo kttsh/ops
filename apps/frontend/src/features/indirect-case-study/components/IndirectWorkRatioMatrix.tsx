@@ -112,7 +112,9 @@ export function IndirectWorkRatioMatrix({
 				<table className="w-full text-sm">
 					<thead>
 						<tr className="border-b border-border bg-muted/50">
-							<th className="text-left py-2 pr-3 font-medium">作業種類</th>
+							<th className="text-center py-2 pl-2 pr-3 font-medium">
+								作業種類
+							</th>
 							{fiscalYears.map((fy) => (
 								<th key={fy} className="text-center py-2 px-2 font-medium">
 									{fy}年度
@@ -126,7 +128,7 @@ export function IndirectWorkRatioMatrix({
 								key={wt.workTypeCode}
 								className="border-b border-border bg-white last:border-b-0"
 							>
-								<td className="py-1.5 pr-3 whitespace-nowrap bg-white">
+								<td className="py-1.5 pl-2 pr-3 whitespace-nowrap bg-white">
 									{wt.name}
 								</td>
 								{fiscalYears.map((fy) => {
@@ -154,7 +156,7 @@ export function IndirectWorkRatioMatrix({
 															: Math.min(100, Math.max(0, val)),
 													);
 												}}
-												className="h-7 w-20 text-sm text-center"
+												className="h-7 w-20 text-sm text-right"
 											/>
 										</td>
 									);
@@ -162,7 +164,7 @@ export function IndirectWorkRatioMatrix({
 							</tr>
 						))}
 						<tr className="border-t-2 border-border bg-white font-semibold">
-							<td className="py-1.5 pr-3">合計</td>
+							<td className="py-1.5 pl-2 pr-3">合計</td>
 							{fiscalYears.map((fy) => (
 								<td key={fy} className="py-1.5 px-1 text-center">
 									{getTotal(fy).toFixed(1)}%

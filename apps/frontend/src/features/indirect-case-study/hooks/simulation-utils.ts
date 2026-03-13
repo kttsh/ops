@@ -115,6 +115,33 @@ export function getAvailableFiscalYears(
 }
 
 /**
+ * ケースID解決ユーティリティ
+ * URL param > プライマリ > 0 のフォールバック
+ *
+ * - selectedId > 0 かつリスト内に存在する場合はそのまま返す
+ * - 存在しなければプライマリIDにフォールバック
+ * - プライマリもなければ 0 を返す
+ */
+export function resolveSelectedCaseId<T>(
+	items: T[],
+	selectedId: number,
+	getId: (item: T) => number,
+	getIsPrimary: (item: T) => boolean,
+): number {
+	// 指定IDが有効かつリスト内に存在する場合はそのまま返す
+	if (selectedId > 0 && items.some((item) => getId(item) === selectedId)) {
+		return selectedId;
+	}
+	// プライマリにフォールバック
+	const primaryItem = items.find((item) => getIsPrimary(item));
+	if (primaryItem) {
+		return getId(primaryItem);
+	}
+	// ケースが存在しない
+	return 0;
+}
+
+/**
  * source === "calculated" のレコードのうち updatedAt の最大値を返す。
  * 該当レコードがない場合は null を返す。
  */

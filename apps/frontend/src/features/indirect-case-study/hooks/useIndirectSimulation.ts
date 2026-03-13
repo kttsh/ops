@@ -13,19 +13,26 @@ import {
 	monthlyIndirectWorkLoadsQueryOptions,
 } from "@/features/indirect-case-study/api/queries";
 import {
-	findPrimaryId,
 	getAvailableFiscalYears,
 	getLastCalculatedAt,
+	resolveSelectedCaseId,
 } from "./simulation-utils";
 import { useCapacityCalculation } from "./useCapacityCalculation";
 import { useIndirectWorkCalculation } from "./useIndirectWorkCalculation";
 
 type UseIndirectSimulationParams = {
 	businessUnitCode: string;
+	/** URL検索パラメータから渡されるケースID（0 = 未指定） */
+	selectedHeadcountCaseId?: number;
+	selectedCapacityScenarioId?: number;
+	selectedIndirectWorkCaseId?: number;
 };
 
 export function useIndirectSimulation({
 	businessUnitCode,
+	selectedHeadcountCaseId = 0,
+	selectedCapacityScenarioId = 0,
+	selectedIndirectWorkCaseId = 0,
 }: UseIndirectSimulationParams) {
 	const queryClient = useQueryClient();
 
@@ -69,78 +76,67 @@ export function useIndirectSimulation({
 		[indirectWorkCasesQuery.data],
 	);
 
-	// primaryケースIDの自動検出
-	const primaryHeadcountCaseId = useMemo(
-		() => findPrimaryId(headcountCases, (c) => c.headcountPlanCaseId),
-		[headcountCases],
-	);
-	const primaryCapacityScenarioId = useMemo(
-		() => findPrimaryId(capacityScenarios, (s) => s.capacityScenarioId),
-		[capacityScenarios],
-	);
-	const primaryIndirectWorkCaseId = useMemo(
-		() => findPrimaryId(indirectWorkCases, (c) => c.indirectWorkCaseId),
-		[indirectWorkCases],
+	// ケースID解決（URL param > プライマリ > 0）
+	const resolvedHeadcountCaseId = useMemo(
+		() =>
+			resolveSelectedCaseId(
+				headcountCases,
+				selectedHeadcountCaseId,
+				(c) => c.headcountPlanCaseId,
+				(c) => c.isPrimary,
+			),
+		[headcountCases, selectedHeadcountCaseId],
 	);
 
-	// primaryケース名の派生
-	const primaryHeadcountCaseName = useMemo(
+	const resolvedCapacityScenarioId = useMemo(
 		() =>
-			headcountCases.find(
-				(c) => c.headcountPlanCaseId === primaryHeadcountCaseId,
-			)?.caseName ?? null,
-		[headcountCases, primaryHeadcountCaseId],
-	);
-	const primaryCapacityScenarioName = useMemo(
-		() =>
-			capacityScenarios.find(
-				(s) => s.capacityScenarioId === primaryCapacityScenarioId,
-			)?.scenarioName ?? null,
-		[capacityScenarios, primaryCapacityScenarioId],
-	);
-	const primaryIndirectWorkCaseName = useMemo(
-		() =>
-			indirectWorkCases.find(
-				(c) => c.indirectWorkCaseId === primaryIndirectWorkCaseId,
-			)?.caseName ?? null,
-		[indirectWorkCases, primaryIndirectWorkCaseId],
+			resolveSelectedCaseId(
+				capacityScenarios,
+				selectedCapacityScenarioId,
+				(s) => s.capacityScenarioId,
+				(s) => s.isPrimary,
+			),
+		[capacityScenarios, selectedCapacityScenarioId],
 	);
 
-	// primaryケース有無フラグ
-	const hasPrimaryHeadcountCase = primaryHeadcountCaseId !== null;
-	const hasPrimaryCapacityScenario = primaryCapacityScenarioId !== null;
-	const hasPrimaryIndirectWorkCase = primaryIndirectWorkCaseId !== null;
+	const resolvedIndirectWorkCaseId = useMemo(
+		() =>
+			resolveSelectedCaseId(
+				indirectWorkCases,
+				selectedIndirectWorkCaseId,
+				(c) => c.indirectWorkCaseId,
+				(c) => c.isPrimary,
+			),
+		[indirectWorkCases, selectedIndirectWorkCaseId],
+	);
 
-	// 再計算可能判定
+	// 再計算可能判定（3つの解決済みIDがすべて > 0）
 	const canRecalculate =
-		primaryHeadcountCaseId !== null &&
-		primaryCapacityScenarioId !== null &&
-		primaryIndirectWorkCaseId !== null;
+		resolvedHeadcountCaseId > 0 &&
+		resolvedCapacityScenarioId > 0 &&
+		resolvedIndirectWorkCaseId > 0;
 
-	// 保存済みデータクエリ（primaryケースIDベース）
+	// 保存済みデータクエリ（解決済みケースIDベース）
 	const monthlyHeadcountQuery = useQuery(
 		monthlyHeadcountPlansQueryOptions(
-			primaryHeadcountCaseId ?? 0,
+			resolvedHeadcountCaseId,
 			businessUnitCode,
 		),
 	);
 
 	const monthlyCapacitiesQuery = useQuery(
-		monthlyCapacitiesQueryOptions(
-			primaryCapacityScenarioId ?? 0,
-			businessUnitCode,
-		),
+		monthlyCapacitiesQueryOptions(resolvedCapacityScenarioId, businessUnitCode),
 	);
 
 	const monthlyIndirectWorkLoadsQuery = useQuery(
 		monthlyIndirectWorkLoadsQueryOptions(
-			primaryIndirectWorkCaseId ?? 0,
+			resolvedIndirectWorkCaseId,
 			businessUnitCode,
 		),
 	);
 
 	const ratiosQuery = useQuery(
-		indirectWorkTypeRatiosQueryOptions(primaryIndirectWorkCaseId ?? 0),
+		indirectWorkTypeRatiosQueryOptions(resolvedIndirectWorkCaseId),
 	);
 
 	// Mutation
@@ -189,9 +185,9 @@ export function useIndirectSimulation({
 	// 1ボタン再計算
 	const recalculate = useCallback(async () => {
 		if (
-			!primaryCapacityScenarioId ||
-			!primaryHeadcountCaseId ||
-			!primaryIndirectWorkCaseId
+			!resolvedCapacityScenarioId ||
+			!resolvedHeadcountCaseId ||
+			!resolvedIndirectWorkCaseId
 		)
 			return;
 
@@ -199,8 +195,8 @@ export function useIndirectSimulation({
 		try {
 			// Step 1: キャパシティ計算
 			const capResult = await capacityCalc.calculate({
-				capacityScenarioId: primaryCapacityScenarioId,
-				headcountPlanCaseId: primaryHeadcountCaseId,
+				capacityScenarioId: resolvedCapacityScenarioId,
+				headcountPlanCaseId: resolvedHeadcountCaseId,
 				businessUnitCodes: [businessUnitCode],
 			});
 
@@ -212,7 +208,7 @@ export function useIndirectSimulation({
 
 			// Step 3: バルク保存
 			await bulkIndirectWorkLoadsMutation.mutateAsync({
-				caseId: primaryIndirectWorkCaseId,
+				caseId: resolvedIndirectWorkCaseId,
 				input: { items: iwResult.monthlyLoads },
 			});
 
@@ -228,9 +224,9 @@ export function useIndirectSimulation({
 			setIsRecalculating(false);
 		}
 	}, [
-		primaryCapacityScenarioId,
-		primaryHeadcountCaseId,
-		primaryIndirectWorkCaseId,
+		resolvedCapacityScenarioId,
+		resolvedHeadcountCaseId,
+		resolvedIndirectWorkCaseId,
 		businessUnitCode,
 		ratios,
 		capacityCalc,
@@ -240,16 +236,17 @@ export function useIndirectSimulation({
 	]);
 
 	return {
-		// primaryケース情報
-		primaryHeadcountCaseId,
-		primaryCapacityScenarioId,
-		primaryIndirectWorkCaseId,
-		primaryHeadcountCaseName,
-		primaryCapacityScenarioName,
-		primaryIndirectWorkCaseName,
-		hasPrimaryHeadcountCase,
-		hasPrimaryCapacityScenario,
-		hasPrimaryIndirectWorkCase,
+		// ケース一覧（セレクタ用）
+		headcountCases,
+		capacityScenarios,
+		indirectWorkCases,
+
+		// 解決済みケースID
+		resolvedHeadcountCaseId,
+		resolvedCapacityScenarioId,
+		resolvedIndirectWorkCaseId,
+
+		// 再計算可能判定
 		canRecalculate,
 
 		// 保存済みデータ

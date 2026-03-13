@@ -204,18 +204,18 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 						<table className="w-full text-sm">
 							<thead>
 								<tr className="border-b border-border bg-muted/50">
-									<th className="text-left py-2 pr-3 font-medium sticky left-0 bg-muted/50 min-w-[160px]">
+									<th className="text-center py-2 pl-2 pr-3 font-medium sticky left-0 bg-muted/50 min-w-[160px]">
 										項目
 									</th>
 									{MONTH_LABELS.map((label) => (
 										<th
 											key={label}
-											className="text-right py-2 px-2 font-medium whitespace-nowrap"
+											className="text-center py-2 px-2 font-medium whitespace-nowrap"
 										>
 											{label}
 										</th>
 									))}
-									<th className="text-right py-2 pl-3 font-semibold whitespace-nowrap border-l">
+									<th className="text-center py-2 pl-3 pr-2 font-semibold whitespace-nowrap border-l">
 										年間合計
 									</th>
 								</tr>
@@ -223,7 +223,7 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 							<tbody>
 								{/* 人員数 */}
 								<tr className="border-b border-border bg-white hover:bg-muted/30">
-									<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-white">
+									<td className="py-1.5 pl-2 pr-3 whitespace-nowrap font-medium sticky left-0 bg-white">
 										{rowData.headcountRow.label}
 									</td>
 									{rowData.headcountRow.values.map((v, i) => (
@@ -231,14 +231,14 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 											{v.toLocaleString()}
 										</td>
 									))}
-									<td className="py-1.5 pl-3 text-right font-semibold tabular-nums border-l text-muted-foreground">
+									<td className="py-1.5 pl-3 pr-2 text-right font-semibold tabular-nums border-l text-muted-foreground">
 										-
 									</td>
 								</tr>
 
 								{/* キャパシティ */}
 								<tr className="border-b border-border bg-white hover:bg-muted/30">
-									<td className="py-1.5 pr-3 whitespace-nowrap font-medium sticky left-0 bg-white">
+									<td className="py-1.5 pl-2 pr-3 whitespace-nowrap font-medium sticky left-0 bg-white">
 										{rowData.capacityRow.label}
 									</td>
 									{rowData.capacityRow.values.map((v, i) => (
@@ -246,7 +246,7 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 											{v.toLocaleString()}
 										</td>
 									))}
-									<td className="py-1.5 pl-3 text-right font-semibold tabular-nums border-l">
+									<td className="py-1.5 pl-3 pr-2 text-right font-semibold tabular-nums border-l">
 										{getAnnualTotal(
 											rowData.capacityRow.values,
 										).toLocaleString()}
@@ -284,7 +284,7 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 											key={row.workTypeCode}
 											className="border-b border-border bg-white hover:bg-muted/30"
 										>
-											<td className="py-1.5 pr-3 whitespace-nowrap text-muted-foreground sticky left-0 bg-white">
+											<td className="py-1.5 pl-2 pr-3 whitespace-nowrap text-muted-foreground sticky left-0 bg-white">
 												{row.label}
 											</td>
 											{row.values.map((v, i) => (
@@ -295,7 +295,7 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 													{v.toLocaleString()}
 												</td>
 											))}
-											<td className="py-1.5 pl-3 text-right tabular-nums border-l">
+											<td className="py-1.5 pl-3 pr-2 text-right tabular-nums border-l">
 												{getAnnualTotal(row.values).toLocaleString()}
 											</td>
 										</tr>
@@ -303,7 +303,7 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 
 								{/* 間接計 */}
 								<tr className="border-t border-border bg-white hover:bg-muted/30 font-semibold">
-									<td className="py-1.5 pr-3 whitespace-nowrap sticky left-0 bg-white">
+									<td className="py-1.5 pl-2 pr-3 whitespace-nowrap sticky left-0 bg-white">
 										{rowData.indirectTotalRow.label}
 									</td>
 									{rowData.indirectTotalRow.values.map((v, i) => (
@@ -311,7 +311,7 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 											{v.toLocaleString()}
 										</td>
 									))}
-									<td className="py-1.5 pl-3 text-right tabular-nums border-l">
+									<td className="py-1.5 pl-3 pr-2 text-right tabular-nums border-l">
 										{getAnnualTotal(
 											rowData.indirectTotalRow.values,
 										).toLocaleString()}
@@ -324,7 +324,7 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 										"border-t border-border bg-white hover:bg-muted/30 font-semibold",
 									)}
 								>
-									<td className="py-1.5 pr-3 whitespace-nowrap sticky left-0 bg-white">
+									<td className="py-1.5 pl-2 pr-3 whitespace-nowrap sticky left-0 bg-white">
 										{rowData.directRow.label}
 									</td>
 									{rowData.directRow.values.map((v, i) => (
@@ -340,7 +340,7 @@ export const IndirectOverviewTable = memo(function IndirectOverviewTable({
 									))}
 									<td
 										className={cn(
-											"py-1.5 pl-3 text-right tabular-nums border-l",
+											"py-1.5 pl-3 pr-2 text-right tabular-nums border-l",
 											getAnnualTotal(rowData.directRow.values) < 0 &&
 												"text-red-600",
 										)}

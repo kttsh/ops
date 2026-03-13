@@ -35,6 +35,7 @@ export { CalculationResultTable } from "./components/CalculationResultTable";
 export { CapacityScenarioDetailSheet } from "./components/CapacityScenarioDetailSheet";
 export { CapacityScenarioList } from "./components/CapacityScenarioList";
 export { CaseFormSheet } from "./components/CaseFormSheet";
+export { CaseSelect } from "./components/CaseSelect";
 export { HeadcountPlanCaseChips } from "./components/HeadcountPlanCaseChips";
 export { IndirectOverviewTable } from "./components/IndirectOverviewTable";
 export { IndirectWorkCaseList } from "./components/IndirectWorkCaseList";

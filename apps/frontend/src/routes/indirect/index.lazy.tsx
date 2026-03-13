@@ -58,12 +58,53 @@ function IndirectPage() {
 
 	const handleBuChange = useCallback(
 		(code: string) => {
-			navigate({ search: { bu: code } });
+			// BU変更時はBU依存のケースIDをリセット（稼働時間はグローバルのため維持）
+			navigate({
+				search: {
+					bu: code,
+					headcountCaseId: 0,
+					capacityScenarioId: search.capacityScenarioId,
+					indirectWorkCaseId: 0,
+				},
+			});
+		},
+		[navigate, search.capacityScenarioId],
+	);
+
+	const sim = useIndirectSimulation({
+		businessUnitCode: selectedBu,
+		selectedHeadcountCaseId: search.headcountCaseId,
+		selectedCapacityScenarioId: search.capacityScenarioId,
+		selectedIndirectWorkCaseId: search.indirectWorkCaseId,
+	});
+
+	// ケースセレクタ変更ハンドラ
+	const handleHeadcountCaseChange = useCallback(
+		(id: number) => {
+			navigate({
+				search: (prev) => ({ ...prev, headcountCaseId: id }),
+			});
 		},
 		[navigate],
 	);
 
-	const sim = useIndirectSimulation({ businessUnitCode: selectedBu });
+	const handleCapacityScenarioChange = useCallback(
+		(id: number) => {
+			navigate({
+				search: (prev) => ({ ...prev, capacityScenarioId: id }),
+			});
+		},
+		[navigate],
+	);
+
+	const handleIndirectWorkCaseChange = useCallback(
+		(id: number) => {
+			navigate({
+				search: (prev) => ({ ...prev, indirectWorkCaseId: id }),
+			});
+		},
+		[navigate],
+	);
 
 	// 再計算確認ダイアログ
 	const handleRecalculateClick = useCallback(() => {
@@ -102,12 +143,19 @@ function IndirectPage() {
 			<div className="flex-1 overflow-y-auto space-y-6 p-6">
 				{/* 計算条件パネル */}
 				<CalculationConditionPanel
-					headcountPlanCaseName={sim.primaryHeadcountCaseName}
-					capacityScenarioName={sim.primaryCapacityScenarioName}
-					indirectWorkCaseName={sim.primaryIndirectWorkCaseName}
+					headcountPlanCases={sim.headcountCases}
+					capacityScenarios={sim.capacityScenarios}
+					indirectWorkCases={sim.indirectWorkCases}
+					selectedHeadcountCaseId={sim.resolvedHeadcountCaseId}
+					selectedCapacityScenarioId={sim.resolvedCapacityScenarioId}
+					selectedIndirectWorkCaseId={sim.resolvedIndirectWorkCaseId}
+					onHeadcountCaseChange={handleHeadcountCaseChange}
+					onCapacityScenarioChange={handleCapacityScenarioChange}
+					onIndirectWorkCaseChange={handleIndirectWorkCaseChange}
 					canRecalculate={sim.canRecalculate}
 					isRecalculating={sim.isRecalculating}
 					onRecalculate={handleRecalculateClick}
+					isLoading={sim.isLoadingData}
 				/>
 
 				{/* 統合テーブル */}
