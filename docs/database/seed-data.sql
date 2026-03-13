@@ -9,7 +9,6 @@
 
 -- チャートビュー関連（子テーブル）
 DELETE FROM chart_view_capacity_items;
-DELETE FROM chart_view_indirect_work_items;
 DELETE FROM chart_view_project_items;
 DELETE FROM chart_views;
 
@@ -47,7 +46,6 @@ DELETE FROM business_units;
 
 -- IDENTITY列のリセット
 DBCC CHECKIDENT ('chart_view_capacity_items', RESEED, 0);
-DBCC CHECKIDENT ('chart_view_indirect_work_items', RESEED, 0);
 DBCC CHECKIDENT ('chart_view_project_items', RESEED, 0);
 DBCC CHECKIDENT ('chart_views', RESEED, 0);
 DBCC CHECKIDENT ('chart_stack_order_settings', RESEED, 0);
@@ -868,14 +866,6 @@ INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id
 INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible, color_code) VALUES
 (3, 9, 11, 1, 1, '#3b82f6'),  -- C-2025-001 ベースケース
 (3, 10, 12, 2, 1, '#10b981'); -- C-2025-002 ベースケース
-
--- -----------------------------------------------------------------------------
--- chart_view_indirect_work_items: チャートビュー間接作業項目
--- -----------------------------------------------------------------------------
-INSERT INTO chart_view_indirect_work_items (chart_view_id, indirect_work_case_id, display_order, is_visible) VALUES
-(1, 1, 1, 1),  -- PLANT標準配分
-(2, 2, 1, 1),  -- TRANS標準配分
-(3, 3, 1, 1);  -- CO2標準配分
 
 -- -----------------------------------------------------------------------------
 -- chart_view_capacity_items: チャートビューキャパシティ項目

@@ -18,9 +18,7 @@ const app = new Hono()
 		const query = c.req.valid("query");
 		const businessUnitCodes = query["filter[businessUnitCodes]"]
 			? query["filter[businessUnitCodes]"].split(",").filter(Boolean)
-			: query["filter[businessUnitCode]"]
-				? [query["filter[businessUnitCode]"]]
-				: undefined;
+			: undefined;
 
 		const result = await projectService.findAll({
 			page: query["page[number]"],

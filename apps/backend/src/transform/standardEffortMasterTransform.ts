@@ -5,29 +5,28 @@ import type {
 	StandardEffortWeight,
 	StandardEffortWeightRow,
 } from "@/types/standardEffortMaster";
+import { createFieldMapper } from "@/utils/fieldMapper";
 
-export function toSummaryResponse(
-	row: StandardEffortMasterRow,
-): StandardEffortMasterSummary {
-	return {
-		standardEffortId: row.standard_effort_id,
-		businessUnitCode: row.business_unit_code,
-		projectTypeCode: row.project_type_code,
-		name: row.name,
-		createdAt: row.created_at.toISOString(),
-		updatedAt: row.updated_at.toISOString(),
-	};
-}
+export const toSummaryResponse = createFieldMapper<
+	StandardEffortMasterRow,
+	StandardEffortMasterSummary
+>({
+	standardEffortId: "standard_effort_id",
+	businessUnitCode: "business_unit_code",
+	projectTypeCode: "project_type_code",
+	name: "name",
+	createdAt: "created_at",
+	updatedAt: "updated_at",
+});
 
-export function toWeightResponse(
-	row: StandardEffortWeightRow,
-): StandardEffortWeight {
-	return {
-		standardEffortWeightId: row.standard_effort_weight_id,
-		progressRate: row.progress_rate,
-		weight: row.weight,
-	};
-}
+export const toWeightResponse = createFieldMapper<
+	StandardEffortWeightRow,
+	StandardEffortWeight
+>({
+	standardEffortWeightId: "standard_effort_weight_id",
+	progressRate: "progress_rate",
+	weight: "weight",
+});
 
 export function toDetailResponse(
 	row: StandardEffortMasterRow,

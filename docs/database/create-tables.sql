@@ -16,7 +16,6 @@ DROP TABLE IF EXISTS chart_stack_order_settings;
 DROP TABLE IF EXISTS project_change_history;
 DROP TABLE IF EXISTS project_attachments;
 DROP TABLE IF EXISTS chart_view_capacity_items;
-DROP TABLE IF EXISTS chart_view_indirect_work_items;
 DROP TABLE IF EXISTS chart_view_project_items;
 
 -- ファクトテーブル
@@ -405,27 +404,6 @@ CREATE TABLE chart_view_project_items (
 
 CREATE INDEX IX_chart_view_project_items_view ON chart_view_project_items (chart_view_id);
 CREATE INDEX IX_chart_view_project_items_project ON chart_view_project_items (project_id);
-
--- -----------------------------------------------------------------------------
--- chart_view_indirect_work_items: チャートビュー間接作業項目
--- -----------------------------------------------------------------------------
-CREATE TABLE chart_view_indirect_work_items (
-    chart_view_indirect_work_item_id INT IDENTITY(1,1) NOT NULL,
-    chart_view_id INT NOT NULL,
-    indirect_work_case_id INT NOT NULL,
-    display_order INT NOT NULL CONSTRAINT DF_chart_view_indirect_work_items_display_order DEFAULT 0,
-    is_visible BIT NOT NULL CONSTRAINT DF_chart_view_indirect_work_items_is_visible DEFAULT 1,
-    created_at DATETIME2 NOT NULL CONSTRAINT DF_chart_view_indirect_work_items_created_at DEFAULT GETDATE(),
-    updated_at DATETIME2 NOT NULL CONSTRAINT DF_chart_view_indirect_work_items_updated_at DEFAULT GETDATE(),
-    CONSTRAINT PK_chart_view_indirect_work_items PRIMARY KEY (chart_view_indirect_work_item_id),
-    CONSTRAINT FK_chart_view_indirect_work_items_view FOREIGN KEY (chart_view_id)
-        REFERENCES chart_views (chart_view_id) ON DELETE CASCADE,
-    CONSTRAINT FK_chart_view_indirect_work_items_case FOREIGN KEY (indirect_work_case_id)
-        REFERENCES indirect_work_cases (indirect_work_case_id)
-);
-
-CREATE INDEX IX_chart_view_indirect_work_items_view ON chart_view_indirect_work_items (chart_view_id);
-CREATE INDEX IX_chart_view_indirect_work_items_case ON chart_view_indirect_work_items (indirect_work_case_id);
 
 -- -----------------------------------------------------------------------------
 -- chart_view_capacity_items: チャートビューキャパシティ項目

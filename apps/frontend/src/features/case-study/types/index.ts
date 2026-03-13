@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+// --- StandardEffortMaster 系の型を正規の feature から re-export ---
+export type {
+	StandardEffortMaster,
+	StandardEffortMasterDetail,
+	StandardEffortWeight,
+} from "@/features/standard-effort-masters/types";
 // --- 共通型を共有レイヤーから re-export ---
 export type {
 	PaginatedResponse,
@@ -139,27 +145,8 @@ export const bulkProjectLoadSchema = z.object({
 export type BulkProjectLoadInput = z.infer<typeof bulkProjectLoadSchema>;
 
 // ============================================================
-// StandardEffortMaster
+// StandardEffortMaster (case-study 固有のパラメータ型のみ定義)
 // ============================================================
-
-export type StandardEffortMaster = {
-	standardEffortId: number;
-	businessUnitCode: string;
-	projectTypeCode: string;
-	name: string;
-	createdAt: string;
-	updatedAt: string;
-};
-
-export type StandardEffortWeight = {
-	standardEffortWeightId: number;
-	progressRate: number;
-	weight: number;
-};
-
-export type StandardEffortMasterDetail = StandardEffortMaster & {
-	weights: StandardEffortWeight[];
-};
 
 export type StandardEffortMasterListParams = {
 	page?: number;

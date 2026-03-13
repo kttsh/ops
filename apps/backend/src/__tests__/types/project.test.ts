@@ -641,7 +641,7 @@ describe("projectListQuerySchema", () => {
 			"page[number]": "2",
 			"page[size]": "50",
 			"filter[includeDisabled]": "true",
-			"filter[businessUnitCode]": "BU-001",
+			"filter[businessUnitCodes]": "BU-001,BU-002",
 			"filter[status]": "ACTIVE",
 		});
 		expect(result.success).toBe(true);
@@ -650,7 +650,7 @@ describe("projectListQuerySchema", () => {
 				"page[number]": 2,
 				"page[size]": 50,
 				"filter[includeDisabled]": true,
-				"filter[businessUnitCode]": "BU-001",
+				"filter[businessUnitCodes]": "BU-001,BU-002",
 				"filter[status]": "ACTIVE",
 			});
 		}
@@ -676,11 +676,11 @@ describe("projectListQuerySchema", () => {
 		expect(result.success).toBe(true);
 	});
 
-	it("filter[businessUnitCode] が省略可能", () => {
+	it("filter[businessUnitCodes] が省略可能", () => {
 		const result = projectListQuerySchema.safeParse({});
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.data["filter[businessUnitCode]"]).toBeUndefined();
+			expect(result.data["filter[businessUnitCodes]"]).toBeUndefined();
 		}
 	});
 

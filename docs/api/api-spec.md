@@ -26,7 +26,6 @@
    - [Standard Effort Weights API](#standard-effort-weights-api)（Masters に統合）
 7. [関連テーブル API](#関連テーブル-api)
    - [Chart View Project Items API](#chart-view-project-items-api)
-   - [Chart View Indirect Work Items API](#chart-view-indirect-work-items-api)
    - [Project Attachments API](#project-attachments-api)
    - [Project Change History API](#project-change-history-api)
 8. [設定テーブル API](#設定テーブル-api)
@@ -70,7 +69,6 @@
 | 15 | indirect_work_type_ratios | ファクト | ✅ | ✅ | ✅ | ✅ | ✅ | - | Bulk Upsert | **実装済** |
 | 16 | standard_effort_weights | ファクト | - | - | - | - | - | - | Masters に統合 | **統合済** |
 | 17 | chart_view_project_items | 関連 | ✅ | ✅ | ✅ | ✅ | ✅ | - | 一括表示順序更新 | **実装済** |
-| 18 | chart_view_indirect_work_items | 関連 | ✅ | ✅ | ✅ | ✅ | ✅ | - | - | **実装済** |
 | 19 | project_attachments | 関連 | - | - | - | - | - | - | - | **未実装** |
 | 20 | project_change_history | 関連 | ✅ | ✅ | ✅ | - | ✅ | - | - | **実装済** |
 | 21 | chart_stack_order_settings | 設定 | - | - | - | - | - | - | - | **未実装** |
@@ -412,7 +410,7 @@
 | `page[number]` | integer | - | 1 | ページ番号 |
 | `page[size]` | integer | - | 20 | ページサイズ（1〜1000） |
 | `filter[includeDisabled]` | boolean | - | false | 論理削除済みを含むか |
-| `filter[businessUnitCode]` | string | - | - | BUコードでフィルタ |
+| `filter[businessUnitCodes]` | string | - | - | BUコードでフィルタ（カンマ区切りで複数指定可） |
 | `filter[status]` | string | - | - | ステータスでフィルタ |
 
 **レスポンス（200）:**

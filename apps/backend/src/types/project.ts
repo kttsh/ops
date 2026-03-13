@@ -72,7 +72,6 @@ export const updateProjectSchema = z
 /** 一覧取得クエリスキーマ（ページネーション + フィルタ） */
 export const projectListQuerySchema = paginationQuerySchema.extend({
 	"filter[includeDisabled]": includeDisabledFilterSchema,
-	"filter[businessUnitCode]": z.string().optional(),
 	"filter[businessUnitCodes]": z.string().optional(),
 	"filter[status]": z.string().optional(),
 });

@@ -169,7 +169,7 @@ describe("GET /projects", () => {
 			page: 2,
 			pageSize: 1,
 			includeDisabled: false,
-			businessUnitCode: undefined,
+			businessUnitCodes: undefined,
 			status: undefined,
 		});
 	});
@@ -188,13 +188,13 @@ describe("GET /projects", () => {
 		);
 	});
 
-	test("filter[businessUnitCode] でフィルタリングする", async () => {
+	test("filter[businessUnitCodes] でフィルタリングする", async () => {
 		mockedService.findAll.mockResolvedValue({
 			items: [sampleProject],
 			totalCount: 1,
 		});
 
-		const res = await app.request("/projects?filter[businessUnitCode]=BU-001");
+		const res = await app.request("/projects?filter[businessUnitCodes]=BU-001");
 		expect(res.status).toBe(200);
 
 		expect(mockedService.findAll).toHaveBeenCalledWith(

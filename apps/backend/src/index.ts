@@ -14,7 +14,6 @@ import chartColorSettings from "@/routes/chartColorSettings";
 import chartData from "@/routes/chartData";
 import chartStackOrderSettings from "@/routes/chartStackOrderSettings";
 import chartViewCapacityItems from "@/routes/chartViewCapacityItems";
-import chartViewIndirectWorkItems from "@/routes/chartViewIndirectWorkItems";
 import chartViewProjectItems from "@/routes/chartViewProjectItems";
 import chartViews from "@/routes/chartViews";
 import headcountPlanCases from "@/routes/headcountPlanCases";
@@ -107,10 +106,6 @@ app.route(
 app.route(
 	"/indirect-work-cases/:indirectWorkCaseId/indirect-work-type-ratios",
 	indirectWorkTypeRatios,
-);
-app.route(
-	"/chart-views/:chartViewId/indirect-work-items",
-	chartViewIndirectWorkItems,
 );
 app.route("/chart-views/:chartViewId/project-items", chartViewProjectItems);
 app.route("/chart-views/:chartViewId/capacity-items", chartViewCapacityItems);
