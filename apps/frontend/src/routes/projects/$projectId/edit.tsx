@@ -30,6 +30,13 @@ function ProjectEditPage() {
 		totalManhour: number;
 		status: string;
 		durationMonths: number | null;
+		fiscalYear: number | null;
+		nickname: string;
+		customerName: string;
+		orderNumber: string;
+		calculationBasis: string;
+		remarks: string;
+		region: string;
 	}) => {
 		try {
 			await updateMutation.mutateAsync({
@@ -40,6 +47,13 @@ function ProjectEditPage() {
 				totalManhour: values.totalManhour,
 				status: values.status,
 				durationMonths: values.durationMonths ?? undefined,
+				fiscalYear: values.fiscalYear ?? undefined,
+				nickname: values.nickname || undefined,
+				customerName: values.customerName || undefined,
+				orderNumber: values.orderNumber || undefined,
+				calculationBasis: values.calculationBasis || undefined,
+				remarks: values.remarks || undefined,
+				region: values.region || undefined,
 			});
 			toast.success("保存しました");
 			navigate({
@@ -112,6 +126,13 @@ function ProjectEditPage() {
 						totalManhour: project.totalManhour,
 						status: project.status,
 						durationMonths: project.durationMonths,
+						fiscalYear: project.fiscalYear,
+						nickname: project.nickname ?? "",
+						customerName: project.customerName ?? "",
+						orderNumber: project.orderNumber ?? "",
+						calculationBasis: project.calculationBasis ?? "",
+						remarks: project.remarks ?? "",
+						region: project.region ?? "",
 					}}
 					onSubmit={handleSubmit}
 					isSubmitting={updateMutation.isPending}

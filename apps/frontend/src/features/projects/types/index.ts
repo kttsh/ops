@@ -21,6 +21,13 @@ export interface Project extends SoftDeletableEntity {
 	totalManhour: number;
 	status: string;
 	durationMonths: number | null;
+	fiscalYear: number | null;
+	nickname: string | null;
+	customerName: string | null;
+	orderNumber: string | null;
+	calculationBasis: string | null;
+	remarks: string | null;
+	region: string | null;
 	cases: ProjectCaseSummary[];
 }
 
@@ -55,6 +62,32 @@ export const createProjectSchema = z.object({
 		.positive("期間月数は正の整数で入力してください")
 		.nullable()
 		.optional(),
+	fiscalYear: z
+		.number({ error: "年度は数値で入力してください" })
+		.int("年度は整数で入力してください")
+		.nullable()
+		.optional(),
+	nickname: z
+		.string()
+		.max(120, "通称・略称は120文字以内で入力してください")
+		.optional(),
+	customerName: z
+		.string()
+		.max(120, "客先名は120文字以内で入力してください")
+		.optional(),
+	orderNumber: z
+		.string()
+		.max(120, "オーダー番号は120文字以内で入力してください")
+		.optional(),
+	calculationBasis: z
+		.string()
+		.max(500, "算出根拠は500文字以内で入力してください")
+		.optional(),
+	remarks: z
+		.string()
+		.max(500, "備考は500文字以内で入力してください")
+		.optional(),
+	region: z.string().max(100, "地域は100文字以内で入力してください").optional(),
 });
 
 export const updateProjectSchema = z
@@ -82,6 +115,13 @@ export const updateProjectSchema = z
 			.positive("期間月数は正の整数で入力してください")
 			.nullable()
 			.optional(),
+		fiscalYear: z.number().int().nullable().optional(),
+		nickname: z.string().max(120).nullable().optional(),
+		customerName: z.string().max(120).nullable().optional(),
+		orderNumber: z.string().max(120).nullable().optional(),
+		calculationBasis: z.string().max(500).nullable().optional(),
+		remarks: z.string().max(500).nullable().optional(),
+		region: z.string().max(100).nullable().optional(),
 	})
 	.refine((data) => Object.values(data).some((v) => v !== undefined), {
 		message: "少なくとも1つのフィールドを入力してください",

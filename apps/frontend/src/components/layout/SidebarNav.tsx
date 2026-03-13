@@ -8,7 +8,6 @@ import {
 	FolderKanban,
 	ListChecks,
 	Palette,
-	Play,
 	Table,
 	TrendingUp,
 	Users,
@@ -52,13 +51,8 @@ const menuItems = [
 		label: "間接作業管理",
 		children: [
 			{
-				label: "間接工数計算",
-				href: "/indirect/simulation",
-				icon: Play,
-			},
-			{
-				label: "月次間接工数",
-				href: "/indirect/monthly-loads",
+				label: "間接工数",
+				href: "/indirect",
 				icon: Table,
 			},
 		],

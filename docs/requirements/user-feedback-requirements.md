@@ -1,7 +1,7 @@
 # ユーザーフィードバックに基づく改修要件定義書
 
-> **Version**: 0.3.4
-> **Last Updated**: 2026-03-12
+> **Version**: 0.4.0
+> **Last Updated**: 2026-03-13
 > **Status**: 開発プラン策定済み
 
 ---
@@ -19,7 +19,7 @@
 
 ## 1. 概要
 
-本文書は、ユーザー試行（UAT）で得られたフィードバック13件+追加2件を整理し、改修要件として定義するものである。
+本文書は、ユーザー試行（UAT）で得られたフィードバック13件+追加2件、および開発中に発生した後発要件1件（#70）を整理し、改修要件として定義するものである。
 
 ### 1.1 分類
 
@@ -29,6 +29,7 @@
 | UX改善 | 5 | #2, #3, #8, #13, #14 |
 | バグ修正 | 3 | #6, #7, #12 |
 | UIリファクタ | 1 | #4 |
+| 統合・簡素化 | 1 | #70（後発） |
 
 ### 1.2 優先度（案）
 
@@ -68,7 +69,7 @@
 | 順序 | 要件 | GitHub Issue | Spec | 概要 | 進捗 |
 |:----:|:----:|:------------:|------|------|:----:|
 | 2-1 | #7 | [#59](https://github.com/kttsh/ops/issues/59) | `bugfix-export` | エクスポート不具合の調査・修正 | ⬜ 未着手 |
-| 2-2 | #11 | [#60](https://github.com/kttsh/ops/issues/60) | `feat-order-number` | オーダー番号属性追加（DB〜UI全層） | ⬜ 未着手 |
+| 2-2 | #11 | [#60](https://github.com/kttsh/ops/issues/60) | `project-frontend-missing-fields` | 案件フロントエンド不足7フィールド追加 | 🟢 完了 |
 | 2-3 | #8,#14 | [#61](https://github.com/kttsh/ops/issues/61) | `ux-standard-effort-layout` | 標準工数パターン画面レイアウト改善 | 🟢 完了 |
 | 2-4 | #4 | [#62](https://github.com/kttsh/ops/issues/62) | `feat-work-type-ordering` | 作業種類の表示順入れ替え | 🟢 完了 |
 | 2-4b | #4 | [#68](https://github.com/kttsh/ops/issues/68) | — | ↑並び替え時に間接エリアが案件の上にスタックされるバグ修正 | 🟢 完了 |
@@ -92,6 +93,14 @@
 |:----:|:----:|:------------:|------|------|:----:|
 | 4-1 | #2 | [#67](https://github.com/kttsh/ops/issues/67) | — | 年度セレクタ改善（複数年度同時表示） | 🟢 完了 (#69で解決) |
 
+#### Phase 5: 統合・簡素化（後発Issue）
+
+| 順序 | 要件 | GitHub Issue | Spec | 概要 | 進捗 |
+|:----:|:----:|:------------:|------|------|:----:|
+| 5-1 | #70 | [#70](https://github.com/kttsh/ops/issues/70) | `indirect-ux-consolidation` | 間接工数管理画面の統合・簡素化 | 🟢 完了 |
+
+> Issue #70 は Phase 3 の #65（間接工数画面）完了後に発生した後発要件。simulation と monthly-loads の2画面を1画面に統合し、primaryケース自動選択・1ボタン再計算・読み取り専用テーブル等でUXを大幅簡素化。Spec `indirect-ux-consolidation` で全12サブタスクを実装完了。
+
 ### 2.3 Spec 一覧
 
 | Spec名 | 対応要件 | フェーズ | 規模 | 状態 |
@@ -99,7 +108,7 @@
 | `frontend-bugfixes-55-56` | #12, #6 | Phase 1 | S | 🟢 完了 |
 | `quick-fixes` | #3, #13 | Phase 1 | S | ⬜ 未着手 |
 | `bugfix-export` | #7 | Phase 2 | M | ⬜ 未着手 |
-| `feat-order-number` | #11 | Phase 2 | M | ⬜ 未着手 |
+| `project-frontend-missing-fields` | #11 | Phase 2 | M | 🟢 完了 |
 | `ux-standard-effort-layout` | #8, #14 | Phase 2 | M | 🟢 完了 |
 | `feat-work-type-ordering` | #4 | Phase 2 | M | 🟢 完了 |
 | `feat-bulk-interpolation` | #1 | Phase 2 | M | 🟢 完了 |
@@ -107,6 +116,7 @@
 | `feat-indirect-loads-screen` | #9 | Phase 3 | L | 🟢 完了 |
 | `feat-capacity-auto-generation` | #10 | Phase 3 | L | 🟢 完了 |
 | ~~`ux-year-selector`~~ | #2 | Phase 4 | — | 🟢 完了 (#69で解決) |
+| `indirect-ux-consolidation` | #70 | Phase 5 | L | 🟢 完了 |
 
 ### 2.4 進捗記号の凡例
 
@@ -138,6 +148,7 @@
 | 12 | `/master/indirect-work-cases` | バグ修正 | 浮動小数点精度エラー | 低 |
 | 13 | `/indirect/simulation` | UX改善 | 左パネルUI説明の不整合修正 | 低 |
 | 14 | `/projects/standard-efforts/new` | UX改善 | 新規登録画面のレイアウト改善 | 中 |
+| 70 | `/indirect/simulation` | 統合・簡素化 | 間接工数管理画面の統合・簡素化（後発） | 高 |
 
 ---
 
@@ -818,6 +829,9 @@ const displayValue = parseFloat((ratio * 100).toPrecision(10));
 
 | 日付 | バージョン | 内容 |
 |------|-----------|------|
+| 2026-03-14 | 0.5.0 | Phase 5 完了: Spec `indirect-ux-consolidation` 全12サブタスク実装完了。simulation/monthly-loads 2画面を `/indirect` 1画面に統合。GitHub Issue #70 クローズ |
+| 2026-03-13 | 0.4.0 | Phase 5 新設: Issue #70（間接工数管理画面の統合・簡素化）を追加。Spec `indirect-primary-case-selector`（Step 1: primary自動選択ロジック）完了。GitHub Issue #70 のチェックリスト更新 |
+| 2026-03-13 | 0.3.5 | #60（案件フロントエンド不足7フィールド追加）完了を反映、GitHub Issue #60 クローズ、Spec名を `project-frontend-missing-fields` に更新 |
 | 2026-03-12 | 0.3.4 | #66（キャパシティ自動生成 n×m組み合わせ）完了を反映、GitHub Issue #66 クローズ、Q10-2 解決済み |
 | 2026-03-11 | 0.3.3 | #69（人員計画フルワイド1カラム化）完了、#67（年度セレクタ改善）を #69 で解決としてクローズ |
 | 2026-03-10 | 0.3.2 | #65（間接工数の閲覧・編集画面）完了を反映、GitHub Issue #65 クローズ |

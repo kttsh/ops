@@ -7,10 +7,10 @@ import type {
 	UpdateProjectInput,
 } from "@/features/projects/types";
 import {
-	type PaginatedResponse,
 	API_BASE_URL,
 	createCrudClient,
 	handleResponse,
+	type PaginatedResponse,
 } from "@/lib/api";
 
 const client = createCrudClient<

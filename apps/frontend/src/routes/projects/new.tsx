@@ -21,12 +21,26 @@ function ProjectNewPage() {
 		totalManhour: number;
 		status: string;
 		durationMonths: number | null;
+		fiscalYear: number | null;
+		nickname: string;
+		customerName: string;
+		orderNumber: string;
+		calculationBasis: string;
+		remarks: string;
+		region: string;
 	}) => {
 		try {
 			await createMutation.mutateAsync({
 				...values,
 				projectTypeCode: values.projectTypeCode || undefined,
 				durationMonths: values.durationMonths ?? undefined,
+				fiscalYear: values.fiscalYear ?? undefined,
+				nickname: values.nickname || undefined,
+				customerName: values.customerName || undefined,
+				orderNumber: values.orderNumber || undefined,
+				calculationBasis: values.calculationBasis || undefined,
+				remarks: values.remarks || undefined,
+				region: values.region || undefined,
 			});
 			toast.success("保存しました");
 			navigate({ to: "/projects" });

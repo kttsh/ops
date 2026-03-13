@@ -7,10 +7,10 @@ import type {
 	UpdateHeadcountPlanCaseInput,
 } from "@/features/indirect-case-study/types";
 import {
-	type PaginatedResponse,
-	type SingleResponse,
 	API_BASE_URL,
 	handleResponse,
+	type PaginatedResponse,
+	type SingleResponse,
 } from "@/lib/api";
 
 // ============================================================

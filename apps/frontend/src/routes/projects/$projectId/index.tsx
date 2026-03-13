@@ -140,6 +140,13 @@ function ProjectDetailCard({
 		totalManhour: number;
 		status: string;
 		durationMonths: number | null;
+		fiscalYear: number | null;
+		nickname: string | null;
+		customerName: string | null;
+		orderNumber: string | null;
+		calculationBasis: string | null;
+		remarks: string | null;
+		region: string | null;
 		updatedAt: string;
 	};
 	statusLabel: string;
@@ -177,6 +184,16 @@ function ProjectDetailCard({
 						: "—"
 				}
 			/>
+			<DetailRow
+				label="年度"
+				value={project.fiscalYear != null ? String(project.fiscalYear) : "—"}
+			/>
+			<DetailRow label="通称・略称" value={project.nickname ?? "—"} />
+			<DetailRow label="客先名" value={project.customerName ?? "—"} />
+			<DetailRow label="オーダー番号" value={project.orderNumber ?? "—"} />
+			<DetailRow label="算出根拠" value={project.calculationBasis ?? "—"} />
+			<DetailRow label="備考" value={project.remarks ?? "—"} />
+			<DetailRow label="地域" value={project.region ?? "—"} />
 			<DetailRow label="更新日時" value={formatDateTime(project.updatedAt)} />
 		</div>
 	);

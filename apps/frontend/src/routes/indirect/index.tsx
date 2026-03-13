@@ -5,6 +5,6 @@ const searchSchema = z.object({
 	bu: z.string().catch("").default(""),
 });
 
-export const Route = createFileRoute("/indirect/simulation/")({
+export const Route = createFileRoute("/indirect/")({
 	validateSearch: searchSchema,
 });

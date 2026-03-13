@@ -48,6 +48,23 @@ export function createColumns(options: {
 			cell: ({ row }) => row.original.projectTypeName ?? "—",
 		},
 		{
+			accessorKey: "fiscalYear",
+			header: ({ column }) => <SortableHeader column={column} label="年度" />,
+			cell: ({ row }) => row.original.fiscalYear ?? "—",
+		},
+		{
+			accessorKey: "customerName",
+			header: ({ column }) => <SortableHeader column={column} label="客先名" />,
+			cell: ({ row }) => row.original.customerName ?? "—",
+		},
+		{
+			accessorKey: "orderNumber",
+			header: ({ column }) => (
+				<SortableHeader column={column} label="オーダー番号" />
+			),
+			cell: ({ row }) => row.original.orderNumber ?? "—",
+		},
+		{
 			accessorKey: "startYearMonth",
 			header: ({ column }) => (
 				<SortableHeader column={column} label="開始年月" />
