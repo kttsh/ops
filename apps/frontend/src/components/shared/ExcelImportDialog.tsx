@@ -336,10 +336,31 @@ function PreviewStep({
 			<div className="flex items-center justify-between text-sm">
 				<span className="text-muted-foreground">{totalRecords} 件のデータ</span>
 				{hasErrors && (
-					<span className="flex items-center gap-1 text-destructive">
-						<AlertCircle className="h-4 w-4" />
-						{errors.length} 件のエラー
-					</span>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="flex items-center gap-1 text-destructive cursor-help">
+									<AlertCircle className="h-4 w-4" />
+									{errors.length} 件のエラー
+								</span>
+							</TooltipTrigger>
+							<TooltipContent
+								side="bottom"
+								align="end"
+								className="max-w-md max-h-60 overflow-y-auto"
+							>
+								<ul className="space-y-1">
+									{errors.map((err, i) => (
+										<li key={i} className="text-xs">
+											{err.row > 0
+												? `行${err.row}: ${err.message}`
+												: err.message}
+										</li>
+									))}
+								</ul>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
 				)}
 			</div>
 
