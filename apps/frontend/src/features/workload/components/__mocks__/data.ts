@@ -45,8 +45,8 @@ const mockAreas: AreaSeriesConfig[] = [
 	{
 		dataKey: "project-1",
 		stackId: "stack",
-		fill: "#3b82f6",
-		stroke: "#3b82f6",
+		fill: "#B9DEFA",
+		stroke: "#B9DEFA",
 		fillOpacity: 0.6,
 		name: "A工場建設PJ",
 		type: "project",
@@ -54,8 +54,8 @@ const mockAreas: AreaSeriesConfig[] = [
 	{
 		dataKey: "project-2",
 		stackId: "stack",
-		fill: "#10b981",
-		stroke: "#10b981",
+		fill: "#B7FFB7",
+		stroke: "#B7FFB7",
 		fillOpacity: 0.6,
 		name: "B工場改修PJ",
 		type: "project",
@@ -63,8 +63,8 @@ const mockAreas: AreaSeriesConfig[] = [
 	{
 		dataKey: "indirect-1",
 		stackId: "stack",
-		fill: "#f59e0b",
-		stroke: "#f59e0b",
+		fill: "#d1d5db",
+		stroke: "#d1d5db",
 		fillOpacity: 0.4,
 		name: "間接業務",
 		type: "indirect",
@@ -74,7 +74,7 @@ const mockAreas: AreaSeriesConfig[] = [
 const mockLines: LineSeriesConfig[] = [
 	{
 		dataKey: "capacity-1",
-		stroke: "#ef4444",
+		stroke: "#E88888",
 		name: "キャパシティ",
 	},
 ];
