@@ -33,7 +33,7 @@ interface WorkloadDataTableProps {
 
 function formatCellValue(value: number | undefined): string {
 	if (value === undefined || value === 0) return "-";
-	return value.toLocaleString("ja-JP");
+	return Math.round(value).toLocaleString("ja-JP");
 }
 
 const MONTH_LABELS = [

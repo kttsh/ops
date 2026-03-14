@@ -17,7 +17,7 @@ interface LegendPanelProps {
 
 function formatManhour(value: number): string {
 	if (value === 0) return "-";
-	return value.toLocaleString("ja-JP");
+	return Math.round(value).toLocaleString("ja-JP");
 }
 
 function LegendPanelInner({
