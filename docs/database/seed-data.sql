@@ -102,18 +102,18 @@ INSERT INTO work_types (work_type_code, name, display_order, color) VALUES
 -- chart_color_palettes: カラーパレット
 -- -----------------------------------------------------------------------------
 INSERT INTO chart_color_palettes (name, color_code, display_order) VALUES
-(N'Blue', '#3B82F6', 1),
-(N'Green', '#22C55E', 2),
-(N'Yellow', '#EAB308', 3),
-(N'Red', '#EF4444', 4),
-(N'Purple', '#A855F7', 5),
-(N'Pink', '#EC4899', 6),
-(N'Indigo', '#6366F1', 7),
-(N'Teal', '#14B8A6', 8),
-(N'Orange', '#F97316', 9),
-(N'Cyan', '#06B6D4', 10),
-(N'Slate', '#64748B', 11),
-(N'Emerald', '#10B981', 12);
+(N'Pastel Blue', '#B9DEFA', 1),
+(N'Pastel Green', '#B7FFB7', 2),
+(N'Pastel Yellow', '#FFFF99', 3),
+(N'Pastel Red', '#FFB3B3', 4),
+(N'Pastel Purple', '#D4B8FF', 5),
+(N'Pastel Pink', '#FFB8D4', 6),
+(N'Pastel Indigo', '#B8BBFF', 7),
+(N'Pastel Teal', '#A8E8E0', 8),
+(N'Pastel Orange', '#FFD4A8', 9),
+(N'Pastel Cyan', '#93E5E5', 10),
+(N'Pastel Slate', '#C8D5E0', 11),
+(N'Pastel Emerald', '#A8E8D0', 12);
 
 -- =============================================================================
 -- 2. シナリオ・ケース
@@ -850,33 +850,33 @@ INSERT INTO chart_views (view_name, chart_type, start_year_month, end_year_month
 -- chart_view_id = 1 (PLANT全体負荷)
 -- -----------------------------------------------------------------------------
 INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible, color_code) VALUES
-(1, 1, 1, 1, 1, '#3b82f6'),  -- P-2025-001 ベースケース
-(1, 2, 3, 2, 1, '#10b981'),  -- P-2025-002 ベースケース
-(1, 3, 4, 3, 1, '#f59e0b'),  -- P-2025-003 ベースケース
-(1, 4, 5, 4, 1, '#ef4444'),  -- P-2026-001 ベースケース
-(1, 5, 7, 5, 1, '#8b5cf6');  -- P-2026-002 ベースケース
+(1, 1, 1, 1, 1, '#B9DEFA'),  -- P-2025-001 ベースケース
+(1, 2, 3, 2, 1, '#B7FFB7'),  -- P-2025-002 ベースケース
+(1, 3, 4, 3, 1, '#FFFF99'),  -- P-2025-003 ベースケース
+(1, 4, 5, 4, 1, '#FFB3B3'),  -- P-2026-001 ベースケース
+(1, 5, 7, 5, 1, '#D4B8FF');  -- P-2026-002 ベースケース
 
 -- chart_view_id = 2 (TRANS全体負荷)
 INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible, color_code) VALUES
-(2, 6, 8, 1, 1, '#3b82f6'),  -- T-2025-001 ベースケース
-(2, 7, 9, 2, 1, '#10b981'),  -- T-2025-002 ベースケース
-(2, 8, 10, 3, 1, '#f59e0b');  -- T-2026-001 ベースケース
+(2, 6, 8, 1, 1, '#B9DEFA'),  -- T-2025-001 ベースケース
+(2, 7, 9, 2, 1, '#B7FFB7'),  -- T-2025-002 ベースケース
+(2, 8, 10, 3, 1, '#FFFF99');  -- T-2026-001 ベースケース
 
 -- chart_view_id = 3 (CO2全体負荷)
 INSERT INTO chart_view_project_items (chart_view_id, project_id, project_case_id, display_order, is_visible, color_code) VALUES
-(3, 9, 11, 1, 1, '#3b82f6'),  -- C-2025-001 ベースケース
-(3, 10, 12, 2, 1, '#10b981'); -- C-2025-002 ベースケース
+(3, 9, 11, 1, 1, '#B9DEFA'),  -- C-2025-001 ベースケース
+(3, 10, 12, 2, 1, '#B7FFB7'); -- C-2025-002 ベースケース
 
 -- -----------------------------------------------------------------------------
 -- chart_view_capacity_items: チャートビューキャパシティ項目
 -- -----------------------------------------------------------------------------
 INSERT INTO chart_view_capacity_items (chart_view_id, capacity_scenario_id, is_visible, color_code) VALUES
-(1, 1, 1, '#dc2626'),  -- PLANT全体負荷 - 標準シナリオ
-(1, 2, 0, '#ea580c'),  -- PLANT全体負荷 - 楽観シナリオ（初期非表示）
-(2, 1, 1, '#dc2626'),  -- TRANS全体負荷 - 標準シナリオ
-(2, 2, 0, '#ea580c'),  -- TRANS全体負荷 - 楽観シナリオ（初期非表示）
-(3, 1, 1, '#dc2626'),  -- CO2全体負荷 - 標準シナリオ
-(3, 2, 0, '#ea580c');  -- CO2全体負荷 - 楽観シナリオ（初期非表示）
+(1, 1, 1, '#E88888'),  -- PLANT全体負荷 - 標準シナリオ
+(1, 2, 0, '#F49E02'),  -- PLANT全体負荷 - 楽観シナリオ（初期非表示）
+(2, 1, 1, '#E88888'),  -- TRANS全体負荷 - 標準シナリオ
+(2, 2, 0, '#F49E02'),  -- TRANS全体負荷 - 楽観シナリオ（初期非表示）
+(3, 1, 1, '#E88888'),  -- CO2全体負荷 - 標準シナリオ
+(3, 2, 0, '#F49E02');  -- CO2全体負荷 - 楽観シナリオ（初期非表示）
 
 -- -----------------------------------------------------------------------------
 -- chart_stack_order_settings: 山積順設定
@@ -893,16 +893,16 @@ INSERT INTO chart_stack_order_settings (target_type, target_code, stack_order) V
 -- chart_color_settings: カラー設定
 -- -----------------------------------------------------------------------------
 INSERT INTO chart_color_settings (target_type, target_code, color_code) VALUES
-('PROJECT', '1', '#3B82F6'),  -- Blue
-('PROJECT', '2', '#22C55E'),  -- Green
-('PROJECT', '3', '#EAB308'),  -- Yellow
-('PROJECT', '4', '#EF4444'),  -- Red
-('PROJECT', '5', '#A855F7'),  -- Purple
-('PROJECT', '6', '#EC4899'),  -- Pink
-('PROJECT', '7', '#6366F1'),  -- Indigo
-('PROJECT', '8', '#14B8A6'),  -- Teal
-('PROJECT', '9', '#F97316'),  -- Orange
-('PROJECT', '10', '#06B6D4'), -- Cyan
+('PROJECT', '1', '#B9DEFA'),  -- Pastel Blue
+('PROJECT', '2', '#B7FFB7'),  -- Pastel Green
+('PROJECT', '3', '#FFFF99'),  -- Pastel Yellow
+('PROJECT', '4', '#FFB3B3'),  -- Pastel Red
+('PROJECT', '5', '#D4B8FF'),  -- Pastel Purple
+('PROJECT', '6', '#FFB8D4'),  -- Pastel Pink
+('PROJECT', '7', '#B8BBFF'),  -- Pastel Indigo
+('PROJECT', '8', '#A8E8E0'),  -- Pastel Teal
+('PROJECT', '9', '#FFD4A8'),  -- Pastel Orange
+('PROJECT', '10', '#93E5E5'), -- Pastel Cyan
 ('INDIRECT', '1', '#d1d5db'), -- Gray-300
 ('INDIRECT', '2', '#9ca3af'), -- Gray-400
 ('INDIRECT', '3', '#6b7280'); -- Gray-500
@@ -1111,9 +1111,9 @@ INSERT INTO monthly_capacity (capacity_scenario_id, business_unit_code, year_mon
 -- 新規シナリオは初期非表示 (is_visible = 0)
 -- -----------------------------------------------------------------------------
 INSERT INTO chart_view_capacity_items (chart_view_id, capacity_scenario_id, is_visible, color_code) VALUES
-(1, 3, 0, '#059669'),
-(2, 3, 0, '#059669'),
-(3, 3, 0, '#059669');
+(1, 3, 0, '#88C9A0'),
+(2, 3, 0, '#88C9A0'),
+(3, 3, 0, '#88C9A0');
 
 -- =============================================================================
 -- 完了メッセージ
